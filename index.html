@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polaris Care Desk — Internal Manual Ops (Mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0C1E29; --ink-2:#102A38; --ink-3:#16384A;
+    --paper:#F4F2EB; --paper-2:#FBFAF5;
+    --line:#DCD7C9; --line-dark:#1E4356;
+    --teal:#0E8C92; --teal-d:#0B7479;
+    --gold:#E0A43B; --gold-d:#C2882A;
+    --coral:#E5604D; --green:#39A07F;
+    --slate:#3A4A52; --slate-2:#6B7980;
+    --on-navy:#CFE3E6; --on-navy-mut:#7FA0AB;
+    --r:10px; --r-s:7px;
+    --shadow:0 1px 0 rgba(12,30,41,.04), 0 8px 24px -12px rgba(12,30,41,.18);
+    --mono:'IBM Plex Mono',monospace; --disp:'Space Grotesk',sans-serif; --body:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--body);color:var(--slate);background:var(--paper);-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.5}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}
+  input,select,textarea{font-family:inherit;font-size:13.5px}
+  ::selection{background:var(--teal);color:#fff}
+
+  .app{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
+  .scrim{display:none}
+  .side{background:var(--ink);color:var(--on-navy);display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+  .brand{padding:20px 20px 16px;border-bottom:1px solid var(--line-dark)}
+  .brand .mark{display:flex;align-items:center;gap:10px}
+  .brand .compass{width:34px;height:34px;flex:0 0 auto}
+  .brand h1{font-family:var(--disp);font-size:16px;font-weight:600;color:#fff;letter-spacing:-.2px;line-height:1.1}
+  .brand .sub{font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--on-navy-mut);margin-top:3px}
+  .nav{padding:14px 12px;flex:1;overflow-y:auto}
+  .nav .lab{font-family:var(--mono);font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:var(--on-navy-mut);padding:0 10px 8px}
+  .nav a{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:var(--r-s);color:var(--on-navy);font-weight:500;font-size:13.5px;margin-bottom:2px;text-decoration:none;transition:background .14s}
+  .nav a svg{width:17px;height:17px;opacity:.8}
+  .nav a:hover{background:var(--ink-2)}
+  .nav a.active{background:var(--teal);color:#fff}
+  .nav a.active svg{opacity:1}
+  .nav a .count{margin-left:auto;font-family:var(--mono);font-size:11px;background:rgba(255,255,255,.12);padding:1px 7px;border-radius:20px}
+  .nav a.active .count{background:rgba(255,255,255,.22)}
+  .side-foot{padding:14px 18px;border-top:1px solid var(--line-dark);font-size:11px;color:var(--on-navy-mut);line-height:1.45}
+  .side-foot b{color:var(--gold);font-weight:600}
+  .side-foot .lock{display:inline-flex;align-items:center;gap:5px;color:var(--on-navy);margin-top:7px}
+  .side-foot .lock svg{width:12px;height:12px}
+
+  .main{min-width:0;display:flex;flex-direction:column}
+  .topbar{display:flex;align-items:center;gap:16px;padding:16px 30px;background:var(--paper);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+  .topbar .crumb{font-family:var(--mono);font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--slate-2)}
+  .topbar h2{font-family:var(--disp);font-size:19px;font-weight:600;color:var(--ink);letter-spacing:-.3px}
+  .topbar .spacer{flex:1}
+  .mockchip{font-family:var(--mono);font-size:10.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--gold-d);background:rgba(224,164,59,.13);border:1px solid rgba(224,164,59,.4);padding:5px 11px;border-radius:20px;font-weight:500}
+  .content{padding:26px 30px 60px;max-width:1180px;width:100%}
+
+  .row{display:flex;align-items:center;gap:10px}
+  .btn{display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:var(--r-s);font-weight:600;font-size:13px;background:var(--ink-2);color:#fff;transition:transform .08s,background .14s,box-shadow .14s}
+  .btn svg{width:15px;height:15px}
+  .btn:hover{background:var(--ink-3)}
+  .btn:active{transform:translateY(1px)}
+  .btn.primary{background:var(--teal)} .btn.primary:hover{background:var(--teal-d)}
+  .btn.ghost{background:transparent;color:var(--slate);border:1px solid var(--line)}
+  .btn.ghost:hover{background:var(--paper-2);border-color:#ccc6b6}
+  .btn.gold{background:var(--gold)} .btn.gold:hover{background:var(--gold-d)}
+  .btn.green{background:var(--green)} .btn.green:hover{filter:brightness(.94)}
+  .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+  .btn.sm{padding:6px 11px;font-size:12px}
+
+  .tag{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.4px;padding:3px 8px;border-radius:5px;text-transform:uppercase;white-space:nowrap}
+  .tag.er{background:rgba(229,96,77,.13);color:#b8392a}
+  .tag.noner{background:rgba(58,74,82,.1);color:var(--slate)}
+  .tag.inp{background:rgba(14,140,146,.12);color:var(--teal-d)}
+  .tag.outp{background:rgba(57,160,127,.14);color:#2c7d62}
+  .tag.chan{background:rgba(58,74,82,.08);color:var(--slate-2)}
+  .card{background:var(--paper-2);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+  .stat{padding:16px 18px}
+  .stat .k{font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--slate-2);margin-bottom:9px}
+  .stat .v{font-family:var(--disp);font-size:27px;font-weight:600;color:var(--ink);line-height:1}
+  .stat .meta{font-size:11.5px;color:var(--slate-2);margin-top:7px}
+  .stat .meta b.alert{color:var(--coral)}
+  .stat-accent{height:3px;border-radius:3px;margin-top:13px;background:var(--line)}
+  .stat-accent.teal{background:var(--teal)} .stat-accent.gold{background:var(--gold)}
+  .stat-accent.coral{background:var(--coral)} .stat-accent.green{background:var(--green)}
+
+  .section-head{display:flex;align-items:baseline;gap:12px;margin:6px 0 14px;flex-wrap:wrap}
+  .section-head h3{font-family:var(--disp);font-size:15px;font-weight:600;color:var(--ink)}
+  .section-head .hint{font-size:12px;color:var(--slate-2)}
+  .section-head .spacer{flex:1}
+
+  .caselist{display:flex;flex-direction:column;gap:11px}
+  .case{display:grid;grid-template-columns:1.6fr 1.5fr 2.4fr auto;gap:18px;align-items:center;padding:15px 18px;cursor:pointer;transition:border-color .14s,box-shadow .14s,transform .08s}
+  .case:hover{border-color:var(--teal);box-shadow:0 6px 20px -10px rgba(14,140,146,.4)}
+  .case:active{transform:translateY(1px)}
+  .case .who .nm{font-weight:600;color:var(--ink);font-size:14px}
+  .case .who .rl{font-size:11.5px;color:var(--slate-2);margin-top:2px}
+  .case .who .id{font-family:var(--mono);font-size:10.5px;color:var(--teal-d);margin-top:3px}
+  .case .prov{font-size:13px;color:var(--slate)}
+  .case .prov .p{font-weight:500;color:var(--ink)}
+  .case .prov .amt{font-family:var(--mono);font-size:12px;color:var(--slate-2);margin-top:3px}
+  .case .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+  .mini-rail{display:flex;align-items:center;gap:0}
+  .mini-rail .seg{height:5px;width:16px;background:var(--line);border-radius:3px;margin-right:3px}
+  .mini-rail .seg.done{background:var(--teal)} .mini-rail .seg.now{background:var(--gold)} .mini-rail .seg.block{background:var(--coral)}
+  .case .stat-col{min-width:170px}
+  .case .stat-col .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--slate-2);margin-bottom:6px}
+  .case .nextcol{text-align:right;min-width:160px}
+  .case .nextcol .na{font-size:11px;color:var(--slate-2);margin-bottom:7px;font-family:var(--mono);letter-spacing:.4px;text-transform:uppercase}
+  .chev{width:16px;height:16px;color:var(--slate-2);flex:0 0 auto}
+
+  .back{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--slate-2);font-weight:500;margin-bottom:16px}
+  .back:hover{color:var(--teal-d)}
+  .back svg{width:15px;height:15px}
+  .detail-head{display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap;margin-bottom:22px}
+  .detail-head .h-main h2{font-family:var(--disp);font-size:24px;font-weight:600;color:var(--ink);letter-spacing:-.4px}
+  .detail-head .h-main .sub{margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .detail-head .h-main .id{font-family:var(--mono);font-size:12px;color:var(--teal-d)}
+
+  .voyage{padding:22px 24px 18px;margin-bottom:22px;overflow-x:auto}
+  .rail{display:flex;min-width:780px;position:relative}
+  .rail::before{content:"";position:absolute;top:15px;left:24px;right:24px;height:2px;background:var(--line)}
+  .rail .prog{position:absolute;top:15px;left:24px;height:2px;background:var(--teal);transition:width .4s cubic-bezier(.4,0,.2,1)}
+  .station{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;z-index:2;text-align:center;padding:0 4px}
+  .station .node{width:30px;height:30px;border-radius:50%;background:var(--paper);border:2px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--slate-2);transition:all .3s;font-family:var(--mono);font-size:11px;font-weight:600}
+  .station .node svg{width:15px;height:15px}
+  .station.done .node{background:var(--teal);border-color:var(--teal);color:#fff}
+  .station.now .node{background:#fff;border-color:var(--teal);color:var(--teal);box-shadow:0 0 0 5px rgba(14,140,146,.16)}
+  .station.now.gate .node{border-color:var(--gold);color:var(--gold-d);box-shadow:0 0 0 5px rgba(224,164,59,.2)}
+  .station .cap{font-size:10.5px;margin-top:9px;color:var(--slate-2);font-weight:500;line-height:1.25;max-width:86px}
+  .station.done .cap,.station.now .cap{color:var(--ink)}
+
+  .detail-grid{display:grid;grid-template-columns:1fr 320px;gap:22px;align-items:start}
+  .panel{padding:20px 22px}
+  .panel h4{font-family:var(--disp);font-size:13px;font-weight:600;color:var(--ink);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+  .panel h4 .step-no{font-family:var(--mono);font-size:11px;color:#fff;background:var(--teal);width:20px;height:20px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center}
+  .panel .desc{font-size:12.5px;color:var(--slate-2);margin-bottom:16px}
+  .panel + .panel{margin-top:16px}
+
+  .actionzone{border:1px dashed var(--line);border-radius:var(--r-s);padding:18px;background:var(--paper)}
+  .gate-warn{display:flex;gap:12px;padding:14px 16px;border-radius:var(--r-s);background:rgba(224,164,59,.1);border:1px solid rgba(224,164,59,.45);margin-bottom:14px}
+  .gate-warn.block{background:rgba(229,96,77,.1);border-color:rgba(229,96,77,.45)}
+  .gate-warn svg{width:19px;height:19px;flex:0 0 auto;color:var(--gold-d);margin-top:1px}
+  .gate-warn.block svg{color:var(--coral)}
+  .gate-warn .gw-t{font-weight:600;color:var(--ink);font-size:13px;margin-bottom:3px}
+  .gate-warn .gw-b{font-size:12.5px;color:var(--slate)}
+
+  .check-item{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--line)}
+  .check-item:last-child{border-bottom:none}
+  .check-item .cb{width:20px;height:20px;border-radius:5px;border:2px solid var(--line);flex:0 0 auto;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .14s;background:#fff}
+  .check-item .cb svg{width:13px;height:13px;color:#fff;opacity:0;transition:opacity .14s}
+  .check-item.on .cb{background:var(--green);border-color:var(--green)}
+  .check-item.on .cb svg{opacity:1}
+  .check-item .ct{font-size:13px;color:var(--slate)} .check-item.on .ct{color:var(--ink)}
+  .check-item .req{font-family:var(--mono);font-size:9.5px;color:var(--coral);text-transform:uppercase;letter-spacing:.5px;margin-left:auto}
+  .check-item.opt .req{color:var(--slate-2)}
+
+  .auto-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#2c7d62;background:rgba(57,160,127,.13);padding:7px 12px;border-radius:6px;margin-bottom:14px}
+  .auto-badge svg{width:15px;height:15px}
+  .recip{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 4px}
+  .recip .rc{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--slate);background:#fff;border:1px solid var(--line);padding:5px 10px;border-radius:20px}
+  .recip .rc svg{width:13px;height:13px;color:var(--teal-d)}
+
+  .magic-row{display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap}
+  .magic-note{font-size:11.5px;color:var(--slate-2);flex:1;min-width:160px}
+  .done-stamp{display:flex;align-items:center;gap:10px;padding:14px 16px;background:rgba(57,160,127,.09);border:1px solid rgba(57,160,127,.4);border-radius:var(--r-s);color:#2c7d62;font-weight:600;font-size:13px}
+  .done-stamp svg{width:18px;height:18px}
+
+  .facts dt{font-family:var(--mono);font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:var(--slate-2);margin-top:14px}
+  .facts dt:first-child{margin-top:0}
+  .facts dd{font-size:13.5px;color:var(--ink);margin-top:3px;font-weight:500}
+  .facts dd.mono{font-family:var(--mono);font-size:12.5px}
+
+  .avail-bar{margin-top:8px}
+  .avail-bar .ab-top{display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:5px}
+  .avail-bar .ab-top .lab{color:var(--slate-2)}
+  .avail-bar .ab-top .val{font-family:var(--mono);color:var(--ink);font-weight:500}
+  .avail-bar .track{height:7px;background:var(--line);border-radius:5px;overflow:hidden}
+  .avail-bar .fill{height:100%;background:var(--teal);border-radius:5px}
+  .avail-bar .fill.low{background:var(--gold)} .avail-bar .fill.zero{background:var(--coral)}
+  .avail-bar + .avail-bar{margin-top:13px}
+
+  .timeline{margin-top:6px}
+  .timeline .ev{display:flex;gap:11px;padding-bottom:14px;position:relative}
+  .timeline .ev:not(:last-child)::before{content:"";position:absolute;left:5px;top:14px;bottom:-2px;width:1.5px;background:var(--line)}
+  .timeline .ev .pip{width:11px;height:11px;border-radius:50%;background:var(--teal);flex:0 0 auto;margin-top:2px;border:2px solid var(--paper-2)}
+  .timeline .ev .tx{font-size:12.5px;color:var(--slate)}
+  .timeline .ev .tm{font-family:var(--mono);font-size:10.5px;color:var(--slate-2);margin-top:2px}
+
+  .net-tabs{display:flex;gap:6px;margin-bottom:18px}
+  .net-tabs button{padding:8px 16px;border-radius:20px;font-weight:600;font-size:13px;color:var(--slate);background:transparent;border:1px solid var(--line)}
+  .net-tabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+  .provider{padding:17px 19px}
+  .provider .pv-top{display:flex;align-items:flex-start;gap:12px}
+  .provider .logo{width:42px;height:42px;border-radius:9px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:600;font-size:16px;flex:0 0 auto}
+  .provider .pv-top .nm{font-weight:600;color:var(--ink);font-size:14.5px;line-height:1.2}
+  .provider .pv-top .loc{font-size:11.5px;color:var(--slate-2);margin-top:3px}
+  .provider .pv-meta{display:flex;gap:14px;margin-top:14px;padding-top:13px;border-top:1px solid var(--line)}
+  .provider .pv-meta .m .mk{font-family:var(--mono);font-size:9.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--slate-2)}
+  .provider .pv-meta .m .mv{font-size:13px;font-weight:600;color:var(--ink);margin-top:3px}
+  .moa{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:5px;font-weight:500;margin-left:auto}
+  .moa.active{background:rgba(57,160,127,.14);color:#2c7d62}
+  .moa.pending{background:rgba(224,164,59,.14);color:var(--gold-d)}
+
+  .ledger-wrap{overflow-x:auto}
+  table.ledger{width:100%;border-collapse:collapse;min-width:840px}
+  table.ledger th{font-family:var(--mono);font-size:10px;letter-spacing:.7px;text-transform:uppercase;color:var(--slate-2);text-align:left;padding:11px 14px;border-bottom:1.5px solid var(--line);font-weight:500;background:var(--paper)}
+  table.ledger th .sub8{display:block;color:var(--teal-d);font-size:9px;margin-top:2px}
+  table.ledger th.num,table.ledger td.num{text-align:right;font-family:var(--mono)}
+  table.ledger td{padding:13px 14px;border-bottom:1px solid var(--line);font-size:13px}
+  table.ledger tr:hover td{background:rgba(14,140,146,.03)}
+  table.ledger .mname{font-weight:600;color:var(--ink)}
+  table.ledger .mrole{font-size:11px;color:var(--slate-2)}
+  table.ledger .mid{font-family:var(--mono);font-size:10.5px;color:var(--teal-d)}
+  .num.zero{color:var(--coral);font-weight:600}
+  .num.low{color:var(--gold-d);font-weight:600}
+  .pill{font-family:var(--mono);font-size:10.5px;padding:2px 7px;border-radius:5px;background:var(--line);color:var(--slate)}
+  .pill.paid{background:rgba(57,160,127,.16);color:#2c7d62}
+
+  .ledger-note{display:flex;gap:11px;padding:14px 16px;border-radius:var(--r-s);background:rgba(14,140,146,.07);border:1px solid rgba(14,140,146,.28);margin-bottom:18px;font-size:12.5px;color:var(--slate)}
+  .ledger-note svg{width:18px;height:18px;color:var(--teal-d);flex:0 0 auto;margin-top:1px}
+  .ledger-note b{color:var(--ink)}
+
+  /* 8.x cycle strip */
+  .cycle{display:flex;align-items:center;gap:0;flex-wrap:wrap;margin-top:18px;padding:16px 18px}
+  .cycle .node8{display:flex;flex-direction:column;gap:3px;padding:10px 14px;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-s);min-width:130px}
+  .cycle .node8 .n{font-family:var(--mono);font-size:10px;color:var(--teal-d);letter-spacing:.5px}
+  .cycle .node8 .t{font-size:12px;font-weight:600;color:var(--ink)}
+  .cycle .arr{margin:0 8px;color:var(--slate-2)}
+  .cycle .arr.loop{color:var(--gold-d);font-weight:600}
+
+  /* procedure reference */
+  .proc-step{display:flex;gap:14px;padding:16px 18px;align-items:flex-start}
+  .proc-step + .proc-step{border-top:1px solid var(--line)}
+  .proc-step .pn{width:30px;height:30px;border-radius:8px;background:var(--ink);color:#fff;font-family:var(--mono);font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .proc-step .pbody{flex:1}
+  .proc-step .pt{font-weight:600;color:var(--ink);font-size:14px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .proc-step .covered{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.5px;color:#2c7d62;background:rgba(57,160,127,.13);padding:2px 7px;border-radius:5px}
+  .proc-step .covered svg{width:11px;height:11px}
+  .proc-step .pd{font-size:12.5px;color:var(--slate);margin-top:5px}
+  .proc-step .subs{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+  .proc-step .sub{font-family:var(--mono);font-size:10.5px;color:var(--slate);background:var(--paper);border:1px solid var(--line);padding:3px 9px;border-radius:20px}
+  .proc-step .where{font-size:11.5px;color:var(--teal-d);margin-top:8px;font-weight:500}
+
+  /* ===== MODAL (New request intake) ===== */
+  .modal-scrim{position:fixed;inset:0;background:rgba(12,30,41,.5);z-index:80;display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
+  .modal-scrim.open{display:flex}
+  .modal{background:var(--paper-2);border-radius:14px;width:100%;max-width:560px;box-shadow:0 30px 70px -20px rgba(12,30,41,.6);animation:pop .2s ease}
+  @keyframes pop{from{opacity:0;transform:translateY(-10px) scale(.98)}to{opacity:1;transform:none}}
+  .modal-head{display:flex;align-items:center;gap:12px;padding:20px 24px;border-bottom:1px solid var(--line)}
+  .modal-head h3{font-family:var(--disp);font-size:18px;font-weight:600;color:var(--ink);flex:1}
+  .modal-head .x{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--slate-2)}
+  .modal-head .x:hover{background:var(--paper);color:var(--ink)}
+  .modal-head .x svg{width:17px;height:17px}
+  .modal-body{padding:22px 24px}
+  .fgroup{margin-bottom:18px}
+  .fgroup > label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.7px;text-transform:uppercase;color:var(--slate-2);margin-bottom:8px;font-weight:500}
+  .fgroup > label .star{color:var(--coral)}
+  .seg-pick{display:flex;gap:8px;flex-wrap:wrap}
+  .seg-pick button{flex:1;min-width:120px;padding:11px 12px;border-radius:var(--r-s);border:1.5px solid var(--line);background:#fff;color:var(--slate);font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .14s}
+  .seg-pick button svg{width:15px;height:15px;opacity:.6}
+  .seg-pick button:hover{border-color:#bbb5a4}
+  .seg-pick button.sel{border-color:var(--teal);background:rgba(14,140,146,.08);color:var(--teal-d)}
+  .seg-pick button.sel svg{opacity:1;color:var(--teal-d)}
+  .seg-pick.two button{min-width:100px}
+  .ftext,.fsel{width:100%;padding:11px 13px;border-radius:var(--r-s);border:1.5px solid var(--line);background:#fff;color:var(--ink)}
+  .ftext:focus,.fsel:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(14,140,146,.12)}
+  textarea.ftext{resize:vertical;min-height:62px}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .member-preview{margin-top:10px;padding:12px 14px;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-s);font-size:12px;display:none}
+  .member-preview.show{display:block}
+  .member-preview .mp-nm{font-weight:600;color:var(--ink);font-size:13px}
+  .member-preview .mp-av{font-family:var(--mono);color:var(--slate);margin-top:5px;font-size:11.5px}
+  .category-readout{font-family:var(--mono);font-size:11px;color:var(--teal-d);margin-top:9px}
+  .moa-warn{display:none;align-items:center;gap:8px;margin-top:9px;font-size:11.5px;color:var(--gold-d)}
+  .moa-warn.show{display:flex} .moa-warn svg{width:14px;height:14px;flex:0 0 auto}
+  .modal-foot{display:flex;gap:10px;justify-content:flex-end;padding:16px 24px;border-top:1px solid var(--line);background:var(--paper)}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:13px 20px;border-radius:var(--r-s);font-size:13px;font-weight:500;box-shadow:0 12px 30px -8px rgba(12,30,41,.5);z-index:120;opacity:0;transition:transform .3s,opacity .3s;display:flex;align-items:center;gap:10px;max-width:90vw}
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+  .toast svg{width:17px;height:17px;color:var(--green)}
+  .hidden{display:none!important}
+
+  .menu-btn{display:none}
+  @media(max-width:900px){
+    .app{grid-template-columns:1fr}
+    .side{position:fixed;left:0;top:0;width:236px;z-index:90;transform:translateX(-100%);transition:transform .25s}
+    .side.open{transform:translateX(0)}
+    .scrim{display:none;position:fixed;inset:0;background:rgba(12,30,41,.45);z-index:85}
+    .scrim.open{display:block}
+    .menu-btn{display:inline-flex;width:38px;height:38px;align-items:center;justify-content:center;border-radius:8px;border:1px solid var(--line);background:var(--paper-2)}
+    .menu-btn svg{width:19px;height:19px;color:var(--ink)}
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .detail-grid{grid-template-columns:1fr}
+    .case{grid-template-columns:1fr;gap:12px}
+    .case .nextcol{text-align:left}
+    .case .chev{display:none}
+    .content{padding:20px 16px 50px}
+    .topbar{padding:13px 16px}
+    .two-col{grid-template-columns:1fr}
+  }
+  @media(max-width:520px){ .stats{grid-template-columns:1fr} }
+
+  /* ===== GUIDE ===== */
+  .g-wrap{max-width:920px}
+  .g-top{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .g-top .spacer{flex:1}
+  .lang-toggle{display:inline-flex;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--paper-2)}
+  .lang-toggle button{padding:6px 15px;font-weight:600;font-size:12px;color:var(--slate-2);font-family:var(--mono);letter-spacing:.6px}
+  .lang-toggle button.on{background:var(--ink);color:#fff}
+  .g-hero{padding:30px 32px;border-radius:14px;background:linear-gradient(135deg,rgba(14,140,146,.12),rgba(57,160,127,.1));border:1px solid rgba(14,140,146,.25);margin-bottom:22px}
+  .g-hero .eye{font-family:var(--mono);font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--teal-d);font-weight:600}
+  .g-hero h2{font-family:var(--disp);font-size:30px;font-weight:700;color:var(--ink);margin:10px 0 8px;letter-spacing:-.5px;display:flex;align-items:center;gap:12px;line-height:1.1}
+  .g-hero p{font-size:14px;color:var(--slate);max-width:640px}
+  .g-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+  .g-tabs button{display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:10px;font-weight:600;font-size:13px;border:1.5px solid var(--line);background:var(--paper-2);color:var(--slate);transition:all .14s}
+  .g-tabs button:hover{border-color:#bbb5a4}
+  .g-tabs button.on{border-color:var(--teal);background:rgba(14,140,146,.1);color:var(--teal-d)}
+  .g-tabs button .gi{font-size:14px}
+  .g-sec{padding:26px 30px}
+  .g-h2{font-family:var(--disp);font-size:20px;font-weight:600;color:var(--ink);margin-bottom:8px;display:flex;align-items:center;gap:10px;line-height:1.25}
+  .g-lead{font-size:14px;color:var(--slate);margin-bottom:20px;line-height:1.65}
+  .g-lead b{color:var(--ink)}
+  .g-sub{font-family:var(--disp);font-size:14.5px;font-weight:600;color:var(--ink);margin:24px 0 10px;display:flex;align-items:center;gap:8px}
+  .g-p{font-size:13.5px;color:var(--slate);line-height:1.65;margin-bottom:11px}
+  .g-p b{color:var(--ink)}
+  .g-ol{counter-reset:gstep;list-style:none;margin:6px 0 14px}
+  .g-ol li{position:relative;padding:11px 0 11px 44px;border-bottom:1px solid var(--line);font-size:13.5px;color:var(--slate);line-height:1.55}
+  .g-ol li:last-child{border-bottom:none}
+  .g-ol li::before{counter-increment:gstep;content:counter(gstep);position:absolute;left:0;top:9px;width:28px;height:28px;border-radius:8px;background:var(--teal);color:#fff;font-family:var(--mono);font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center}
+  .g-ol li b{color:var(--ink)}
+  .g-ref{display:inline-flex;align-items:center;font-family:var(--mono);font-size:11.5px;font-weight:600;color:var(--teal-d);background:rgba(14,140,146,.1);border:1px solid rgba(14,140,146,.3);padding:1px 7px;border-radius:5px;white-space:nowrap}
+  .g-note,.g-warn,.g-ok{display:flex;gap:11px;padding:13px 16px;border-radius:var(--r-s);font-size:13px;line-height:1.55;margin:14px 0}
+  .g-note{background:rgba(14,140,146,.07);border:1px solid rgba(14,140,146,.28);color:var(--slate)}
+  .g-warn{background:rgba(224,164,59,.1);border:1px solid rgba(224,164,59,.42);color:var(--slate)}
+  .g-ok{background:rgba(57,160,127,.1);border:1px solid rgba(57,160,127,.42);color:var(--slate)}
+  .g-note b,.g-warn b,.g-ok b{color:var(--ink)}
+  .g-note .ic,.g-warn .ic,.g-ok .ic{flex:0 0 auto;font-size:15px;line-height:1.4}
+  .g-legend{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+  .g-legend .lg{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:500;padding:6px 12px;border-radius:20px;border:1px solid var(--line);background:var(--paper);color:var(--slate)}
+  .g-legend .lg .d{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+  .g-tbl{width:100%;border-collapse:collapse;margin-top:6px}
+  .g-tbl th{text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:var(--slate-2);padding:9px 12px;border-bottom:1.5px solid var(--line)}
+  .g-tbl td{padding:11px 12px;border-bottom:1px solid var(--line);font-size:13px;color:var(--slate);vertical-align:top;line-height:1.5}
+  .g-tbl td.term{font-weight:600;color:var(--ink);white-space:nowrap;font-family:var(--mono);font-size:12px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="scrim" id="scrim" onclick="toggleMenu()"></div>
+  <aside class="side" id="side">
+    <div class="brand">
+      <div class="mark">
+        <svg class="compass" viewBox="0 0 40 40" fill="none">
+          <circle cx="20" cy="20" r="18" stroke="#E0A43B" stroke-width="1.6"/>
+          <circle cx="20" cy="20" r="13" stroke="#1E4356" stroke-width="1"/>
+          <path d="M20 8 L24 20 L20 32 L16 20 Z" fill="#0E8C92"/>
+          <path d="M20 8 L24 20 L20 20 Z" fill="#CFE3E6"/>
+          <circle cx="20" cy="20" r="2" fill="#E0A43B"/>
+        </svg>
+        <div><h1>Care Desk</h1><div class="sub">Polaris · Manual Ops</div></div>
+      </div>
+    </div>
+    <nav class="nav">
+      <div class="lab">Operations</div>
+      <a href="#" class="active" data-view="dashboard" onclick="go('dashboard',event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        Case Board <span class="count" id="nav-cases">6</span>
+      </a>
+      <a href="#" data-view="network" onclick="go('network',event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="18" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M12 7.5v4M7 16l3-3M17 16l-3-3"/></svg>
+        Network
+      </a>
+      <a href="#" data-view="ledger" onclick="go('ledger',event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+        Availment Ledger
+      </a>
+      <div class="lab" style="margin-top:18px">Reference</div>
+      <a href="#" data-view="procedure" onclick="go('procedure',event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h9l5 5v13a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
+        Procedure & Coverage
+      </a>
+      <a href="#" data-view="guide" onclick="go('guide',event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+        Guide · Οδηγός
+      </a>
+    </nav>
+    <div class="side-foot">
+      <b>Phase 1 · Internal mockup</b><br>
+      Fake data μόνο.
+      <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>Καθόλου real PII · εκτός GDPR scope</span>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <button class="menu-btn" onclick="toggleMenu()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+      <div><div class="crumb" id="crumb">Operations / Case Board</div><h2 id="title">Case Board</h2></div>
+      <div class="spacer"></div>
+      <span class="mockchip">Mockup · internal</span>
+    </div>
+    <div class="content" id="content"></div>
+  </main>
+</div>
+
+<!-- ===== NEW REQUEST MODAL ===== -->
+<div class="modal-scrim" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>New request</h3>
+      <button class="x" onclick="closeModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <!-- 1. reception -->
+      <div class="fgroup">
+        <label>Reception channel <span class="star">*</span></label>
+        <div class="seg-pick">
+          <button data-f="channel" data-v="call" onclick="pick(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3-8.6A2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.4 1.8.7 2.7a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.4-1.2a2 2 0 012.1-.5c.9.3 1.8.6 2.7.7a2 2 0 011.7 2z"/></svg>Phone call</button>
+          <button data-f="channel" data-v="message" onclick="pick(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 01-9 8.4 8.5 8.5 0 01-3.6-.8L3 21l1.9-5.4A8.4 8.4 0 1121 11.5z"/></svg>Message</button>
+        </div>
+      </div>
+      <div class="fgroup">
+        <label>Request source <span class="star">*</span></label>
+        <div class="seg-pick">
+          <button data-f="source" data-v="patient" onclick="pick(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>Patient / member</button>
+          <button data-f="source" data-v="provider" onclick="pick(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M15 9h.01M9 13h.01M15 13h.01"/></svg>Accredited provider</button>
+        </div>
+      </div>
+      <!-- member -->
+      <div class="fgroup">
+        <label>Member (Seafarer ID) <span class="star">*</span></label>
+        <select class="fsel" id="m-member" onchange="memberPreview()">
+          <option value="">— επίλεξε μέλος —</option>
+        </select>
+        <div class="member-preview" id="m-preview"></div>
+      </div>
+      <!-- provider -->
+      <div class="fgroup">
+        <label>Accredited provider <span class="star">*</span></label>
+        <select class="fsel" id="m-provider" onchange="providerCheck()">
+          <option value="">— επίλεξε provider —</option>
+        </select>
+        <div class="moa-warn" id="m-moawarn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0zM12 9v4M12 17h.01"/></svg>MOA pending — reimbursable μόνο, χωρίς direct billing</div>
+      </div>
+      <!-- 1.1-1.4 category -->
+      <div class="fgroup">
+        <label>Case category <span class="star">*</span></label>
+        <div class="two-col">
+          <div class="seg-pick two">
+            <button data-f="emergency" data-v="1" onclick="pick(this)">ER</button>
+            <button data-f="emergency" data-v="0" onclick="pick(this)">Non-ER</button>
+          </div>
+          <div class="seg-pick two">
+            <button data-f="inpatient" data-v="1" onclick="pick(this)">Inpatient</button>
+            <button data-f="inpatient" data-v="0" onclick="pick(this)">Outpatient</button>
+          </div>
+        </div>
+        <div class="category-readout" id="m-cat"></div>
+      </div>
+      <!-- dx + amount -->
+      <div class="fgroup">
+        <label>Reason / diagnosis <span class="star">*</span></label>
+        <textarea class="ftext" id="m-dx" placeholder="π.χ. Acute appendicitis, RLQ pain"></textarea>
+      </div>
+      <div class="fgroup" style="margin-bottom:4px">
+        <label>Estimated amount (Php)</label>
+        <input class="ftext" id="m-amt" type="number" min="0" step="100" placeholder="π.χ. 4500 — κενό αν άγνωστο (ER)">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="closeModal()">Άκυρο</button>
+      <button class="btn primary" onclick="createCase()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Create case</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg><span id="toast-msg"></span></div>
+
+<script>
+/* ============================================================
+   ============  DOMAIN  (portable → Next2MCL spec)  ==========
+   Αυτό το block είναι framework-agnostic: μεταφέρεται 1:1 σε
+   lib/lifecycle.ts (TypeScript) στο MCL. Δες companion .md.
+   ============================================================ */
+
+// 8 lifecycle steps ⇄ τα 8 βήματα του εγγράφου (18 May 2026)
+const STEPS = [
+  {key:'request',   cap:'Request',         no:1},
+  {key:'membership',cap:'Membership',      no:2},
+  {key:'availment', cap:'Availment',       no:3},
+  {key:'prelim',    cap:'Preliminary LOA', no:4},
+  {key:'discharge', cap:'Discharge docs',  no:5},
+  {key:'final',     cap:'Final LOA',        no:6},
+  {key:'payment',   cap:'Payment',          no:7},
+  {key:'ledger',    cap:'Ledger update',    no:8},
+];
+const stepIndex = k => STEPS.findIndex(s=>s.key===k);
+
+// --- business RULES (the moat of this mockup; carry to MCL) ---
+const RULES = {
+  PRELIM_AUTO_LIMIT: 5000,
+  // step 4: outpatient ≤ Php5,000 auto-approves
+  autoApprovePrelim: c => !c.inpatient && c.estAmount>0 && c.estAmount <= RULES.PRELIM_AUTO_LIMIT,
+  // step 5: required documents by case type
+  requiredDocs: c => c.inpatient
+      ? [{k:'d0',t:'Medical report',req:true},{k:'d1',t:'Itemized invoice (ή final SOA)',req:true}]
+      : [{k:'d0',t:'Medical abstract'+(c.amount>5000?' (>Php5,000 — required)':' (optional ≤Php5,000)'),req:c.amount>5000},
+         {k:'d1',t:'Invoice',req:true}],
+  // step 3: availment gate
+  noAvailment: (c,m) => c.inpatient ? m.amblLeft<=0 : m.oamblLeft<=0,
+};
+
+/* ============================================================
+   SEED DATA — φανταστικό (maritime / Filipino · HPDC Manila)
+   ============================================================ */
+const PROVIDERS = [
+  {id:'MDH', name:'Manila Doctors Hospital', loc:'Ermita, Manila', kind:'clinic', moa:'active', tier:'Tier 1', rate:'Direct billing'},
+  {id:'SLM', name:"St. Luke's Medical Center", loc:'Quezon City', kind:'clinic', moa:'active', tier:'Tier 1', rate:'Direct billing'},
+  {id:'MCM', name:'Metro Cebu Medical Center', loc:'Cebu City', kind:'clinic', moa:'active', tier:'Tier 2', rate:'Direct billing'},
+  {id:'CDH', name:"Cebu Doctors' University Hosp.", loc:'Cebu City', kind:'clinic', moa:'pending', tier:'Tier 2', rate:'Reimbursable'},
+  {id:'MKT', name:'Makati Medical Center', loc:'Makati', kind:'clinic', moa:'active', tier:'Tier 1', rate:'Direct billing'},
+];
+const DOCTORS = [
+  {id:'DR1', name:'Dr. Elena Villanueva', loc:'Internal Medicine · Manila Doctors', kind:'doctor', moa:'active', tier:'Accredited', rate:'PF capped'},
+  {id:'DR2', name:'Dr. Ramon Bautista', loc:"Cardiology · St. Luke's", kind:'doctor', moa:'active', tier:'Accredited', rate:'PF capped'},
+  {id:'DR3', name:'Dr. Grace Lim', loc:'Pediatrics · Metro Cebu', kind:'doctor', moa:'active', tier:'Accredited', rate:'PF capped'},
+  {id:'DR4', name:'Dr. Antonio Cruz', loc:'Orthopedics · Makati Med', kind:'doctor', moa:'pending', tier:'Accredited', rate:'Per visit'},
+];
+const MEMBERS = {
+  'PRS-100482':{name:'Reyes, Mariano', role:'AB Seaman · Aegean Crewing', relation:'Principal member',
+     amblTotal:500000, amblLeft:48000, oamblTotal:60000, oamblLeft:0, inner:'Room & Board Php2,500/day', paid:0},
+  'PRS-100482-D1':{name:'Reyes, Carmela', role:'Spouse of M. Reyes', relation:'Dependent',
+     amblTotal:300000, amblLeft:212000, oamblTotal:40000, oamblLeft:18500, inner:'Maternity Php45,000', paid:0},
+  'PRS-100731':{name:'Dela Cruz, Romeo', role:'Bosun · Hellas Marine Manning', relation:'Principal member',
+     amblTotal:500000, amblLeft:355000, oamblTotal:60000, oamblLeft:42000, inner:'ICU Php8,000/day', paid:0},
+  'PRS-100958':{name:'Aquino, Joel', role:'Oiler · Pacific Star Shipping', relation:'Principal member',
+     amblTotal:400000, amblLeft:91000, oamblTotal:50000, oamblLeft:9200, inner:'—', paid:0},
+  'PRS-100731-D2':{name:'Mendoza, Grace', role:'Child of R. Dela Cruz', relation:'Dependent',
+     amblTotal:300000, amblLeft:268000, oamblTotal:40000, oamblLeft:23000, inner:'Dental Php6,000', paid:0},
+  'PRS-100204':{name:'Navarro, Ferdinand', role:'Master · Aegean Crewing', relation:'Principal member',
+     amblTotal:600000, amblLeft:121000, oamblTotal:70000, oamblLeft:31000, inner:'Cardiac rider', paid:0},
+};
+let CASES = [
+  {ref:'PC-2606-014', member:'PRS-100958', provider:'CDH', emergency:true, inpatient:false,
+    channel:'call', source:'provider', estAmount:6800, amount:6800, stage:'request', dx:'Acute gastroenteritis, dehydration',
+    timeline:[{t:'Request received via provider hotline (call)',m:'09 Jun · 14:20'}]},
+  {ref:'PC-2606-011', member:'PRS-100482-D1', provider:'MCM', emergency:false, inpatient:false,
+    channel:'message', source:'patient', estAmount:3200, amount:3200, stage:'prelim', dx:'Prenatal consult + labs',
+    timeline:[{t:'Request received (message)',m:'07 Jun · 10:05'},{t:'Membership verified',m:'07 Jun · 10:18'},{t:'Availment confirmed — outpatient AMBL ok',m:'07 Jun · 10:24'}]},
+  {ref:'PC-2606-007', member:'PRS-100731', provider:'SLM', emergency:false, inpatient:true,
+    channel:'call', source:'provider', estAmount:80000, amount:84500, stage:'discharge', dx:'Elective cholecystectomy',
+    timeline:[{t:'Request received (call)',m:'04 Jun · 16:40'},{t:'Membership verified',m:'04 Jun · 16:52'},{t:'Availment confirmed',m:'04 Jun · 17:10'},{t:'Preliminary LOA issued (admin control)',m:'04 Jun · 17:30'},{t:'Patient discharged — awaiting docs',m:'08 Jun · 11:00'}]},
+  {ref:'PC-2606-003', member:'PRS-100731-D2', provider:'MCM', emergency:false, inpatient:false,
+    channel:'message', source:'patient', estAmount:4500, amount:4500, stage:'final', dx:'Dental — extraction + restoration',
+    timeline:[{t:'Request received (message)',m:'02 Jun · 09:15'},{t:'Membership verified',m:'02 Jun · 09:30'},{t:'Availment confirmed',m:'02 Jun · 09:41'},{t:'Preliminary LOA auto-approved',m:'02 Jun · 09:42'},{t:'Invoice + abstract received',m:'05 Jun · 13:20'}]},
+  {ref:'PC-2605-118', member:'PRS-100204', provider:'MKT', emergency:true, inpatient:true,
+    channel:'call', source:'provider', estAmount:140000, amount:152000, stage:'payment', dx:'NSTEMI — cardiac admission',
+    timeline:[{t:'ER request received (call)',m:'24 May · 03:10'},{t:'Membership verified',m:'24 May · 03:22'},{t:'Availment confirmed — ER',m:'24 May · 03:35'},{t:'Preliminary LOA issued',m:'24 May · 03:50'},{t:'Final SOA + report received',m:'01 Jun · 10:00'},{t:'Final LOA issued',m:'02 Jun · 09:00'}]},
+  {ref:'PC-2606-016', member:'PRS-100482', provider:'MDH', emergency:true, inpatient:true,
+    channel:'call', source:'provider', estAmount:0, amount:0, stage:'availment', dx:'ER — chest trauma, fall on deck',
+    timeline:[{t:'ER request received via provider (call)',m:'09 Jun · 22:05'},{t:'Membership verified',m:'09 Jun · 22:14'}]},
+];
+
+/* ============================================================
+   STATE + HELPERS
+   ============================================================ */
+let view='dashboard', currentRef=null, netTab='clinic';
+let gateState={}, docState={}, draft={channel:'',source:'',emergency:null,inpatient:null};
+let caseSeq=17;
+
+const $ = s => document.querySelector(s);
+const php = n => 'Php ' + Number(n).toLocaleString('en-US');
+const provById = id => [...PROVIDERS,...DOCTORS].find(p=>p.id===id);
+function caseType(c){return (c.emergency?'ER':'Non-ER')+' '+(c.inpatient?'Inpatient':'Outpatient');}
+function svgCheck(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>';}
+function chev(){return '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>';}
+function magicIcon(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';}
+function toast(msg){$('#toast-msg').textContent=msg;$('#toast').classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>$('#toast').classList.remove('show'),2600);}
+function toggleMenu(){$('#side').classList.toggle('open');$('#scrim').classList.toggle('open');}
+
+/* ROUTER */
+function go(v,e){if(e)e.preventDefault();view=v;currentRef=null;
+  document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('active',a.dataset.view===v));
+  $('#side').classList.remove('open');$('#scrim').classList.remove('open');render();}
+function openCase(ref){currentRef=ref;view='case';render();window.scrollTo(0,0);}
+const TITLES={dashboard:['Operations / Case Board','Case Board'],network:['Operations / Network','Accredited Network'],ledger:['Operations / Availment Ledger','Availment Ledger'],procedure:['Reference / Procedure','Procedure & Coverage'],guide:['Reference / Guide','User Guide'],case:['Operations / Case Board / Detail','Case Detail']};
+function render(){
+  const [crumb,title]=TITLES[view];
+  $('#crumb').textContent=crumb;$('#title').textContent=title;
+  $('#nav-cases').textContent=CASES.filter(c=>c.stage!=='ledger').length;
+  ({dashboard:renderDashboard,network:renderNetwork,ledger:renderLedger,procedure:renderProcedure,guide:renderGuide,case:renderCase}[view])();
+}
+
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+function renderDashboard(){
+  const active=CASES.filter(c=>c.stage!=='ledger');
+  const needAttn=active.filter(c=>c.stage==='availment'||c.stage==='request').length;
+  const awaitingPay=CASES.filter(c=>c.stage==='payment').length;
+  const erLow=CASES.filter(c=>c.emergency&&MEMBERS[c.member].amblLeft<10000).length;
+
+  let h=`<div class="stats">
+    <div class="stat card"><div class="k">Active cases</div><div class="v">${active.length}</div><div class="meta">σε εξέλιξη στο δίκτυο</div><div class="stat-accent teal"></div></div>
+    <div class="stat card"><div class="k">Need action now</div><div class="v">${needAttn}</div><div class="meta">request / availment βήμα</div><div class="stat-accent gold"></div></div>
+    <div class="stat card"><div class="k">Awaiting payment</div><div class="v">${awaitingPay}</div><div class="meta">final LOA → MOA payout</div><div class="stat-accent green"></div></div>
+    <div class="stat card"><div class="k">ER · low availment</div><div class="v">${erLow}</div><div class="meta"><b class="alert">inform principal</b> πιθανώς</div><div class="stat-accent coral"></div></div>
+  </div>`;
+  h+=`<div class="section-head"><h3>Active cases</h3><span class="hint">Πάτα ένα case για το πλήρες lifecycle</span><div class="spacer"></div><button class="btn primary sm" onclick="openModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>New request</button></div>`;
+  h+=`<div class="caselist">`;
+  active.forEach(c=>{
+    const m=MEMBERS[c.member];const si=stepIndex(c.stage);const stepObj=STEPS[si];
+    let rail='<div class="mini-rail">';
+    STEPS.forEach((s,i)=>{let cls=i<si?'done':(i===si?'now':'');if(i===si&&c.stage==='availment')cls='block';rail+=`<span class="seg ${cls}"></span>`;});
+    rail+='</div>';
+    h+=`<div class="case card" onclick="openCase('${c.ref}')">
+      <div class="who"><div class="nm">${m.name}</div><div class="rl">${m.role}</div><div class="id">${c.ref} · ${c.member}</div></div>
+      <div class="prov"><div class="p">${provById(c.provider).name}</div><div class="amt">${c.amount?php(c.amount):'amount TBD'} · ${c.dx}</div>
+        <div class="tags"><span class="tag ${c.emergency?'er':'noner'}">${c.emergency?'ER':'Non-ER'}</span><span class="tag ${c.inpatient?'inp':'outp'}">${c.inpatient?'Inpatient':'Outpatient'}</span><span class="tag chan">${c.channel==='call'?'☎ call':'✉ message'}</span></div>
+      </div>
+      <div class="stat-col"><div class="lbl">Step ${stepObj.no}/8 · ${stepObj.cap}</div>${rail}</div>
+      <div class="row"><div class="nextcol"><div class="na">Next action</div><span class="btn ${c.stage==='availment'?'gold':'primary'} sm">${nextActionLabel(c)}</span></div>${chev()}</div>
+    </div>`;
+  });
+  h+=`</div>`;
+  $('#content').innerHTML=h;
+}
+function nextActionLabel(c){return {request:'Verify membership',membership:'Check availment',availment:'Resolve gate',prelim:'Issue Preliminary LOA',discharge:'Receive docs',final:'Issue Final LOA',payment:'Mark paid'}[c.stage]||'Close';}
+
+/* ============================================================
+   CASE DETAIL — voyage rail + step action zone
+   ============================================================ */
+function renderCase(){
+  const c=CASES.find(x=>x.ref===currentRef);if(!c){go('dashboard');return;}
+  const m=MEMBERS[c.member];const si=stepIndex(c.stage);const prov=provById(c.provider);
+  const progPct=(si/(STEPS.length-1))*100;
+  let rail=`<div class="rail"><div class="prog" style="width:calc(${progPct}% - ${progPct*0.48}px)"></div>`;
+  STEPS.forEach((s,i)=>{let cls=i<si?'done':(i===si?'now':'');let gate=(i===si&&c.stage==='availment')?' gate':'';let inner=i<si?svgCheck():s.no;rail+=`<div class="station ${cls}${gate}"><div class="node">${inner}</div><div class="cap">${s.cap}</div></div>`;});
+  rail+=`</div>`;
+  function bar(lab,left,total){const pct=total?Math.max(2,Math.round(left/total*100)):0;const cls=left<=0?'zero':(left/total<0.2?'low':'');return `<div class="avail-bar"><div class="ab-top"><span class="lab">${lab}</span><span class="val">${php(left)} / ${php(total)}</span></div><div class="track"><div class="fill ${cls}" style="width:${pct}%"></div></div></div>`;}
+
+  let h=`<a class="back" href="#" onclick="go('dashboard',event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>Case Board</a>`;
+  h+=`<div class="detail-head"><div class="h-main"><h2>${m.name}</h2><div class="sub"><span class="id">${c.ref}</span><span class="tag ${c.emergency?'er':'noner'}">${c.emergency?'ER':'Non-ER'}</span><span class="tag ${c.inpatient?'inp':'outp'}">${c.inpatient?'Inpatient':'Outpatient'}</span><span class="tag chan">${c.channel==='call'?'☎ call':'✉ message'} · ${c.source}</span><span style="font-size:12.5px;color:var(--slate-2)">${c.dx}</span></div></div></div>`;
+  h+=`<div class="voyage card">${rail}</div>`;
+  h+=`<div class="detail-grid"><div class="col-main">`+stepPanel(c,m,prov)+`</div><div class="col-side">`;
+  h+=`<div class="panel card"><h4>Member</h4><dl class="facts">
+      <dt>Seafarer ID (for life)</dt><dd class="mono">${c.member}</dd>
+      <dt>Relation</dt><dd>${m.relation}</dd>
+      <dt>Principal</dt><dd>${m.role.split('·')[1]?m.role.split('·')[1].trim():'—'}</dd>
+      <dt>Inner limit</dt><dd>${m.inner}</dd></dl>
+      <div style="margin-top:16px;padding-top:15px;border-top:1px solid var(--line)"><dt style="font-family:var(--mono);font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:var(--slate-2);margin-bottom:10px">Remaining availment</dt>${bar('AMBL (annual)',m.amblLeft,m.amblTotal)}${bar('Outpatient AMBL',m.oamblLeft,m.oamblTotal)}</div></div>`;
+  h+=`<div class="panel card"><h4>Provider</h4><dl class="facts"><dt>Accredited provider</dt><dd>${prov.name}</dd><dt>Location</dt><dd>${prov.loc}</dd><dt>MOA</dt><dd>${prov.moa==='active'?'Active · '+prov.rate:'⚠ Pending signature'}</dd><dt>Case amount</dt><dd class="mono">${c.amount?php(c.amount):'TBD on discharge'}</dd></dl></div>`;
+  h+=`<div class="panel card"><h4>Audit trail</h4><div class="timeline">`;
+  c.timeline.slice().reverse().forEach(ev=>{h+=`<div class="ev"><div class="pip"></div><div><div class="tx">${ev.t}</div><div class="tm">${ev.m}</div></div></div>`;});
+  h+=`</div></div></div></div>`;
+  $('#content').innerHTML=h;
+}
+
+function stepPanel(c,m,prov){
+  const step=STEPS[stepIndex(c.stage)];
+  const head=`<div class="panel card"><h4><span class="step-no">${step.no}</span>${step.cap}</h4>`;
+
+  if(c.stage==='request') return head+`<div class="desc">Αίτημα ελήφθη (${c.channel==='call'?'phone call':'message'}, από ${c.source==='patient'?'patient/member':'accredited provider'}). Επιβεβαίωσε ιδιότητα μέλους πριν προχωρήσεις.</div>
+    <div class="actionzone"><div style="font-size:13px;color:var(--slate);margin-bottom:6px">Έλεγχος Seafarer ID <b style="font-family:var(--mono);color:var(--teal-d)">${c.member}</b> στο master registry.</div>
+    <div class="magic-row"><button class="btn primary" onclick="advance('${c.ref}','Membership verified')">${magicIcon()}Verify membership</button><span class="magic-note">Magic Button → επόμενο λογικό βήμα.</span></div></div></div>`;
+
+  if(c.stage==='membership') return head+`<div class="desc">Το μέλος επιβεβαιώθηκε. Προσδιόρισε remaining availment (AMBL · outpatient AMBL · inner limits).</div>
+    <div class="actionzone"><div class="magic-row"><button class="btn primary" onclick="advance('${c.ref}','Availment determination opened')">${magicIcon()}Check availment</button><span class="magic-note">Ανοίγει το forced-compliance gate.</span></div></div></div>`;
+
+  if(c.stage==='availment'){
+    const g=gateState[c.ref]||(gateState[c.ref]={cbms:false,claims:false});
+    const noAvail=RULES.noAvailment(c,m);const ready=g.cbms&&g.claims;
+    let body=`<div class="desc">Forced compliance: δεν εκδίδεται LOA αν το ledger δεν είναι ενημερωμένο ή υπάρχουν unencoded claims. Το μέλος ενημερώνεται για το remaining benefit.</div><div class="actionzone">`;
+    body+=`<div class="check-item ${g.cbms?'on':''}" onclick="flipGate('${c.ref}','cbms')"><span class="cb">${svgCheck()}</span><span class="ct">CBMS / ledger ενημερωμένο για αυτό το μέλος</span><span class="req">required</span></div>`;
+    body+=`<div class="check-item ${g.claims?'on':''}" onclick="flipGate('${c.ref}','claims')"><span class="cb">${svgCheck()}</span><span class="ct">Κανένα pending claim προς encoding</span><span class="req">required</span></div>`;
+    if(noAvail&&c.emergency){body+=`<div class="gate-warn block" style="margin-top:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg><div><div class="gw-t">ER admission · μηδενικό availment</div><div class="gw-b">Κατά το έγγραφο: σε ER χωρίς availment ενημερώνουμε τον principal. Δεν μπλοκάρεται η εισαγωγή — προχωρά με escalation.</div></div></div>`;}
+    else if(noAvail){body+=`<div class="gate-warn block" style="margin-top:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg><div><div class="gw-t">Δεν υπάρχει διαθέσιμο availment</div><div class="gw-b">Non-ER χωρίς υπόλοιπο — δεν εκδίδεται LOA. Ενημέρωσε το μέλος για το εξαντλημένο όριο.</div></div></div>`;}
+    if(!ready){body+=`<div class="gate-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg><div><div class="gw-t">Gate κλειστό</div><div class="gw-b">Ολοκλήρωσε τα δύο compliance checks για να ξεκλειδώσει η preliminary LOA.</div></div></div>`;}
+    const canProceed=ready&&!(noAvail&&!c.emergency);const escalate=ready&&noAvail&&c.emergency;
+    body+=`<div class="magic-row">`;
+    if(escalate) body+=`<button class="btn gold" onclick="advance('${c.ref}','Principal informed — ER no availment','Principal ενημερώθηκε. Συνεχίζει σε preliminary LOA.')">${magicIcon()}Inform principal & proceed</button>`;
+    else body+=`<button class="btn primary" ${canProceed?'':'disabled'} onclick="advance('${c.ref}','Availment confirmed — member informed')">${magicIcon()}Confirm & continue</button>`;
+    body+=`<span class="magic-note">Member ενημερώνεται για το remaining benefit.</span></div></div>`;
+    return head+body;
+  }
+
+  if(c.stage==='prelim'){
+    const auto=RULES.autoApprovePrelim(c);
+    let body=`<div class="desc">Έκδοση Preliminary LOA. Αποστέλλεται και στους δύο αποδέκτες.</div><div class="actionzone">`;
+    if(auto){body+=`<div class="auto-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Auto-approved — outpatient ${php(c.estAmount)} ≤ Php 5,000</div><div style="font-size:12.5px;color:var(--slate-2)">Καμία χειροκίνητη έγκριση κατά το έγγραφο.</div>`;}
+    else{body+=`<div class="gate-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg><div><div class="gw-t">Subject to Polaris Admin control</div><div class="gw-b">${c.inpatient?'Inpatient case':'Outpatient > Php 5,000'} — χρειάζεται χειροκίνητη έγκριση χειριστή.</div></div></div>`;}
+    body+=`<div class="recip"><span class="rc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>Provider: ${prov.name}</span><span class="rc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>Patient: ${m.name}</span></div>`;
+    body+=`<div class="magic-row"><button class="btn ${auto?'primary':'gold'}" onclick="advance('${c.ref}','Preliminary LOA ${auto?'auto-approved':'issued (admin control)'} → provider + patient')">${magicIcon()}${auto?'Issue Preliminary LOA':'Approve & issue LOA'}</button>${auto?'':'<button class="btn ghost" onclick="holdCase()">Hold</button>'}</div></div></div>`;
+    return head+body;
+  }
+
+  if(c.stage==='discharge'){
+    const ds=docState[c.ref]||(docState[c.ref]={});const docs=RULES.requiredDocs(c);
+    let body=`<div class="desc">On discharge — ο provider στέλνει τα παραστατικά. Επιβεβαίωσε λήψη.</div><div class="actionzone">`;
+    docs.forEach(d=>{body+=`<div class="check-item ${ds[d.k]?'on':''} ${d.req?'':'opt'}" onclick="flipDoc('${c.ref}','${d.k}')"><span class="cb">${svgCheck()}</span><span class="ct">${d.t}</span><span class="req">${d.req?'required':'optional'}</span></div>`;});
+    const ready=docs.filter(d=>d.req).every(d=>ds[d.k]);
+    body+=`<div class="magic-row" style="margin-top:14px"><button class="btn primary" ${ready?'':'disabled'} onclick="advance('${c.ref}','Discharge documents received')">${magicIcon()}Confirm documents received</button><span class="magic-note">${ready?'Όλα τα required ελήφθησαν.':'Λείπουν required παραστατικά.'}</span></div></div></div>`;
+    return head+body;
+  }
+
+  if(c.stage==='final') return head+`<div class="desc">Έκδοση Final LOA προς provider + patient, βάσει τελικών παραστατικών.</div>
+    <div class="actionzone"><dl class="facts" style="margin-bottom:6px"><dt>Final billed amount</dt><dd class="mono">${php(c.amount)}</dd><dt>Against</dt><dd>${c.inpatient?'AMBL (annual)':'Outpatient AMBL'} — remaining ${php(c.inpatient?m.amblLeft:m.oamblLeft)}</dd></dl>
+    <div class="recip"><span class="rc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>${prov.name}</span><span class="rc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>${m.name}</span></div>
+    <div class="magic-row"><button class="btn primary" onclick="advance('${c.ref}','Final LOA issued → provider + patient')">${magicIcon()}Issue Final LOA</button></div></div></div>`;
+
+  if(c.stage==='payment') return head+`<div class="desc">Πληρωμή προς provider κατά το αντίστοιχο MOA. Καταχωρείται στο executed ledger (8.4).</div>
+    <div class="actionzone"><dl class="facts" style="margin-bottom:14px"><dt>Payable to</dt><dd>${prov.name}</dd><dt>Terms</dt><dd>${prov.rate} · per MOA</dd><dt>Amount</dt><dd class="mono">${php(c.amount)}</dd></dl>
+    <div class="magic-row"><button class="btn green" onclick="advance('${c.ref}','Payment executed → ledger updated (8.4→8.1)','Πληρωμή καταχωρήθηκε. Ledger ενημερώθηκε.')">${magicIcon()}Mark paid & update ledger</button></div></div></div>`;
+
+  return head+`<div class="done-stamp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Case closed — ledger ενημερώθηκε. Remaining availment ξαναμπαίνει στον κύκλο (8.1).</div></div>`;
+}
+
+/* ACTIONS */
+function flipGate(ref,key){const g=gateState[ref]||(gateState[ref]={cbms:false,claims:false});g[key]=!g[key];renderCase();}
+function flipDoc(ref,key){const d=docState[ref]||(docState[ref]={});d[key]=!d[key];renderCase();}
+function holdCase(){toast('Mockup — hold / escalate flow');}
+function advance(ref,trailMsg,customToast){
+  const c=CASES.find(x=>x.ref===ref);if(!c)return;const si=stepIndex(c.stage);
+  if(si<STEPS.length-1){
+    if(c.stage==='payment'){const m=MEMBERS[c.member];if(c.inpatient)m.amblLeft=Math.max(0,m.amblLeft-c.amount);else m.oamblLeft=Math.max(0,m.oamblLeft-c.amount);m.paid=(m.paid||0)+c.amount;}
+    c.stage=STEPS[si+1].key;
+    const now=new Date();const stamp=now.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+' · '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    c.timeline.push({t:trailMsg,m:stamp});
+    toast(customToast||('✓ '+trailMsg));renderCase();
+  }
+}
+
+/* ============================================================
+   NEW REQUEST MODAL (step 1 intake)
+   ============================================================ */
+function openModal(){
+  draft={channel:'',source:'',emergency:null,inpatient:null};
+  const ms=$('#m-member');ms.innerHTML='<option value="">— επίλεξε μέλος —</option>'+Object.entries(MEMBERS).map(([id,m])=>`<option value="${id}">${m.name} · ${id}</option>`).join('');
+  const ps=$('#m-provider');ps.innerHTML='<option value="">— επίλεξε provider —</option>'+PROVIDERS.map(p=>`<option value="${p.id}">${p.name}${p.moa==='pending'?' (MOA pending)':''}</option>`).join('');
+  $('#m-dx').value='';$('#m-amt').value='';$('#m-preview').className='member-preview';$('#m-moawarn').className='moa-warn';$('#m-cat').textContent='';
+  document.querySelectorAll('.modal .seg-pick button').forEach(b=>b.classList.remove('sel'));
+  $('#modal').classList.add('open');
+}
+function closeModal(){$('#modal').classList.remove('open');}
+function pick(btn){
+  const f=btn.dataset.f;
+  btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  draft[f]=(f==='emergency'||f==='inpatient')?(btn.dataset.v==='1'):btn.dataset.v;
+  if(f==='emergency'||f==='inpatient') catReadout();
+}
+function catReadout(){
+  if(draft.emergency===null||draft.inpatient===null){return;}
+  const map={ '1.1':[true,true],'1.2':[true,false],'1.3':[false,true],'1.4':[false,false] };
+  let no=Object.keys(map).find(k=>map[k][0]===draft.emergency&&map[k][1]===draft.inpatient);
+  $('#m-cat').textContent=`→ Κατηγορία ${no}: ${draft.emergency?'ER':'Non-ER'} ${draft.inpatient?'inpatient':'outpatient'}`;
+}
+function memberPreview(){
+  const id=$('#m-member').value;const p=$('#m-preview');
+  if(!id){p.className='member-preview';return;}
+  const m=MEMBERS[id];
+  p.innerHTML=`<div class="mp-nm">${m.name} · ${m.relation}</div><div class="mp-av">AMBL left ${php(m.amblLeft)} · Outpatient left ${php(m.oamblLeft)} · ${m.inner}</div>`;
+  p.className='member-preview show';
+}
+function providerCheck(){
+  const id=$('#m-provider').value;const w=$('#m-moawarn');
+  const pr=PROVIDERS.find(p=>p.id===id);
+  w.className=(pr&&pr.moa==='pending')?'moa-warn show':'moa-warn';
+}
+function createCase(){
+  if(!draft.channel||!draft.source){toast('Συμπλήρωσε channel + source');return;}
+  const member=$('#m-member').value,provider=$('#m-provider').value,dx=$('#m-dx').value.trim();
+  if(!member||!provider||!dx||draft.emergency===null||draft.inpatient===null){toast('Λείπουν υποχρεωτικά πεδία');return;}
+  const amt=parseInt($('#m-amt').value)||0;
+  const ref='PC-2606-0'+(caseSeq++);
+  const now=new Date();const stamp=now.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+' · '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  CASES.unshift({ref,member,provider,emergency:draft.emergency,inpatient:draft.inpatient,channel:draft.channel,source:draft.source,estAmount:amt,amount:amt,stage:'request',dx,
+    timeline:[{t:`Request received (${draft.channel}, from ${draft.source})`,m:stamp}]});
+  closeModal();toast('✓ Case '+ref+' δημιουργήθηκε');openCase(ref);
+}
+
+/* ============================================================
+   NETWORK
+   ============================================================ */
+function renderNetwork(){
+  let h=`<div class="ledger-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg><div>Χειρόγραφες συμβάσεις (MOA) με κλινικές & γιατρούς. <b>Active MOA</b> = direct billing & LOA· <b>pending</b> = reimbursable μόνο.</div></div>`;
+  h+=`<div class="net-tabs"><button class="${netTab==='clinic'?'on':''}" onclick="setNet('clinic')">Clinics & Hospitals</button><button class="${netTab==='doctor'?'on':''}" onclick="setNet('doctor')">Doctors</button></div>`;
+  const list=netTab==='clinic'?PROVIDERS:DOCTORS;
+  h+=`<div class="grid-cards">`;
+  list.forEach(p=>{h+=`<div class="provider card"><div class="pv-top"><div class="logo">${p.id.slice(0,2)}</div><div style="flex:1"><div class="nm">${p.name}</div><div class="loc">${p.loc}</div></div><span class="moa ${p.moa}">${p.moa==='active'?'MOA active':'MOA pending'}</span></div>
+    <div class="pv-meta"><div class="m"><div class="mk">Tier</div><div class="mv">${p.tier}</div></div><div class="m"><div class="mk">Billing</div><div class="mv">${p.rate}</div></div><div class="m"><div class="mk">Open cases</div><div class="mv">${CASES.filter(c=>c.provider===p.id&&c.stage!=='ledger').length}</div></div></div></div>`;});
+  h+=`</div>`;$('#content').innerHTML=h;
+}
+function setNet(t){netTab=t;renderNetwork();}
+
+/* ============================================================
+   LEDGER — manual CBMS substitute (8.1–8.4 explicit)
+   ============================================================ */
+function renderLedger(){
+  let h=`<div class="ledger-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v8M8 12h8"/><circle cx="12" cy="12" r="10"/></svg><div>Manual <b>CBMS substitute</b> — single source of truth για availment όσο τρέχουμε χειροκίνητα. Οι 4 στήλες αντιστοιχούν στα 8.1–8.4 του εγγράφου.</div></div>`;
+  h+=`<div class="card ledger-wrap"><table class="ledger"><thead><tr>
+    <th>Member</th><th>Seafarer ID</th>
+    <th class="num">Remaining AMBL<span class="sub8">8.1</span></th>
+    <th class="num">Remaining OP<span class="sub8">8.1</span></th>
+    <th>Inner limit</th>
+    <th class="num">Conditional<span class="sub8">8.2</span></th>
+    <th class="num">Final<span class="sub8">8.3</span></th>
+    <th class="num">Executed / Paid<span class="sub8">8.4</span></th>
+  </tr></thead><tbody>`;
+  Object.entries(MEMBERS).forEach(([id,m])=>{
+    const cond=CASES.filter(c=>c.member===id&&['prelim','discharge'].includes(c.stage)).length;
+    const fin=CASES.filter(c=>c.member===id&&['final','payment'].includes(c.stage)).length;
+    const amblCls=m.amblLeft<=0?'zero':(m.amblLeft/m.amblTotal<0.2?'low':'');
+    const oamblCls=m.oamblLeft<=0?'zero':(m.oamblLeft/m.oamblTotal<0.2?'low':'');
+    h+=`<tr><td><div class="mname">${m.name}</div><div class="mrole">${m.relation}</div></td><td class="mid">${id}</td>
+      <td class="num ${amblCls}">${php(m.amblLeft)}</td><td class="num ${oamblCls}">${php(m.oamblLeft)}</td>
+      <td style="font-size:12px;color:var(--slate-2)">${m.inner}</td>
+      <td class="num"><span class="pill">${cond}</span></td><td class="num"><span class="pill">${fin}</span></td>
+      <td class="num">${m.paid?'<span class="pill paid">'+php(m.paid)+'</span>':'<span class="pill">—</span>'}</td></tr>`;
+  });
+  h+=`</tbody></table></div>`;
+  h+=`<div class="card cycle"><div class="node8"><span class="n">8.1</span><span class="t">Remaining benefits</span></div><span class="arr">→</span>
+    <div class="node8"><span class="n">8.2</span><span class="t">Conditional LOAs</span></div><span class="arr">→</span>
+    <div class="node8"><span class="n">8.3</span><span class="t">Final LOAs</span></div><span class="arr">→</span>
+    <div class="node8"><span class="n">8.4</span><span class="t">Executed / Paid</span></div><span class="arr loop">⟲ back to 8.1</span></div>`;
+  $('#content').innerHTML=h;
+}
+
+/* ============================================================
+   PROCEDURE & COVERAGE (audit vs the 18 May 2026 PDF)
+   ============================================================ */
+function renderProcedure(){
+  const steps=[
+    {n:'1',t:'Request reception',d:'Message ή call από patient ή accredited provider.',subs:['1.1 ER inpatient','1.2 ER outpatient','1.3 Non-ER inpatient','1.4 Non-ER outpatient'],where:'Intake form (channel + source + κατηγορία) → Case Board'},
+    {n:'2',t:'Membership verification',d:'By Polaris Admin — έλεγχος Seafarer ID.',subs:[],where:'Case step 2 · Verify membership'},
+    {n:'3',t:'Determination of remaining availment',d:'AMBL · outpatient AMBL · inner limits. CBMS updated + no pending claims. Member informed. ER χωρίς availment → inform principal.',subs:['Forced-compliance gate','ER → inform principal'],where:'Case step 3 · gate + member availment bars'},
+    {n:'4',t:'Preliminary LOA issuance',d:'Προς provider + patient. Auto-approved outpatient ≤ Php5,000· αλλιώς admin control.',subs:['Auto ≤ Php5,000','Admin control'],where:'Case step 4 · auto-badge / approve + 2 recipients'},
+    {n:'5',t:'On discharge — documents',d:'Inpatient: medical report + itemized invoice / final SOA. Outpatient: medical abstract (>Php5,000) + invoice.',subs:['Inpatient docs','Outpatient docs'],where:'Case step 5 · doc checklist ανά τύπο'},
+    {n:'6',t:'Final LOA issuance',d:'Προς provider + patient βάσει τελικών παραστατικών.',subs:[],where:'Case step 6 · Issue Final LOA'},
+    {n:'7',t:'Payment to provider',d:'As per respective MOA, by Polaris Admin.',subs:[],where:'Case step 7 · Mark paid (per MOA)'},
+    {n:'8',t:'CBMS update',d:'Remaining → conditional → final → executed/paid → loop στο 8.1.',subs:['8.1 Remaining','8.2 Conditional','8.3 Final','8.4 Executed/Paid'],where:'Availment Ledger · 4 στήλες + cycle strip'},
+  ];
+  let h=`<div class="ledger-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/></svg><div>Coverage audit — κάθε βήμα του εγγράφου <b>18 May 2026</b> αντιστοιχισμένο στο εργαλείο. Όλα ✓ covered.</div></div>`;
+  h+=`<div class="card">`;
+  steps.forEach(s=>{h+=`<div class="proc-step"><div class="pn">${s.n}</div><div class="pbody"><div class="pt">${s.t}<span class="covered"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>covered</span></div><div class="pd">${s.d}</div>${s.subs.length?'<div class="subs">'+s.subs.map(x=>`<span class="sub">${x}</span>`).join('')+'</div>':''}<div class="where">↳ ${s.where}</div></div></div>`;});
+  h+=`</div>`;$('#content').innerHTML=h;
+}
+
+
+/* ============================================================
+   GUIDE — bilingual EL/EN step-by-step (Next2View-style)
+   ============================================================ */
+let guideLang='el', guideTab='start';
+const GUIDE_TABS=[
+ {id:'start',   icon:'\u{1F680}', el:'Ξεκίνημα',        en:'Getting started'},
+ {id:'intake',  icon:'\u2795',    el:'Καταχώρηση',       en:'New request'},
+ {id:'flow1',   icon:'\u2460',    el:'Βήματα 1–4',       en:'Steps 1–4'},
+ {id:'flow2',   icon:'\u2464',    el:'Βήματα 5–8',       en:'Steps 5–8'},
+ {id:'rules',   icon:'\u{1F6E1}', el:'Κανόνες',          en:'Rules'},
+ {id:'data',    icon:'\u{1F5C2}', el:'Δίκτυο & Ledger',  en:'Network & Ledger'},
+ {id:'glossary',icon:'\u{1F4D6}', el:'Γλωσσάριο',         en:'Glossary'},
+];
+
+const GUIDE={
+ start:{
+  el:`<div class="g-h2">🚀 Ξεκίνημα</div>
+  <p class="g-lead">Το <b>Care Desk</b> είναι το εσωτερικό εργαλείο του Polaris Admin για να χειρίζεσαι <b>χειροκίνητα</b> τα ιατρικά περιστατικά από το δίκτυο direct providers — μέχρι να ψηφιοποιηθεί πλήρως στο MCL. Όλα τα δεδομένα εδώ είναι δοκιμαστικά· καθόλου πραγματικά προσωπικά στοιχεία.</p>
+  <div class="g-sub">🧭 Οι 4 περιοχές</div>
+  <p class="g-p"><b>Case Board</b> — όλα τα ενεργά περιστατικά και το κουμπί <span class="g-ref">+ New request</span>.</p>
+  <p class="g-p"><b>Network</b> — κλινικές &amp; γιατροί με την κατάσταση της σύμβασης (MOA).</p>
+  <p class="g-p"><b>Availment Ledger</b> — τα υπόλοιπα ορίων ανά μέλος (το χειροκίνητο CBMS).</p>
+  <p class="g-p"><b>Procedure &amp; Coverage</b> — η αντιστοίχιση με το επίσημο έγγραφο, για έλεγχο πληρότητας.</p>
+  <div class="g-sub">🚢 Πώς «ταξιδεύει» ένα περιστατικό</div>
+  <p class="g-p">Κάθε περιστατικό περνά από 8 σταθμούς (το voyage rail στην κορυφή του case):</p>
+  <p class="g-p">Request → Membership → Availment → Preliminary LOA → Discharge docs → Final LOA → Payment → Ledger update.</p>
+  <div class="g-note"><span class="ic">💡</span><div>Σε κάθε βήμα υπάρχει ένα <b>Magic Button</b> που σε πάει στο επόμενο λογικό βήμα — δεν χρειάζεται να θυμάσαι τη σειρά.</div></div>
+  <div class="g-sub">🏷️ Οι 4 κατηγορίες περιστατικού</div>
+  <p class="g-p">Κάθε αίτημα είναι συνδυασμός <b>ER / Non-ER</b> και <b>Inpatient / Outpatient</b>:</p>
+  <div class="g-legend"><span class="lg">1.1 · ER inpatient</span><span class="lg">1.2 · ER outpatient</span><span class="lg">1.3 · Non-ER inpatient</span><span class="lg">1.4 · Non-ER outpatient</span></div>
+  <p class="g-p">Η κατηγορία καθορίζει κανόνες παρακάτω (auto-approve ορίου, απαιτούμενα παραστατικά).</p>`,
+  en:`<div class="g-h2">🚀 Getting started</div>
+  <p class="g-lead"><b>Care Desk</b> is the Polaris Admin internal tool for handling direct-provider medical cases <b>manually</b> — until everything is digitised in MCL. All data here is sample data; no real personal information.</p>
+  <div class="g-sub">🧭 The 4 areas</div>
+  <p class="g-p"><b>Case Board</b> — every active case plus the <span class="g-ref">+ New request</span> button.</p>
+  <p class="g-p"><b>Network</b> — clinics &amp; doctors with their agreement (MOA) status.</p>
+  <p class="g-p"><b>Availment Ledger</b> — remaining limits per member (the manual CBMS).</p>
+  <p class="g-p"><b>Procedure &amp; Coverage</b> — the mapping to the official document, for a completeness check.</p>
+  <div class="g-sub">🚢 How a case "travels"</div>
+  <p class="g-p">Every case moves through 8 stations (the voyage rail at the top of each case):</p>
+  <p class="g-p">Request → Membership → Availment → Preliminary LOA → Discharge docs → Final LOA → Payment → Ledger update.</p>
+  <div class="g-note"><span class="ic">💡</span><div>Each step has a <b>Magic Button</b> that advances you to the next logical step — you don't need to memorise the order.</div></div>
+  <div class="g-sub">🏷️ The 4 case categories</div>
+  <p class="g-p">Each request is a combination of <b>ER / Non-ER</b> and <b>Inpatient / Outpatient</b>:</p>
+  <div class="g-legend"><span class="lg">1.1 · ER inpatient</span><span class="lg">1.2 · ER outpatient</span><span class="lg">1.3 · Non-ER inpatient</span><span class="lg">1.4 · Non-ER outpatient</span></div>
+  <p class="g-p">The category drives the rules below (auto-approve threshold, required documents).</p>`
+ },
+ intake:{
+  el:`<div class="g-h2">➕ Καταχώρηση νέου αιτήματος</div>
+  <p class="g-lead">Όταν έρθει αίτημα (τηλεφώνημα ή μήνυμα), έτσι το καταχωρείς:</p>
+  <ol class="g-ol">
+  <li>Στο <b>Case Board</b> πάτα <span class="g-ref">+ New request</span>.</li>
+  <li><b>Reception channel</b> — πώς ήρθε: <b>Phone call</b> ή <b>Message</b>.</li>
+  <li><b>Request source</b> — ποιος το στέλνει: <b>Patient / member</b> ή <b>Accredited provider</b>.</li>
+  <li><b>Member (Seafarer ID)</b> — επίλεξε το μέλος· εμφανίζεται preview με τα διαθέσιμα όρια (AMBL / outpatient).</li>
+  <li><b>Accredited provider</b> — επίλεξε κλινική ή γιατρό. Αν το MOA είναι <b>pending</b>, βγαίνει προειδοποίηση: reimbursable μόνο, χωρίς direct billing.</li>
+  <li><b>Case category</b> — διάλεξε ER / Non-ER και Inpatient / Outpatient. Κάτω εμφανίζεται η κατηγορία 1.1–1.4.</li>
+  <li><b>Reason / diagnosis</b> — σύντομη περιγραφή του περιστατικού.</li>
+  <li><b>Estimated amount (Php)</b> — εκτίμηση κόστους. Άφησέ το κενό αν είναι άγνωστο (συχνά σε ER).</li>
+  <li>Πάτα <span class="g-ref">Create case</span> → το περιστατικό μπαίνει στο Board στο βήμα 1 και ανοίγει αυτόματα.</li>
+  </ol>
+  <div class="g-warn"><span class="ic">⚠️</span><div>Τα πεδία με <b>*</b> είναι υποχρεωτικά. Αν λείπει κάποιο, το <b>Create case</b> δεν προχωράει.</div></div>`,
+  en:`<div class="g-h2">➕ Registering a new request</div>
+  <p class="g-lead">When a request comes in (phone call or message), here is how you register it:</p>
+  <ol class="g-ol">
+  <li>On the <b>Case Board</b>, click <span class="g-ref">+ New request</span>.</li>
+  <li><b>Reception channel</b> — how it arrived: <b>Phone call</b> or <b>Message</b>.</li>
+  <li><b>Request source</b> — who is sending it: <b>Patient / member</b> or <b>Accredited provider</b>.</li>
+  <li><b>Member (Seafarer ID)</b> — pick the member; a preview shows the available limits (AMBL / outpatient).</li>
+  <li><b>Accredited provider</b> — pick a clinic or doctor. If the MOA is <b>pending</b>, a warning appears: reimbursable only, no direct billing.</li>
+  <li><b>Case category</b> — choose ER / Non-ER and Inpatient / Outpatient. The 1.1–1.4 category shows below.</li>
+  <li><b>Reason / diagnosis</b> — a short description of the case.</li>
+  <li><b>Estimated amount (Php)</b> — a cost estimate. Leave blank if unknown (often for ER).</li>
+  <li>Click <span class="g-ref">Create case</span> → the case enters the Board at step 1 and opens automatically.</li>
+  </ol>
+  <div class="g-warn"><span class="ic">⚠️</span><div>Fields marked <b>*</b> are required. If one is missing, <b>Create case</b> will not proceed.</div></div>`
+ },
+ flow1:{
+  el:`<div class="g-h2">① Βήματα 1–4 · Από το αίτημα στο Preliminary LOA</div>
+  <p class="g-lead">Άνοιξε ένα περιστατικό από το Board. Δεξιά βλέπεις το μέλος, τον provider και το audit trail· στο κέντρο το ενεργό βήμα.</p>
+  <div class="g-sub">1 · Request</div>
+  <p class="g-p">Το περιστατικό ήρθε με channel + source. Έλεγξε το Seafarer ID και πάτα <span class="g-ref">Verify membership</span>.</p>
+  <div class="g-sub">2 · Membership verification</div>
+  <p class="g-p">Επιβεβαιώνεις ότι το μέλος είναι ενεργό. Πάτα <span class="g-ref">Check availment</span>.</p>
+  <div class="g-sub">3 · Availment — Forced compliance gate</div>
+  <p class="g-p">Πριν εκδοθεί οποιοδήποτε LOA, τσεκάρεις δύο πράγματα:</p>
+  <ol class="g-ol">
+  <li><b>CBMS / ledger ενημερωμένο</b> για το μέλος.</li>
+  <li><b>Κανένα pending claim</b> προς encoding.</li>
+  </ol>
+  <p class="g-p">Όσο αυτά δεν είναι τσεκαρισμένα, το κουμπί μένει κλειδωμένο. Το μέλος ενημερώνεται για το remaining benefit.</p>
+  <div class="g-warn"><span class="ic">⚓</span><div><b>ER χωρίς διαθέσιμο όριο:</b> εμφανίζεται <span class="g-ref">Inform principal &amp; proceed</span> — ενημερώνεις τον principal και προχωράς. <b>Non-ER χωρίς όριο:</b> δεν εκδίδεται LOA· ενημερώνεις το μέλος.</div></div>
+  <div class="g-sub">4 · Preliminary LOA</div>
+  <div class="g-ok"><span class="ic">✅</span><div><b>Auto-approve:</b> outpatient έως <b>Php 5.000</b> εγκρίνεται αυτόματα — καμία χειροκίνητη ενέργεια.</div></div>
+  <p class="g-p">Όλα τα άλλα (inpatient, ή outpatient &gt; Php 5.000) είναι <b>subject to admin control</b>: πάτα <span class="g-ref">Approve &amp; issue LOA</span>.</p>
+  <p class="g-p">Το Preliminary LOA αποστέλλεται σε <b>δύο αποδέκτες</b>: τον provider και τον patient.</p>`,
+  en:`<div class="g-h2">① Steps 1–4 · From the request to the Preliminary LOA</div>
+  <p class="g-lead">Open a case from the Board. On the right you see the member, provider and audit trail; in the centre, the active step.</p>
+  <div class="g-sub">1 · Request</div>
+  <p class="g-p">The case arrived with channel + source. Check the Seafarer ID and click <span class="g-ref">Verify membership</span>.</p>
+  <div class="g-sub">2 · Membership verification</div>
+  <p class="g-p">You confirm the member is active. Click <span class="g-ref">Check availment</span>.</p>
+  <div class="g-sub">3 · Availment — Forced compliance gate</div>
+  <p class="g-p">Before any LOA is issued, you confirm two things:</p>
+  <ol class="g-ol">
+  <li><b>CBMS / ledger updated</b> for the member.</li>
+  <li><b>No pending claim</b> awaiting encoding.</li>
+  </ol>
+  <p class="g-p">Until both are ticked, the button stays locked. The member is informed of the remaining benefit.</p>
+  <div class="g-warn"><span class="ic">⚓</span><div><b>ER with no availment:</b> <span class="g-ref">Inform principal &amp; proceed</span> appears — you notify the principal and continue. <b>Non-ER with no availment:</b> no LOA is issued; you inform the member.</div></div>
+  <div class="g-sub">4 · Preliminary LOA</div>
+  <div class="g-ok"><span class="ic">✅</span><div><b>Auto-approve:</b> outpatient up to <b>Php 5,000</b> is approved automatically — no manual action.</div></div>
+  <p class="g-p">Everything else (inpatient, or outpatient &gt; Php 5,000) is <b>subject to admin control</b>: click <span class="g-ref">Approve &amp; issue LOA</span>.</p>
+  <p class="g-p">The Preliminary LOA is sent to <b>two recipients</b>: the provider and the patient.</p>`
+ },
+ flow2:{
+  el:`<div class="g-h2">⑤ Βήματα 5–8 · Από το discharge στο κλείσιμο</div>
+  <div class="g-sub">5 · On discharge — παραστατικά</div>
+  <p class="g-p">Ο provider στέλνει τα έγγραφα. Τα απαιτούμενα διαφέρουν ανά τύπο:</p>
+  <p class="g-p"><b>Inpatient:</b> Medical report + Itemized invoice (ή final SOA).</p>
+  <p class="g-p"><b>Outpatient:</b> Invoice + Medical abstract (μόνο αν το ποσό &gt; Php 5.000).</p>
+  <p class="g-p">Τσέκαρε τα required και πάτα <span class="g-ref">Confirm documents received</span>. Όσο λείπει required, το κουμπί μένει κλειδωμένο.</p>
+  <div class="g-sub">6 · Final LOA</div>
+  <p class="g-p">Με βάση το τελικό ποσό, πάτα <span class="g-ref">Issue Final LOA</span>. Φεύγει ξανά σε provider + patient.</p>
+  <div class="g-sub">7 · Payment</div>
+  <p class="g-p">Πληρωμή στον provider <b>κατά το αντίστοιχο MOA</b>. Πάτα <span class="g-ref">Mark paid &amp; update ledger</span>.</p>
+  <div class="g-sub">8 · Ledger update</div>
+  <p class="g-p">Το remaining μειώνεται, το ποσό καταγράφεται στο <b>Executed / Paid (8.4)</b> και ο κύκλος γυρνά στο 8.1. Το περιστατικό κλείνει.</p>
+  <div class="g-note"><span class="ic">🔁</span><div>Ο κύκλος του εγγράφου: <b>8.1</b> Remaining → <b>8.2</b> Conditional LOAs → <b>8.3</b> Final LOAs → <b>8.4</b> Executed/Paid → πίσω στο <b>8.1</b>.</div></div>`,
+  en:`<div class="g-h2">⑤ Steps 5–8 · From discharge to closing</div>
+  <div class="g-sub">5 · On discharge — documents</div>
+  <p class="g-p">The provider sends the documents. Requirements differ by type:</p>
+  <p class="g-p"><b>Inpatient:</b> Medical report + Itemized invoice (or final SOA).</p>
+  <p class="g-p"><b>Outpatient:</b> Invoice + Medical abstract (only if the amount &gt; Php 5,000).</p>
+  <p class="g-p">Tick the required ones and click <span class="g-ref">Confirm documents received</span>. While a required item is missing, the button stays locked.</p>
+  <div class="g-sub">6 · Final LOA</div>
+  <p class="g-p">Based on the final amount, click <span class="g-ref">Issue Final LOA</span>. It goes again to provider + patient.</p>
+  <div class="g-sub">7 · Payment</div>
+  <p class="g-p">Payment to the provider <b>as per the respective MOA</b>. Click <span class="g-ref">Mark paid &amp; update ledger</span>.</p>
+  <div class="g-sub">8 · Ledger update</div>
+  <p class="g-p">Remaining decreases, the amount is recorded under <b>Executed / Paid (8.4)</b>, and the cycle loops back to 8.1. The case closes.</p>
+  <div class="g-note"><span class="ic">🔁</span><div>The document's cycle: <b>8.1</b> Remaining → <b>8.2</b> Conditional LOAs → <b>8.3</b> Final LOAs → <b>8.4</b> Executed/Paid → back to <b>8.1</b>.</div></div>`
+ },
+ rules:{
+  el:`<div class="g-h2">🛡️ Οι κανόνες με μια ματιά</div>
+  <p class="g-lead">Όλοι οι κανόνες που εφαρμόζει αυτόματα το εργαλείο, όπως ορίζονται στο έγγραφο.</p>
+  <div class="g-sub">💸 Preliminary LOA</div>
+  <p class="g-p">Outpatient ≤ <b>Php 5.000</b> → <b>auto-approved</b>. Όλα τα άλλα → <b>admin control</b>.</p>
+  <div class="g-sub">🔒 Forced compliance</div>
+  <p class="g-p">Κανένα LOA δεν εκδίδεται αν δεν είναι <b>ενημερωμένο το CBMS/ledger</b> και δεν έχουν <b>encoded όλα τα pending claims</b>.</p>
+  <div class="g-sub">⚓ Availment</div>
+  <p class="g-p"><b>ER χωρίς όριο</b> → inform principal &amp; proceed. <b>Non-ER χωρίς όριο</b> → δεν εκδίδεται LOA.</p>
+  <div class="g-sub">📄 Παραστατικά discharge</div>
+  <p class="g-p"><b>Inpatient:</b> medical report + itemized invoice/SOA. <b>Outpatient:</b> invoice + abstract (αν &gt; Php 5.000).</p>
+  <div class="g-sub">💳 Πληρωμή</div>
+  <p class="g-p">Πάντα <b>κατά το αντίστοιχο MOA</b> του provider.</p>`,
+  en:`<div class="g-h2">🛡️ The rules at a glance</div>
+  <p class="g-lead">Every rule the tool applies automatically, as defined in the document.</p>
+  <div class="g-sub">💸 Preliminary LOA</div>
+  <p class="g-p">Outpatient ≤ <b>Php 5,000</b> → <b>auto-approved</b>. Everything else → <b>admin control</b>.</p>
+  <div class="g-sub">🔒 Forced compliance</div>
+  <p class="g-p">No LOA is issued unless the <b>CBMS/ledger is updated</b> and <b>all pending claims are encoded</b>.</p>
+  <div class="g-sub">⚓ Availment</div>
+  <p class="g-p"><b>ER with no limit</b> → inform principal &amp; proceed. <b>Non-ER with no limit</b> → no LOA issued.</p>
+  <div class="g-sub">📄 Discharge documents</div>
+  <p class="g-p"><b>Inpatient:</b> medical report + itemized invoice/SOA. <b>Outpatient:</b> invoice + abstract (if &gt; Php 5,000).</p>
+  <div class="g-sub">💳 Payment</div>
+  <p class="g-p">Always <b>as per the provider's respective MOA</b>.</p>`
+ },
+ data:{
+  el:`<div class="g-h2">🗂️ Δίκτυο &amp; Availment Ledger</div>
+  <div class="g-sub">🏥 Network</div>
+  <p class="g-p">Κάρτες παρόχων (κλινικές &amp; γιατροί) με: tier, τρόπο χρέωσης, ανοιχτά περιστατικά και κατάσταση σύμβασης.</p>
+  <div class="g-legend"><span class="lg"><span class="d" style="background:var(--green)"></span>MOA active — direct billing &amp; LOA</span><span class="lg"><span class="d" style="background:var(--gold)"></span>MOA pending — reimbursable μόνο</span></div>
+  <div class="g-sub">📒 Availment Ledger (CBMS substitute)</div>
+  <p class="g-p">Single source of truth για τα όρια όσο δουλεύουμε χειροκίνητα. Οι στήλες αντιστοιχούν στα 8.1–8.4:</p>
+  <p class="g-p"><b>8.1</b> Remaining AMBL / Outpatient · <b>8.2</b> Conditional LOAs · <b>8.3</b> Final LOAs · <b>8.4</b> Executed / Paid.</p>
+  <div class="g-legend"><span class="lg"><span class="d" style="background:var(--coral)"></span>Κόκκινο — εξαντλημένο όριο</span><span class="lg"><span class="d" style="background:var(--gold)"></span>Κίτρινο — χαμηλό (&lt;20%)</span><span class="lg"><span class="d" style="background:var(--teal)"></span>Πράσινο — επαρκές</span></div>`,
+  en:`<div class="g-h2">🗂️ Network &amp; Availment Ledger</div>
+  <div class="g-sub">🏥 Network</div>
+  <p class="g-p">Provider cards (clinics &amp; doctors) with: tier, billing method, open cases and agreement status.</p>
+  <div class="g-legend"><span class="lg"><span class="d" style="background:var(--green)"></span>MOA active — direct billing &amp; LOA</span><span class="lg"><span class="d" style="background:var(--gold)"></span>MOA pending — reimbursable only</span></div>
+  <div class="g-sub">📒 Availment Ledger (CBMS substitute)</div>
+  <p class="g-p">The single source of truth for limits while we work manually. The columns map to 8.1–8.4:</p>
+  <p class="g-p"><b>8.1</b> Remaining AMBL / Outpatient · <b>8.2</b> Conditional LOAs · <b>8.3</b> Final LOAs · <b>8.4</b> Executed / Paid.</p>
+  <div class="g-legend"><span class="lg"><span class="d" style="background:var(--coral)"></span>Red — limit exhausted</span><span class="lg"><span class="d" style="background:var(--gold)"></span>Amber — low (&lt;20%)</span><span class="lg"><span class="d" style="background:var(--teal)"></span>Green — sufficient</span></div>`
+ },
+ glossary:{
+  el:`<div class="g-h2">📖 Γλωσσάριο</div>
+  <p class="g-lead">Οι βασικοί όροι που θα συναντήσεις στο εργαλείο.</p>
+  <table class="g-tbl"><thead><tr><th>Όρος</th><th>Επεξήγηση</th></tr></thead><tbody>
+  <tr><td class="term">AMBL</td><td>Annual Maximum Benefit Limit — ετήσιο ανώτατο όριο κάλυψης ανά μέλος.</td></tr>
+  <tr><td class="term">Outpatient AMBL</td><td>Όριο για εξωνοσοκομειακές υπηρεσίες.</td></tr>
+  <tr><td class="term">Inner limit</td><td>Επιμέρους όριο μέσα στην κάλυψη (π.χ. room &amp; board/ημέρα, ICU/ημέρα).</td></tr>
+  <tr><td class="term">LOA</td><td>Letter of Authorization — έγκριση κάλυψης προς τον provider.</td></tr>
+  <tr><td class="term">Preliminary LOA</td><td>Προσωρινή (conditional) έγκριση πριν τα τελικά παραστατικά.</td></tr>
+  <tr><td class="term">Final LOA</td><td>Τελική έγκριση βάσει του τελικού κόστους.</td></tr>
+  <tr><td class="term">MOA</td><td>Memorandum of Agreement — η σύμβαση με τον provider (όροι χρέωσης &amp; πληρωμής).</td></tr>
+  <tr><td class="term">CBMS</td><td>Το master σύστημα ορίων. Εδώ το αντικαθιστά το Availment Ledger.</td></tr>
+  <tr><td class="term">Seafarer ID</td><td>Μοναδικό αναγνωριστικό μέλους — «one ID for life».</td></tr>
+  <tr><td class="term">Principal</td><td>Ο πλοιοκτήτης / manning agency που καλύπτει το μέλος.</td></tr>
+  <tr><td class="term">ER / Non-ER</td><td>Επείγον / μη επείγον περιστατικό.</td></tr>
+  <tr><td class="term">Inpatient / Outpatient</td><td>Νοσηλεία / εξωνοσοκομειακή φροντίδα.</td></tr>
+  </tbody></table>`,
+  en:`<div class="g-h2">📖 Glossary</div>
+  <p class="g-lead">The key terms you will encounter in the tool.</p>
+  <table class="g-tbl"><thead><tr><th>Term</th><th>Meaning</th></tr></thead><tbody>
+  <tr><td class="term">AMBL</td><td>Annual Maximum Benefit Limit — the yearly coverage cap per member.</td></tr>
+  <tr><td class="term">Outpatient AMBL</td><td>The limit for outpatient services.</td></tr>
+  <tr><td class="term">Inner limit</td><td>A sub-limit within the coverage (e.g. room &amp; board/day, ICU/day).</td></tr>
+  <tr><td class="term">LOA</td><td>Letter of Authorization — coverage approval sent to the provider.</td></tr>
+  <tr><td class="term">Preliminary LOA</td><td>A provisional (conditional) approval before the final documents.</td></tr>
+  <tr><td class="term">Final LOA</td><td>The final approval based on the final cost.</td></tr>
+  <tr><td class="term">MOA</td><td>Memorandum of Agreement — the contract with the provider (billing &amp; payment terms).</td></tr>
+  <tr><td class="term">CBMS</td><td>The master limits system. Replaced here by the Availment Ledger.</td></tr>
+  <tr><td class="term">Seafarer ID</td><td>The unique member identifier — "one ID for life".</td></tr>
+  <tr><td class="term">Principal</td><td>The shipowner / manning agency covering the member.</td></tr>
+  <tr><td class="term">ER / Non-ER</td><td>Emergency / non-emergency case.</td></tr>
+  <tr><td class="term">Inpatient / Outpatient</td><td>Hospital admission / outpatient care.</td></tr>
+  </tbody></table>`
+ }
+};
+
+function renderGuide(){
+  const L=guideLang;
+  let h='<div class="g-wrap">';
+  h+='<div class="g-top"><div class="spacer"></div><div class="lang-toggle">'
+    +'<button class="'+(L==='el'?'on':'')+'" onclick="setGuideLang(\'el\')">ΕΛ</button>'
+    +'<button class="'+(L==='en'?'on':'')+'" onclick="setGuideLang(\'en\')">EN</button></div></div>';
+  h+='<div class="g-hero"><div class="eye">CARE DESK</div><h2>📘 '+(L==='el'?'Οδηγός Χρήσης':'User Guide')+'</h2><p>'
+    +(L==='el'?'Πλήρης βήμα-βήμα οδηγός για το εσωτερικό εργαλείο. Διάλεξε ενότητα παρακάτω.':'A complete step-by-step guide to the internal tool. Pick a section below.')+'</p></div>';
+  h+='<div class="g-tabs">';
+  GUIDE_TABS.forEach(t=>{h+='<button class="'+(guideTab===t.id?'on':'')+'" onclick="setGuideTab(\''+t.id+'\')"><span class="gi">'+t.icon+'</span>'+t[L]+'</button>';});
+  h+='</div>';
+  h+='<div class="card g-sec">'+GUIDE[guideTab][L]+'</div></div>';
+  $('#content').innerHTML=h;
+}
+function setGuideLang(l){guideLang=l;renderGuide();}
+function setGuideTab(id){guideTab=id;renderGuide();window.scrollTo(0,0);}
+
+
+render();
+</script>
+</body>
+</html>
