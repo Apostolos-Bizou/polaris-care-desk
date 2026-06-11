@@ -349,17 +349,7 @@
   .g-tbl th{text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:var(--slate-2);padding:9px 12px;border-bottom:1.5px solid var(--line)}
   .g-tbl td{padding:11px 12px;border-bottom:1px solid var(--line);font-size:13px;color:var(--slate);vertical-align:top;line-height:1.5}
   .g-tbl td.term{font-weight:600;color:var(--ink);white-space:nowrap;font-family:var(--mono);font-size:12px}
-
-  /* ===== local build additions ===== */
-  .x-row{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px}
-  .x-lab,.bank-grid label,.frow label{font-family:var(--mono);font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:var(--slate-2);display:block;margin-bottom:6px}
-  .x-count{font-size:12px;color:var(--slate-2);padding-bottom:11px}
-  .frow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
-  .bank-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
-  .ftext.sm{padding:8px 10px}
-  .local-pill{font-family:var(--mono);font-size:10.5px;letter-spacing:.8px;text-transform:uppercase;color:#b8392a;background:rgba(229,96,77,.12);border:1px solid rgba(229,96,77,.4);padding:5px 11px;border-radius:20px;font-weight:500}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 <div class="app">
@@ -396,19 +386,15 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h9l5 5v13a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
         Procedure & Coverage
       </a>
-      <a href="#" data-view="export" onclick="go('export',event)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-        Export · CBMS feed
-      </a>
       <a href="#" data-view="guide" onclick="go('guide',event)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
         Guide · Οδηγός
       </a>
     </nav>
     <div class="side-foot">
-      <b>Local ops build · CBMS export</b><br>
-      Fake seed data. Τα <b style="color:var(--on-navy)">πραγματικά</b> δεδομένα μένουν τοπικά.
-      <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>Real-data path = local only · GDPR gate</span>
+      <b>Phase 1 · Internal mockup</b><br>
+      Fake data μόνο.
+      <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>Καθόλου real PII · εκτός GDPR scope</span>
     </div>
   </aside>
 
@@ -417,7 +403,7 @@
       <button class="menu-btn" onclick="toggleMenu()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
       <div><div class="crumb" id="crumb">Operations / Case Board</div><h2 id="title">Case Board</h2></div>
       <div class="spacer"></div>
-      <span class="local-pill">Local · CBMS export</span>
+      <span class="mockchip">Mockup · internal</span>
     </div>
     <div class="content" id="content"></div>
   </main>
@@ -477,20 +463,6 @@
         </div>
         <div class="category-readout" id="m-cat"></div>
       </div>
-      <!-- claim mode -->
-      <div class="fgroup">
-        <label>Claim mode <span class="star">*</span></label>
-        <div class="seg-pick two">
-          <button data-f="claimMode" data-v="direct" onclick="pick(this)">Direct LOA</button>
-          <button data-f="claimMode" data-v="reimbursement" onclick="pick(this)">Reimbursement</button>
-        </div>
-      </div>
-      <!-- service type (Non-ER outpatient direct only) -->
-      <div class="fgroup hidden" id="m-svc-group">
-        <label>Service type <span class="star">*</span></label>
-        <select class="fsel" id="m-service" onchange="catReadout()"><option value="">— επίλεξε —</option></select>
-      </div>
-      <div class="category-readout" id="m-cov" style="margin-bottom:10px"></div>
       <!-- dx + amount -->
       <div class="fgroup">
         <label>Reason / diagnosis <span class="star">*</span></label>
@@ -544,43 +516,6 @@ const RULES = {
   noAvailment: (c,m) => c.inpatient ? m.amblLeft<=0 : m.oamblLeft<=0,
 };
 
-/* --- CONFIG (local build; editable by finance/ops) --- */
-const CONFIG = {
-  ewtRate: 0,                                              // EWT %; Net Paid = Actual − EWT (set once)
-  disbursingAccountName: 'ADVANCED MEDICAL ACCESS PHILIPPINES INC.',
-  disbursingBankNo: '101790002171',
-  corpDefault: 'POLARIS FINANCIAL SERVICES',
-  generatedBy: 'Care Desk (manual)',
-};
-const SERVICE_TYPES = [
-  {v:'consultation', label:'Consultation',            code:'OUTPATIENT-BASIC-CONSULTATION'},
-  {v:'laboratory',   label:'Laboratory',              code:'OUTPATIENT-LABORATORY'},
-  {v:'clinic',       label:'Clinic procedure',        code:'OUTPATIENT-CLINIC-SETTING'},
-  {v:'referral',     label:'Referral to specialist',  code:'OUTPATIENT-REFERRAL-TO-SPECIALIST'},
-  {v:'opd_or',       label:'Day surgery (OR)',        code:'OUTPATIENT-OPD-OR'},
-  {v:'facility',     label:'Facility fee',            code:'OUTPATIENT-FACILITY-FEE'},
-];
-// approved coverage mapping (case → 1 of 12 CBMS codes)
-RULES.deriveCoverage = c => {
-  if(c.coverageOverride) return c.coverageOverride;                 // ATACCESS / manual
-  if(c.claimMode==='reimbursement') return c.inpatient ? 'RI-INPATIENT' : 'RI-OUTPATIENT';
-  if(c.emergency) return 'EMERGENCY';
-  if(c.inpatient) return 'INPATIENT-ADMISSION';
-  const st = SERVICE_TYPES.find(s=>s.v===c.serviceType);
-  return st ? st.code : 'OUTPATIENT-BASIC-CONSULTATION';
-};
-// TRN status from lifecycle + claim mode
-RULES.deriveTrn = c => {
-  if(c.claimMode==='reimbursement') return 'Processed Reimbursement';
-  if(c.stage==='ledger') return 'Discharged';
-  if(stepIndex(c.stage) >= stepIndex('prelim')) return 'Approved TRN with LOA';
-  return '—';
-};
-const ewtAmt  = c => Math.round((c.amount||0)*CONFIG.ewtRate*100)/100;
-const netPaid = c => Math.round(((c.amount||0) - ewtAmt(c))*100)/100;
-function genLoa(){return Math.random().toString(36).slice(2,9).toUpperCase();}
-function genTrans(){return '26'+Math.floor(100000+Math.random()*899999);}
-
 /* ============================================================
    SEED DATA — φανταστικό (maritime / Filipino · HPDC Manila)
    ============================================================ */
@@ -599,22 +534,16 @@ const DOCTORS = [
 ];
 const MEMBERS = {
   'PRS-100482':{name:'Reyes, Mariano', role:'AB Seaman · Aegean Crewing', relation:'Principal member',
-     amaphilId:'8-000128-100482001', employeeId:'30100482001', corporate:'AEGEAN CREWING',
      amblTotal:500000, amblLeft:48000, oamblTotal:60000, oamblLeft:0, inner:'Room & Board Php2,500/day', paid:0},
   'PRS-100482-D1':{name:'Reyes, Carmela', role:'Spouse of M. Reyes', relation:'Dependent',
-     amaphilId:'8-000128-100482002', employeeId:'30100482002', corporate:'AEGEAN CREWING',
      amblTotal:300000, amblLeft:212000, oamblTotal:40000, oamblLeft:18500, inner:'Maternity Php45,000', paid:0},
   'PRS-100731':{name:'Dela Cruz, Romeo', role:'Bosun · Hellas Marine Manning', relation:'Principal member',
-     amaphilId:'8-000128-100731001', employeeId:'30100731001', corporate:'HELLAS MARINE MANNING',
      amblTotal:500000, amblLeft:355000, oamblTotal:60000, oamblLeft:42000, inner:'ICU Php8,000/day', paid:0},
   'PRS-100958':{name:'Aquino, Joel', role:'Oiler · Pacific Star Shipping', relation:'Principal member',
-     amaphilId:'8-000127-100958001', employeeId:'30100958001', corporate:'PACIFIC STAR SHIPPING',
      amblTotal:400000, amblLeft:91000, oamblTotal:50000, oamblLeft:9200, inner:'—', paid:0},
   'PRS-100731-D2':{name:'Mendoza, Grace', role:'Child of R. Dela Cruz', relation:'Dependent',
-     amaphilId:'8-000128-100731002', employeeId:'30100731002', corporate:'HELLAS MARINE MANNING',
      amblTotal:300000, amblLeft:268000, oamblTotal:40000, oamblLeft:23000, inner:'Dental Php6,000', paid:0},
   'PRS-100204':{name:'Navarro, Ferdinand', role:'Master · Aegean Crewing', relation:'Principal member',
-     amaphilId:'8-000127-100204001', employeeId:'30100204001', corporate:'AEGEAN CREWING',
      amblTotal:600000, amblLeft:121000, oamblTotal:70000, oamblLeft:31000, inner:'Cardiac rider', paid:0},
 };
 let CASES = [
@@ -637,15 +566,6 @@ let CASES = [
     channel:'call', source:'provider', estAmount:0, amount:0, stage:'availment', dx:'ER — chest trauma, fall on deck',
     timeline:[{t:'ER request received via provider (call)',m:'09 Jun · 22:05'},{t:'Membership verified',m:'09 Jun · 22:14'}]},
 ];
-CASES.forEach(c=>{
-  c.claimMode = c.claimMode || 'direct';
-  if(c.serviceType===undefined) c.serviceType = (!c.emergency && !c.inpatient) ? 'consultation' : null;
-  c.loaNo = c.loaNo || genLoa();
-  c.transNo = c.transNo || genTrans();
-  if(!c.txnDate){ const mm = c.ref.includes('-2605-')?'05':'06'; const dd=(10+(parseInt(c.ref.slice(-2))||1)%18); c.txnDate='2026-'+mm+'-'+String(dd).padStart(2,'0'); }
-  c.dischargeDate = c.dischargeDate || (stepIndex(c.stage)>stepIndex('discharge') ? c.txnDate : '');
-  c.bankRef = c.bankRef || ''; c.dateCredited = c.dateCredited || ''; c.amtDeducted = c.amtDeducted || ''; c.dateDeducted = c.dateDeducted || '';
-});
 
 /* ============================================================
    STATE + HELPERS
@@ -669,12 +589,12 @@ function go(v,e){if(e)e.preventDefault();view=v;currentRef=null;
   document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('active',a.dataset.view===v));
   $('#side').classList.remove('open');$('#scrim').classList.remove('open');render();}
 function openCase(ref){currentRef=ref;view='case';render();window.scrollTo(0,0);}
-const TITLES={dashboard:['Operations / Case Board','Case Board'],network:['Operations / Network','Accredited Network'],ledger:['Operations / Availment Ledger','Availment Ledger'],procedure:['Reference / Procedure','Procedure & Coverage'],guide:['Reference / Guide','User Guide'],export:['Operations / Export','CBMS Utilization Export'],case:['Operations / Case Board / Detail','Case Detail']};
+const TITLES={dashboard:['Operations / Case Board','Case Board'],network:['Operations / Network','Accredited Network'],ledger:['Operations / Availment Ledger','Availment Ledger'],procedure:['Reference / Procedure','Procedure & Coverage'],guide:['Reference / Guide','User Guide'],case:['Operations / Case Board / Detail','Case Detail']};
 function render(){
   const [crumb,title]=TITLES[view];
   $('#crumb').textContent=crumb;$('#title').textContent=title;
   $('#nav-cases').textContent=CASES.filter(c=>c.stage!=='ledger').length;
-  ({dashboard:renderDashboard,network:renderNetwork,ledger:renderLedger,procedure:renderProcedure,guide:renderGuide,export:renderExport,case:renderCase}[view])();
+  ({dashboard:renderDashboard,network:renderNetwork,ledger:renderLedger,procedure:renderProcedure,guide:renderGuide,case:renderCase}[view])();
 }
 
 /* ============================================================
@@ -735,13 +655,6 @@ function renderCase(){
       <dt>Principal</dt><dd>${m.role.split('·')[1]?m.role.split('·')[1].trim():'—'}</dd>
       <dt>Inner limit</dt><dd>${m.inner}</dd></dl>
       <div style="margin-top:16px;padding-top:15px;border-top:1px solid var(--line)"><dt style="font-family:var(--mono);font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:var(--slate-2);margin-bottom:10px">Remaining availment</dt>${bar('AMBL (annual)',m.amblLeft,m.amblTotal)}${bar('Outpatient AMBL',m.oamblLeft,m.oamblTotal)}</div></div>`;
-  h+=`<div class="panel card"><h4>Claim coding</h4><dl class="facts">
-      <dt>Coverage code (CBMS)</dt><dd class="mono">${RULES.deriveCoverage(c)}</dd>
-      <dt>Claim mode</dt><dd>${c.claimMode==='reimbursement'?'Reimbursement':'Direct LOA'}${c.serviceType?' · '+c.serviceType:''}</dd>
-      <dt>TRN status</dt><dd>${RULES.deriveTrn(c)}</dd>
-      <dt>LOA No. · TRN</dt><dd class="mono">${c.loaNo} · ${c.transNo}</dd>
-      <dt>Member ID · Corporate</dt><dd class="mono" style="font-size:11.5px">${m.amaphilId} · ${m.corporate}</dd>
-    </dl>${(c.emergency&&c.inpatient)?`<button class="btn ghost sm" style="margin-top:12px" onclick="toggleSplit('${c.ref}')">${c.splitAdmission?'✓ ':''}ER→admission export line</button>`:''}</div>`;
   h+=`<div class="panel card"><h4>Provider</h4><dl class="facts"><dt>Accredited provider</dt><dd>${prov.name}</dd><dt>Location</dt><dd>${prov.loc}</dd><dt>MOA</dt><dd>${prov.moa==='active'?'Active · '+prov.rate:'⚠ Pending signature'}</dd><dt>Case amount</dt><dd class="mono">${c.amount?php(c.amount):'TBD on discharge'}</dd></dl></div>`;
   h+=`<div class="panel card"><h4>Audit trail</h4><div class="timeline">`;
   c.timeline.slice().reverse().forEach(ev=>{h+=`<div class="ev"><div class="pip"></div><div><div class="tx">${ev.t}</div><div class="tm">${ev.m}</div></div></div>`;});
@@ -801,16 +714,9 @@ function stepPanel(c,m,prov){
     <div class="recip"><span class="rc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>${prov.name}</span><span class="rc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>${m.name}</span></div>
     <div class="magic-row"><button class="btn primary" onclick="advance('${c.ref}','Final LOA issued → provider + patient')">${magicIcon()}Issue Final LOA</button></div></div></div>`;
 
-  if(c.stage==='payment'){
-    const ewt=ewtAmt(c), net=netPaid(c);
-    let body=`<div class="desc">Πληρωμή κατά MOA + EWT + bank settlement. Τα bank πεδία τροφοδοτούν τις στήλες του export (PAID CLAIMS / FUNDED LOA).</div><div class="actionzone">`;
-    body+=`<dl class="facts" style="margin-bottom:10px"><dt>Payable to</dt><dd>${prov.name} · per MOA</dd><dt>Actual claims</dt><dd class="mono">${php(c.amount)}</dd></dl>`;
-    body+=`<div class="frow"><span>EWT (${(CONFIG.ewtRate*100).toFixed(1)}%)</span><span class="mono">${php(ewt)}</span></div>`;
-    body+=`<div class="frow"><span><b>Net paid</b></span><span class="mono" style="font-weight:600">${php(net)}</span></div>`;
-    body+=`<div class="bank-grid"><div><label>Bank Ref No.</label><input class="ftext sm" value="${c.bankRef||''}" onchange="setCaseField('${c.ref}','bankRef',this.value)" placeholder="UB…"></div><div><label>Date credited</label><input class="ftext sm" type="date" value="${c.dateCredited||''}" onchange="setCaseField('${c.ref}','dateCredited',this.value)"></div></div>`;
-    body+=`<div class="magic-row"><button class="btn green" onclick="advance('${c.ref}','Payment executed → ledger updated (8.4→8.1)','Πληρωμή καταχωρήθηκε.')">${magicIcon()}Mark paid & update ledger</button></div></div></div>`;
-    return head+body;
-  }
+  if(c.stage==='payment') return head+`<div class="desc">Πληρωμή προς provider κατά το αντίστοιχο MOA. Καταχωρείται στο executed ledger (8.4).</div>
+    <div class="actionzone"><dl class="facts" style="margin-bottom:14px"><dt>Payable to</dt><dd>${prov.name}</dd><dt>Terms</dt><dd>${prov.rate} · per MOA</dd><dt>Amount</dt><dd class="mono">${php(c.amount)}</dd></dl>
+    <div class="magic-row"><button class="btn green" onclick="advance('${c.ref}','Payment executed → ledger updated (8.4→8.1)','Πληρωμή καταχωρήθηκε. Ledger ενημερώθηκε.')">${magicIcon()}Mark paid & update ledger</button></div></div></div>`;
 
   return head+`<div class="done-stamp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Case closed — ledger ενημερώθηκε. Remaining availment ξαναμπαίνει στον κύκλο (8.1).</div></div>`;
 }
@@ -819,12 +725,9 @@ function stepPanel(c,m,prov){
 function flipGate(ref,key){const g=gateState[ref]||(gateState[ref]={cbms:false,claims:false});g[key]=!g[key];renderCase();}
 function flipDoc(ref,key){const d=docState[ref]||(docState[ref]={});d[key]=!d[key];renderCase();}
 function holdCase(){toast('Mockup — hold / escalate flow');}
-function setCaseField(ref,f,v){const c=CASES.find(x=>x.ref===ref);if(c)c[f]=v;}
-function toggleSplit(ref){const c=CASES.find(x=>x.ref===ref);if(c){c.splitAdmission=!c.splitAdmission;toast(c.splitAdmission?'Admission line θα μπει στο export':'Admission line off');renderCase();}}
 function advance(ref,trailMsg,customToast){
   const c=CASES.find(x=>x.ref===ref);if(!c)return;const si=stepIndex(c.stage);
   if(si<STEPS.length-1){
-    if(c.stage==='discharge'&&!c.dischargeDate)c.dischargeDate=new Date().toISOString().slice(0,10);
     if(c.stage==='payment'){const m=MEMBERS[c.member];if(c.inpatient)m.amblLeft=Math.max(0,m.amblLeft-c.amount);else m.oamblLeft=Math.max(0,m.oamblLeft-c.amount);m.paid=(m.paid||0)+c.amount;}
     c.stage=STEPS[si+1].key;
     const now=new Date();const stamp=now.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+' · '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
@@ -837,14 +740,11 @@ function advance(ref,trailMsg,customToast){
    NEW REQUEST MODAL (step 1 intake)
    ============================================================ */
 function openModal(){
-  draft={channel:'',source:'',emergency:null,inpatient:null,claimMode:'direct'};
+  draft={channel:'',source:'',emergency:null,inpatient:null};
   const ms=$('#m-member');ms.innerHTML='<option value="">— επίλεξε μέλος —</option>'+Object.entries(MEMBERS).map(([id,m])=>`<option value="${id}">${m.name} · ${id}</option>`).join('');
   const ps=$('#m-provider');ps.innerHTML='<option value="">— επίλεξε provider —</option>'+PROVIDERS.map(p=>`<option value="${p.id}">${p.name}${p.moa==='pending'?' (MOA pending)':''}</option>`).join('');
-  const svc=$('#m-service');svc.innerHTML='<option value="">— επίλεξε —</option>'+SERVICE_TYPES.map(x=>`<option value="${x.v}">${x.label}</option>`).join('');
-  $('#m-dx').value='';$('#m-amt').value='';$('#m-preview').className='member-preview';$('#m-moawarn').className='moa-warn';$('#m-cat').textContent='';$('#m-cov').textContent='';
+  $('#m-dx').value='';$('#m-amt').value='';$('#m-preview').className='member-preview';$('#m-moawarn').className='moa-warn';$('#m-cat').textContent='';
   document.querySelectorAll('.modal .seg-pick button').forEach(b=>b.classList.remove('sel'));
-  const db=document.querySelector('.modal [data-f="claimMode"][data-v="direct"]');if(db)db.classList.add('sel');
-  $('#m-svc-group').classList.add('hidden');
   $('#modal').classList.add('open');
 }
 function closeModal(){$('#modal').classList.remove('open');}
@@ -853,25 +753,19 @@ function pick(btn){
   btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('sel'));
   btn.classList.add('sel');
   draft[f]=(f==='emergency'||f==='inpatient')?(btn.dataset.v==='1'):btn.dataset.v;
-  updateSvc();catReadout();
-}
-function updateSvc(){
-  const show = draft.emergency===false && draft.inpatient===false && draft.claimMode==='direct';
-  $('#m-svc-group').classList.toggle('hidden', !show);
+  if(f==='emergency'||f==='inpatient') catReadout();
 }
 function catReadout(){
-  if(draft.emergency===null||draft.inpatient===null){$('#m-cat').textContent='';$('#m-cov').textContent='';return;}
-  const map={'1.1':[true,true],'1.2':[true,false],'1.3':[false,true],'1.4':[false,false]};
-  const no=Object.keys(map).find(k=>map[k][0]===draft.emergency&&map[k][1]===draft.inpatient);
+  if(draft.emergency===null||draft.inpatient===null){return;}
+  const map={ '1.1':[true,true],'1.2':[true,false],'1.3':[false,true],'1.4':[false,false] };
+  let no=Object.keys(map).find(k=>map[k][0]===draft.emergency&&map[k][1]===draft.inpatient);
   $('#m-cat').textContent=`→ Κατηγορία ${no}: ${draft.emergency?'ER':'Non-ER'} ${draft.inpatient?'inpatient':'outpatient'}`;
-  const probe={emergency:draft.emergency,inpatient:draft.inpatient,claimMode:draft.claimMode||'direct',serviceType:$('#m-service')?$('#m-service').value:null};
-  $('#m-cov').textContent='→ Coverage code: '+RULES.deriveCoverage(probe);
 }
 function memberPreview(){
   const id=$('#m-member').value;const p=$('#m-preview');
   if(!id){p.className='member-preview';return;}
   const m=MEMBERS[id];
-  p.innerHTML=`<div class="mp-nm">${m.name} · ${m.relation}</div><div class="mp-av">${m.amaphilId} · ${m.corporate}<br>AMBL left ${php(m.amblLeft)} · Outpatient left ${php(m.oamblLeft)} · ${m.inner}</div>`;
+  p.innerHTML=`<div class="mp-nm">${m.name} · ${m.relation}</div><div class="mp-av">AMBL left ${php(m.amblLeft)} · Outpatient left ${php(m.oamblLeft)} · ${m.inner}</div>`;
   p.className='member-preview show';
 }
 function providerCheck(){
@@ -883,16 +777,10 @@ function createCase(){
   if(!draft.channel||!draft.source){toast('Συμπλήρωσε channel + source');return;}
   const member=$('#m-member').value,provider=$('#m-provider').value,dx=$('#m-dx').value.trim();
   if(!member||!provider||!dx||draft.emergency===null||draft.inpatient===null){toast('Λείπουν υποχρεωτικά πεδία');return;}
-  const svcNeeded = draft.emergency===false && draft.inpatient===false && draft.claimMode==='direct';
-  const serviceType = svcNeeded ? $('#m-service').value : null;
-  if(svcNeeded && !serviceType){toast('Διάλεξε service type');return;}
   const amt=parseInt($('#m-amt').value)||0;
   const ref='PC-2606-0'+(caseSeq++);
-  const today=new Date().toISOString().slice(0,10);
   const now=new Date();const stamp=now.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+' · '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-  CASES.unshift({ref,member,provider,emergency:draft.emergency,inpatient:draft.inpatient,channel:draft.channel,source:draft.source,
-    claimMode:draft.claimMode,serviceType,estAmount:amt,amount:amt,stage:'request',dx,
-    loaNo:genLoa(),transNo:genTrans(),txnDate:today,dischargeDate:'',bankRef:'',dateCredited:'',amtDeducted:'',dateDeducted:'',
+  CASES.unshift({ref,member,provider,emergency:draft.emergency,inpatient:draft.inpatient,channel:draft.channel,source:draft.source,estAmount:amt,amount:amt,stage:'request',dx,
     timeline:[{t:`Request received (${draft.channel}, from ${draft.source})`,m:stamp}]});
   closeModal();toast('✓ Case '+ref+' δημιουργήθηκε');openCase(ref);
 }
@@ -976,7 +864,6 @@ const GUIDE_TABS=[
  {id:'flow2',   icon:'\u2464',    el:'Βήματα 5–8',       en:'Steps 5–8'},
  {id:'rules',   icon:'\u{1F6E1}', el:'Κανόνες',          en:'Rules'},
  {id:'data',    icon:'\u{1F5C2}', el:'Δίκτυο & Ledger',  en:'Network & Ledger'},
- {id:'export',  icon:'\u{1F9FE}', el:'Export · CBMS',    en:'Export · CBMS'},
  {id:'glossary',icon:'\u{1F4D6}', el:'Γλωσσάριο',         en:'Glossary'},
 ];
 
@@ -1023,14 +910,11 @@ const GUIDE={
   <li><b>Member (Seafarer ID)</b> — επίλεξε το μέλος· εμφανίζεται preview με τα διαθέσιμα όρια (AMBL / outpatient).</li>
   <li><b>Accredited provider</b> — επίλεξε κλινική ή γιατρό. Αν το MOA είναι <b>pending</b>, βγαίνει προειδοποίηση: reimbursable μόνο, χωρίς direct billing.</li>
   <li><b>Case category</b> — διάλεξε ER / Non-ER και Inpatient / Outpatient. Κάτω εμφανίζεται η κατηγορία 1.1–1.4.</li>
-  <li><b>Claim mode</b> — <b>Direct LOA</b> (η κανονική direct-provider ροή) ή <b>Reimbursement</b> (το μέλος πλήρωσε & ζητά επιστροφή).</li>
-  <li><b>Service type</b> — εμφανίζεται <b>μόνο</b> σε Non-ER outpatient direct· καθορίζει τον ακριβή coverage code. Κάτω βλέπεις live το <b>→ Coverage code</b> που θα γραφτεί στο CBMS.</li>
   <li><b>Reason / diagnosis</b> — σύντομη περιγραφή του περιστατικού.</li>
   <li><b>Estimated amount (Php)</b> — εκτίμηση κόστους. Άφησέ το κενό αν είναι άγνωστο (συχνά σε ER).</li>
   <li>Πάτα <span class="g-ref">Create case</span> → το περιστατικό μπαίνει στο Board στο βήμα 1 και ανοίγει αυτόματα.</li>
   </ol>
-  <div class="g-warn"><span class="ic">⚠️</span><div>Τα πεδία με <b>*</b> είναι υποχρεωτικά. Αν λείπει κάποιο, το <b>Create case</b> δεν προχωράει.</div></div>
-  <div class="g-note"><span class="ic">⚙️</span><div><b>Τι ενημερώνεται αυτόματα:</b> μετά τη δημιουργία, ο <b>coverage code</b> και το <b>TRN status</b> βγαίνουν μόνα τους (panel «Claim coding» του case) — δεν τα γράφεις χειροκίνητα. Το <b>Availment Ledger</b> ενημερώνεται στο βήμα 8· το CBMS Excel φεύγει από το <span class="g-ref">Export · CBMS feed</span>.</div></div>`,
+  <div class="g-warn"><span class="ic">⚠️</span><div>Τα πεδία με <b>*</b> είναι υποχρεωτικά. Αν λείπει κάποιο, το <b>Create case</b> δεν προχωράει.</div></div>`,
   en:`<div class="g-h2">➕ Registering a new request</div>
   <p class="g-lead">When a request comes in (phone call or message), here is how you register it:</p>
   <ol class="g-ol">
@@ -1040,14 +924,11 @@ const GUIDE={
   <li><b>Member (Seafarer ID)</b> — pick the member; a preview shows the available limits (AMBL / outpatient).</li>
   <li><b>Accredited provider</b> — pick a clinic or doctor. If the MOA is <b>pending</b>, a warning appears: reimbursable only, no direct billing.</li>
   <li><b>Case category</b> — choose ER / Non-ER and Inpatient / Outpatient. The 1.1–1.4 category shows below.</li>
-  <li><b>Claim mode</b> — <b>Direct LOA</b> (the normal direct-provider flow) or <b>Reimbursement</b> (member paid & claims it back).</li>
-  <li><b>Service type</b> — shown <b>only</b> for Non-ER outpatient direct; pins the exact coverage code. You see the live <b>→ Coverage code</b> that will be written to CBMS.</li>
   <li><b>Reason / diagnosis</b> — a short description of the case.</li>
   <li><b>Estimated amount (Php)</b> — a cost estimate. Leave blank if unknown (often for ER).</li>
   <li>Click <span class="g-ref">Create case</span> → the case enters the Board at step 1 and opens automatically.</li>
   </ol>
-  <div class="g-warn"><span class="ic">⚠️</span><div>Fields marked <b>*</b> are required. If one is missing, <b>Create case</b> will not proceed.</div></div>
-  <div class="g-note"><span class="ic">⚙️</span><div><b>What updates automatically:</b> after creation, the <b>coverage code</b> and <b>TRN status</b> are derived on their own (the case's "Claim coding" panel) — you don't type them. The <b>Availment Ledger</b> updates at step 8; the CBMS Excel goes out from <span class="g-ref">Export · CBMS feed</span>.</div></div>`
+  <div class="g-warn"><span class="ic">⚠️</span><div>Fields marked <b>*</b> are required. If one is missing, <b>Create case</b> will not proceed.</div></div>`
  },
  flow1:{
   el:`<div class="g-h2">① Βήματα 1–4 · Από το αίτημα στο Preliminary LOA</div>
@@ -1159,60 +1040,6 @@ const GUIDE={
   <p class="g-p"><b>8.1</b> Remaining AMBL / Outpatient · <b>8.2</b> Conditional LOAs · <b>8.3</b> Final LOAs · <b>8.4</b> Executed / Paid.</p>
   <div class="g-legend"><span class="lg"><span class="d" style="background:var(--coral)"></span>Red — limit exhausted</span><span class="lg"><span class="d" style="background:var(--gold)"></span>Amber — low (&lt;20%)</span><span class="lg"><span class="d" style="background:var(--teal)"></span>Green — sufficient</span></div>`
  },
- export:{
-  el:`<div class="g-h2">🧾 Export · CBMS feed</div>
-  <p class="g-lead">Το Care Desk βγάζει <b>ακριβώς το ίδιο Excel</b> που τροφοδοτεί το CBMS — όπως ακριβώς το παράγει και η ψηφιακή ροή. Δύο φύλλα: <b>PAID CLAIMS</b> (21 στήλες) και <b>FUNDED LOA</b> (14 στήλες).</p>
-
-  <div class="g-sub">🆕 Δύο νέα πεδία στην Καταχώρηση</div>
-  <p class="g-p"><b>Claim mode</b> — <b>Direct LOA</b> (η κανονική direct-provider ροή) ή <b>Reimbursement</b> (το μέλος πλήρωσε και ζητά επιστροφή).</p>
-  <p class="g-p"><b>Service type</b> — εμφανίζεται μόνο σε <b>Non-ER outpatient direct</b> και καθορίζει τον ακριβή κωδικό κάλυψης.</p>
-  <div class="g-note"><span class="ic">💡</span><div>Δεν διαλέγεις κωδικό. Ο <b>coverage code</b> και το <b>TRN status</b> βγαίνουν <b>αυτόματα</b> — τα βλέπεις live στη φόρμα και στο panel «Claim coding» κάθε case.</div></div>
-
-  <div class="g-sub">🗺️ Πώς αντιστοιχίζεται ο κωδικός (1 από 12)</div>
-  <p class="g-p"><b>ER</b> (οποιοδήποτε setting) → <span class="g-ref">EMERGENCY</span></p>
-  <p class="g-p"><b>Non-ER + Inpatient</b> → <span class="g-ref">INPATIENT-ADMISSION</span></p>
-  <p class="g-p"><b>Non-ER + Outpatient (direct)</b> → ανά service type:</p>
-  <div class="g-legend"><span class="lg">Consultation → OUTPATIENT-BASIC-CONSULTATION</span><span class="lg">Laboratory → OUTPATIENT-LABORATORY</span><span class="lg">Clinic → OUTPATIENT-CLINIC-SETTING</span><span class="lg">Referral → OUTPATIENT-REFERRAL-TO-SPECIALIST</span><span class="lg">Day surgery → OUTPATIENT-OPD-OR</span><span class="lg">Facility → OUTPATIENT-FACILITY-FEE</span></div>
-  <p class="g-p"><b>Reimbursement</b> → <span class="g-ref">RI-INPATIENT</span> ή <span class="g-ref">RI-OUTPATIENT</span>. Το <span class="g-ref">ATACCESS</span> μπαίνει μόνο χειροκίνητα.</p>
-  <div class="g-note"><span class="ic">🩺</span><div>ER που καταλήγει σε εισαγωγή: μένει <b>EMERGENCY</b>· με το κουμπί «ER→admission export line» προστίθεται και δεύτερη γραμμή <b>INPATIENT-ADMISSION</b> στο export.</div></div>
-
-  <div class="g-sub">📤 Πώς κάνεις export</div>
-  <p class="g-p">Μπες στο <span class="g-ref">Export · CBMS feed</span>, διάλεξε <b>Από / Έως</b> (φίλτρο στο Transaction Date) και πάτα <span class="g-ref">Generate .xlsx</span>. Κατεβαίνει αρχείο <b>CareDesk_Utilization_&lt;από&gt;-&lt;έως&gt;.xlsx</b> με τα δύο φύλλα. Εξάγονται μόνο cases που έχουν φτάσει τουλάχιστον σε Preliminary LOA.</p>
-  <p class="g-p">Κάθε εξαγωγή καταγράφεται στο <b>Export history</b> (περίοδος · ημερομηνία · #γραμμές · αρχείο), ώστε να μην εξάγεις δύο φορές την ίδια περίοδο.</p>
-
-  <div class="g-sub">🏦 Bank reconciliation</div>
-  <p class="g-p">Οι στήλες settlement (Bank Ref, Date credited, Amt deducted) γεμίζουν <b>μετά</b> το funding από την τράπεζα. Στο πεδίο reconciliation επικόλλησε γραμμές:</p>
-  <p class="g-p"><span class="g-ref">LOA_No, Bank_Ref, Date</span> — π.χ. <span class="g-ref">X1MEH8X, UB249229, 2026-05-27</span> — και πάτα «Match &amp; fill». Ματσάρει ανά LOA και συμπληρώνει τις bank στήλες.</p>
-  <div class="g-note"><span class="ic">💶</span><div>Το <b>EWT</b> (Net Paid = Actual − EWT) είναι ρυθμιζόμενο· τώρα <b>0%</b> μέχρι να το ορίσει το finance.</div></div>
-
-  <div class="g-note"><span class="ic">🔒</span><div><b>GDPR:</b> το export με <b>πραγματικά</b> δεδομένα τρέχει <b>μόνο τοπικά</b> — ποτέ από το δημόσιο demo. Τα δεδομένα δεν φεύγουν από τον υπολογιστή.</div></div>`,
-  en:`<div class="g-h2">🧾 Export · CBMS feed</div>
-  <p class="g-lead">Care Desk produces <b>the exact same Excel</b> that feeds CBMS — just like the digital flow does. Two sheets: <b>PAID CLAIMS</b> (21 columns) and <b>FUNDED LOA</b> (14 columns).</p>
-
-  <div class="g-sub">🆕 Two new fields on New request</div>
-  <p class="g-p"><b>Claim mode</b> — <b>Direct LOA</b> (the normal direct-provider flow) or <b>Reimbursement</b> (member paid and claims it back).</p>
-  <p class="g-p"><b>Service type</b> — shown only for <b>Non-ER outpatient direct</b> and pins the exact coverage code.</p>
-  <div class="g-note"><span class="ic">💡</span><div>You never pick a code. The <b>coverage code</b> and <b>TRN status</b> are derived <b>automatically</b> — visible live in the form and in each case's "Claim coding" panel.</div></div>
-
-  <div class="g-sub">🗺️ How the code is mapped (1 of 12)</div>
-  <p class="g-p"><b>ER</b> (any setting) → <span class="g-ref">EMERGENCY</span></p>
-  <p class="g-p"><b>Non-ER + Inpatient</b> → <span class="g-ref">INPATIENT-ADMISSION</span></p>
-  <p class="g-p"><b>Non-ER + Outpatient (direct)</b> → by service type:</p>
-  <div class="g-legend"><span class="lg">Consultation → OUTPATIENT-BASIC-CONSULTATION</span><span class="lg">Laboratory → OUTPATIENT-LABORATORY</span><span class="lg">Clinic → OUTPATIENT-CLINIC-SETTING</span><span class="lg">Referral → OUTPATIENT-REFERRAL-TO-SPECIALIST</span><span class="lg">Day surgery → OUTPATIENT-OPD-OR</span><span class="lg">Facility → OUTPATIENT-FACILITY-FEE</span></div>
-  <p class="g-p"><b>Reimbursement</b> → <span class="g-ref">RI-INPATIENT</span> or <span class="g-ref">RI-OUTPATIENT</span>. <span class="g-ref">ATACCESS</span> is manual override only.</p>
-  <div class="g-note"><span class="ic">🩺</span><div>ER that becomes an admission stays <b>EMERGENCY</b>; the "ER→admission export line" button adds a second <b>INPATIENT-ADMISSION</b> row to the export.</div></div>
-
-  <div class="g-sub">📤 How to export</div>
-  <p class="g-p">Open <span class="g-ref">Export · CBMS feed</span>, choose <b>From / To</b> (filters on Transaction Date) and hit <span class="g-ref">Generate .xlsx</span>. It downloads <b>CareDesk_Utilization_&lt;from&gt;-&lt;to&gt;.xlsx</b> with both sheets. Only cases that reached at least Preliminary LOA are exported.</p>
-  <p class="g-p">Every export is logged in <b>Export history</b> (period · date · #rows · file) so you don't export the same period twice.</p>
-
-  <div class="g-sub">🏦 Bank reconciliation</div>
-  <p class="g-p">Settlement columns (Bank Ref, Date credited, Amt deducted) fill in <b>after</b> the bank funds. In the reconciliation box, paste lines:</p>
-  <p class="g-p"><span class="g-ref">LOA_No, Bank_Ref, Date</span> — e.g. <span class="g-ref">X1MEH8X, UB249229, 2026-05-27</span> — and hit "Match &amp; fill". It matches per LOA and fills the bank columns.</p>
-  <div class="g-note"><span class="ic">💶</span><div><b>EWT</b> (Net Paid = Actual − EWT) is configurable; currently <b>0%</b> until finance sets the rate.</div></div>
-
-  <div class="g-note"><span class="ic">🔒</span><div><b>GDPR:</b> exporting with <b>real</b> data runs <b>locally only</b> — never from the public demo. Data never leaves the machine.</div></div>`
- },
  glossary:{
   el:`<div class="g-h2">📖 Γλωσσάριο</div>
   <p class="g-lead">Οι βασικοί όροι που θα συναντήσεις στο εργαλείο.</p>
@@ -1266,91 +1093,6 @@ function renderGuide(){
 function setGuideLang(l){guideLang=l;renderGuide();}
 function setGuideTab(id){guideTab=id;renderGuide();window.scrollTo(0,0);}
 
-
-
-/* ============================================================
-   EXPORT — CBMS utilization feed (PAID CLAIMS + FUNDED LOA)
-   ============================================================ */
-const PC_HEADERS=['Transaction Date','DISCHARGE DATE','Member Name','Member ID','Employee ID','Corporate','TRN Status','Coverage','generated_by','LOA No.','DIAGNOSIS','Provider','LOA Amount','ACTUAL CLAIMS','EWT','NET PAID','AMT DEDUCTED IN BANK','DATE DEDUCTED','BANK REF. NO.','DATE CREDITED','TRN'];
-const FL_HEADERS=['corp_name','Date Issued/Discharged','loa_no','trans_no','coverage_code','provider_name','LOA Amt.','Claim Amt.','Claim - LOA Amt','bank_acc_name','bank_no','Date Funded','Part of','Bank ref. no.'];
-let EXPORT_HISTORY=[];
-function loadHistory(){try{const j=localStorage.getItem('cd_export_history');if(j)EXPORT_HISTORY=JSON.parse(j);}catch(e){}}
-function logExport(from,to,rows,fn){EXPORT_HISTORY.unshift({period:(from||'…')+' → '+(to||'…'),generated:new Date().toISOString().slice(0,16).replace('T',' '),rows,file:fn});try{localStorage.setItem('cd_export_history',JSON.stringify(EXPORT_HISTORY.slice(0,50)));}catch(e){}}
-
-function casesInRange(from,to){
-  return CASES.filter(c=>stepIndex(c.stage)>=stepIndex('prelim'))
-    .filter(c=>{ if(from&&c.txnDate<from)return false; if(to&&c.txnDate>to)return false; return true;})
-    .sort((a,b)=>a.txnDate<b.txnDate?-1:1);
-}
-function pcRowsFor(c){
-  const m=MEMBERS[c.member], p=provById(c.provider);
-  const base=cov=>({'Transaction Date':c.txnDate,'DISCHARGE DATE':c.dischargeDate||'','Member Name':m.name,'Member ID':m.amaphilId,'Employee ID':m.employeeId,'Corporate':m.corporate||CONFIG.corpDefault,'TRN Status':RULES.deriveTrn(c),'Coverage':cov,'generated_by':CONFIG.generatedBy,'LOA No.':c.loaNo,'DIAGNOSIS':c.dx,'Provider':p.name,'LOA Amount':c.estAmount||c.amount,'ACTUAL CLAIMS':c.amount,'EWT':ewtAmt(c),'NET PAID':netPaid(c),'AMT DEDUCTED IN BANK':c.amtDeducted||'','DATE DEDUCTED':c.dateDeducted||'','BANK REF. NO.':c.bankRef||'','DATE CREDITED':c.dateCredited||'','TRN':c.transNo});
-  if(c.splitAdmission&&c.emergency&&c.inpatient) return [base('EMERGENCY'),base('INPATIENT-ADMISSION')];
-  return [base(RULES.deriveCoverage(c))];
-}
-function flRowFor(c){
-  const m=MEMBERS[c.member], p=provById(c.provider);
-  const loa=c.estAmount||c.amount, claim=c.amount;
-  return {'corp_name':m.corporate||CONFIG.corpDefault,'Date Issued/Discharged':c.dischargeDate||c.txnDate,'loa_no':c.loaNo,'trans_no':c.transNo,'coverage_code':RULES.deriveCoverage(c),'provider_name':p.name,'LOA Amt.':loa,'Claim Amt.':claim,'Claim - LOA Amt':Math.round((claim-loa)*100)/100,'bank_acc_name':CONFIG.disbursingAccountName,'bank_no':CONFIG.disbursingBankNo,'Date Funded':c.dateCredited||'','Part of':c.fundedBatch||'','Bank ref. no.':c.bankRef||''};
-}
-function doExport(){
-  if(typeof XLSX==='undefined'){toast('SheetJS δεν φορτώθηκε (χρειάζεται internet)');return;}
-  const from=$('#x-from').value, to=$('#x-to').value;
-  const cs=casesInRange(from,to);
-  if(!cs.length){toast('Καμία εγγραφή με LOA στο διάστημα');return;}
-  let pc=[]; cs.forEach(c=>pc.push(...pcRowsFor(c)));
-  const fl=cs.map(flRowFor);
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(pc,{header:PC_HEADERS}), 'PAID CLAIMS');
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(fl,{header:FL_HEADERS}), 'FUNDED LOA');
-  const fn='CareDesk_Utilization_'+(from||'start').replace(/-/g,'')+'-'+(to||'now').replace(/-/g,'')+'.xlsx';
-  XLSX.writeFile(wb, fn);
-  logExport(from,to,pc.length,fn);
-  toast('✓ Export: '+pc.length+' PAID CLAIMS + '+fl.length+' FUNDED LOA');
-  renderExport();
-}
-function reconcile(){
-  const txt=($('#x-recon').value||'').trim(); if(!txt){toast('Επικόλλησε bank lines');return;}
-  let matched=0;
-  txt.split(/\r?\n/).forEach(line=>{
-    const parts=line.split(/[\t,;]+|\s{2,}/).map(x=>x.trim()).filter(Boolean);
-    if(parts.length<2)return;
-    const loa=parts[0], ref=parts[1], date=parts[2];
-    const c=CASES.find(x=>x.loaNo && x.loaNo.toUpperCase()===String(loa).toUpperCase());
-    if(c){c.bankRef=ref||c.bankRef; if(date)c.dateCredited=date; c.amtDeducted=c.amount; matched++;}
-  });
-  toast(matched?('✓ Reconciled '+matched+' LOAs'):'Κανένα match — έλεγξε LOA No.');
-  renderExport();
-}
-function dlIcon(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>';}
-
-function renderExport(){
-  const dates=CASES.map(c=>c.txnDate).filter(Boolean).sort();
-  const minD=dates[0]||'2026-05-01', today=new Date().toISOString().slice(0,10);
-  const fromV=$('#x-from')?$('#x-from').value:minD, toV=$('#x-to')?$('#x-to').value:today;
-  const inRange=casesInRange(fromV,toV);
-  let h=`<div class="ledger-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg><div>Εξαγωγή στο <b>ίδιο schema</b> με το utilization report που τροφοδοτεί το CBMS — sheets <b>PAID CLAIMS</b> + <b>FUNDED LOA</b>. Τρέχει τοπικά· τα δεδομένα δεν φεύγουν από το μηχάνημα (GDPR gate).</div></div>`;
-  h+=`<div class="card" style="padding:22px 24px;margin-bottom:18px"><div class="section-head"><h3>Utilization export</h3><span class="hint">φίλτρο στο Transaction Date</span></div>
-    <div class="x-row">
-      <div><label class="x-lab">Από</label><input class="ftext" type="date" id="x-from" value="${fromV}" onchange="renderExport()"></div>
-      <div><label class="x-lab">Έως</label><input class="ftext" type="date" id="x-to" value="${toV}" onchange="renderExport()"></div>
-      <div class="x-count"><span class="mono" style="font-size:15px;color:var(--ink);font-weight:600">${inRange.length}</span> cases με LOA στο διάστημα</div>
-    </div>
-    <div class="magic-row"><button class="btn primary" onclick="doExport()">${dlIcon()}Generate .xlsx (PAID CLAIMS + FUNDED LOA)</button><span class="magic-note">CareDesk_Utilization_&lt;από&gt;-&lt;έως&gt;.xlsx</span></div>
-  </div>`;
-  h+=`<div class="card" style="padding:22px 24px;margin-bottom:18px"><div class="section-head"><h3>Bank reconciliation</h3><span class="hint">γραμμές: LOA_No, Bank_Ref, Date</span></div>
-    <textarea class="ftext" id="x-recon" style="min-height:88px;font-family:var(--mono);font-size:12px" placeholder="X1MEH8X, UB249229, 2026-05-27&#10;O4S016J, UB248835, 2026-05-27"></textarea>
-    <div class="magic-row"><button class="btn ghost" onclick="reconcile()">Match & fill bank columns</button><span class="magic-note">Συμπληρώνει Bank Ref · Date credited · Amt deducted ανά LOA.</span></div></div>`;
-  h+=`<div class="card" style="padding:22px 24px"><div class="section-head"><h3>Export history</h3></div>`;
-  if(!EXPORT_HISTORY.length) h+=`<div style="font-size:13px;color:var(--slate-2)">Καμία εξαγωγή ακόμα.</div>`;
-  else{ h+=`<div class="ledger-wrap"><table class="ledger"><thead><tr><th>Generated</th><th>Period</th><th class="num">Rows</th><th>File</th></tr></thead><tbody>`;
-    EXPORT_HISTORY.forEach(e=>{h+=`<tr><td class="mono" style="font-size:12px">${e.generated}</td><td>${e.period}</td><td class="num">${e.rows}</td><td class="mono" style="font-size:11px">${e.file}</td></tr>`;});
-    h+=`</tbody></table></div>`; }
-  h+=`</div>`;
-  $('#content').innerHTML=h;
-}
-
-loadHistory();
 
 render();
 </script>
