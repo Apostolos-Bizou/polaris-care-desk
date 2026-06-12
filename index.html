@@ -187,6 +187,23 @@
   .ts-hit .th-ref{font-family:var(--mono);font-size:12px;color:var(--teal-d)}
   .ts-hit .th-st{margin-left:auto;font-size:12px;color:var(--slate-2)}
   .ts-empty{padding:10px 8px;font-size:12.5px;color:var(--slate-2)}
+  .gsearch{padding:16px 18px;margin-bottom:18px}
+  .gs-kind{font-family:var(--mono);font-size:9px;letter-spacing:.5px;text-transform:uppercase;padding:3px 8px;border-radius:10px;background:var(--paper);border:1px solid var(--line);color:var(--slate-2);min-width:70px;text-align:center;flex:0 0 auto}
+  .gs-kind.case{color:var(--teal-d);border-color:var(--teal)}
+  .gs-kind.diagnostic{color:var(--gold-d);border-color:var(--gold)}
+  .gs-kind.doctor{color:var(--coral);border-color:var(--coral)}
+  .topsearch{position:relative;display:flex;align-items:center;gap:8px;width:280px;max-width:40vw;background:#fff;border:1px solid var(--line);border-radius:var(--r-s);padding:7px 12px}
+  .topsearch .ts-ic{width:16px;height:16px;color:var(--slate-2);flex:0 0 auto}
+  .topsearch input{flex:1;min-width:0;border:none;outline:none;background:transparent;font-size:13px;color:var(--ink);font-family:inherit}
+  .topsearch .topdrop{position:absolute;top:calc(100% + 9px);right:0;background:#fff;border:1px solid var(--line);border-radius:var(--r-s);box-shadow:0 14px 34px rgba(11,31,42,.16);max-height:66vh;overflow-y:auto;overflow-x:hidden;padding:8px;z-index:40;width:640px;max-width:92vw}
+  .topsearch .topdrop .ts-hit{flex-wrap:nowrap;gap:14px;padding:11px 10px}
+  .topsearch .topdrop .ts-hit .gs-kind{flex:0 0 auto;min-width:64px}
+  .topsearch .topdrop .ts-hit .th-nm{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .topsearch .topdrop .ts-hit .th-ref{flex:0 0 auto;white-space:nowrap}
+  .topsearch .topdrop .ts-hit .th-st{flex:0 0 auto;white-space:nowrap;margin-left:0;color:var(--slate-2)}
+  .topsearch .topdrop .ts-empty{white-space:normal}
+  .topsearch .topdrop:empty{display:none}
+  @media(max-width:720px){ .topsearch{display:none} }
 
   .detail-grid{display:grid;grid-template-columns:1fr 320px;gap:22px;align-items:start}
   .panel{padding:20px 22px}
@@ -486,6 +503,7 @@
       <button class="menu-btn" onclick="toggleMenu()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
       <div><div class="crumb" id="crumb">Operations / Case Board</div><h2 id="title">Case Board</h2></div>
       <div class="spacer"></div>
+      <div class="topsearch"><svg class="ts-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="g-q" placeholder="Search anything…" autocomplete="off" oninput="runGlobalSearch()" onkeydown="if(event.key==='Enter')submitGlobalSearch()"><div id="g-results" class="ts-results topdrop"></div></div>
       <span class="local-pill">Local · CBMS export</span>
     </div>
     <div class="content" id="content"></div>
@@ -829,8 +847,9 @@ function go(v,e){if(e)e.preventDefault();view=v;currentRef=null;
   document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('active',a.dataset.view===v));
   $('#side').classList.remove('open');$('#scrim').classList.remove('open');render();}
 function openCase(ref){currentRef=ref;view='case';render();window.scrollTo(0,0);}
-function openTrack(ref){currentRef=ref;view='track';render();window.scrollTo(0,0);}
-function openProvider(id){currentProv=id;view='provider';render();window.scrollTo(0,0);}
+function clearGlobalSearch(){const q=$('#g-q'); if(q)q.value=''; const r=$('#g-results'); if(r)r.innerHTML='';}
+function openTrack(ref){clearGlobalSearch();currentRef=ref;view='track';render();window.scrollTo(0,0);}
+function openProvider(id){clearGlobalSearch();currentProv=id;view='provider';render();window.scrollTo(0,0);}
 const TITLES={dashboard:['Operations / Case Board','Case Board'],network:['Operations / Network','Accredited Network'],ledger:['Operations / Availment Ledger','Availment Ledger'],procedure:['Reference / Procedure','Procedure & Coverage'],guide:['Reference / Guide','User Guide'],export:['Operations / Export','CBMS Utilization Export'],case:['Operations / Case Board / Detail','Case Detail'],track:['Operations / Case Board / Tracking','Case Tracking'],provider:['Operations / Network / Provider','Provider Card']};
 function render(){
   const [crumb,title]=TITLES[view];
@@ -1014,6 +1033,31 @@ function runCaseSearch(){
     + (res.length>8?`<div class="ts-empty">…and ${res.length-8} more. Narrow the search.</div>`:'');
 }
 function submitCaseSearch(){const inp=$('#case-q'); if(!inp)return; const res=caseSearch(inp.value); if(res.length){openTrack(res[0].ref);} else {runCaseSearch();}}
+// GLOBAL search — cases + providers + doctors, across every field
+function globalSearch(q){
+  q=(q||'').trim().toLowerCase(); if(!q) return [];
+  const out=[];
+  CASES.forEach(c=>{const m=MEMBERS[c.member]||{};const prov=provById(c.provider)||{};const st=STEPS[stepIndex(c.stage)];
+    const hay=[caseId(c),c.ref,c.member,m.name,m.amaphilId,m.employeeId,m.corporate,prov.name,c.dx,catCode(c),caseType(c),catLetters(c),c.loaNo,c.transNo,st.cap,(c.emergency?'ER':'Non-ER'),(c.inpatient?'inpatient':'outpatient')].filter(Boolean).join(' ').toLowerCase();
+    if(hay.includes(q)) out.push({kind:'Case',ref:c.ref,title:m.name||c.member,code:caseId(c),sub:'Step '+st.no+'/8 · '+st.cap,act:`openTrack('${c.ref}')`});
+  });
+  [...PROVIDERS,...DOCTORS].forEach(p=>{const isDoc=p.kind==='doctor';
+    const hay=[p.id,p.name,p.loc,p.phone,p.email,p.tin,p.lto,p.pan,p.prc,p.ptr,p.s2,p.specialty,p.subspecialty,p.hospital,p.board,p.facilityType,p.labClass,p.tier,p.rate,p.moa,p.address,p.officer].filter(Boolean).join(' ').toLowerCase();
+    if(hay.includes(q)) out.push({kind:isDoc?'Doctor':(p.facilityType==='Diagnostic'?'Diagnostic':'Hospital'),id:p.id,title:p.name,code:p.id,sub:((isDoc?(p.specialty||''):(p.facilityType||''))+(p.loc?' · '+p.loc:'')),act:`openProvider('${p.id}')`});
+  });
+  out.forEach(r=>{r.score=(((r.title||'').toLowerCase().includes(q))||((r.code||'').toLowerCase().includes(q)))?2:1;});
+  out.sort((a,b)=>b.score-a.score);
+  return out;
+}
+function runGlobalSearch(){
+  const inp=$('#g-q'); if(!inp) return; const q=inp.value; const box=$('#g-results'); if(!box) return;
+  if(!q.trim()){box.innerHTML='';return;}
+  const res=globalSearch(q);
+  if(!res.length){box.innerHTML='<div class="ts-empty">No match for «'+q+'».</div>';return;}
+  box.innerHTML=res.slice(0,10).map(r=>`<div class="ts-hit" onclick="${r.act}"><span class="gs-kind ${r.kind.toLowerCase()}">${r.kind}</span><span class="th-nm">${r.title}</span><span class="th-ref">${r.code}</span><span class="th-st">${r.sub}</span></div>`).join('')
+    + (res.length>10?`<div class="ts-empty">…and ${res.length-10} more. Narrow the search.</div>`:'');
+}
+function submitGlobalSearch(){const inp=$('#g-q'); if(!inp)return; const res=globalSearch(inp.value); if(!res.length){runGlobalSearch();return;} const r=res[0]; if(r.kind==='Case') openTrack(r.ref); else openProvider(r.id);}
 function renderTrack(){
   const c=CASES.find(x=>x.ref===currentRef);if(!c){go('dashboard');return;}
   const m=MEMBERS[c.member];const prov=provById(c.provider);const si=stepIndex(c.stage);
@@ -1587,7 +1631,8 @@ const GUIDE={
   <li>Γράψε <b>οτιδήποτε</b>: όνομα, κωδικό (πλήρη ή μόνο τα γράμματα π.χ. <b>EI</b>), πάροχο, διάγνωση, ή κατηγορία.</li>
   <li>Εμφανίζεται live λίστα με τη <b>σταδιοποίηση</b> κάθε match (Step x/8).</li>
   <li>Κλικ στη γραμμή ή <b>Enter</b> → ανοίγει η Πορεία εκείνου του case.</li>
-  </ol>`,
+  </ol>
+  <div class="g-note"><span class="ic">🔎</span><div><b>Global search (top bar):</b> το ίδιο search υπάρχει <b>πάνω-δεξιά σε κάθε οθόνη</b> — βρίσκει μαζί cases, νοσοκομεία, διαγνωστικά, γιατρούς (όνομα · κωδικός · τηλέφωνο · διάγνωση · άδεια). Enter → ανοίγει το πιο σχετικό.</div></div>`,
   en:`<div class="g-h2">🛰️ Case Tracking & Search</div>
   <p class="g-lead">The <b>Tracking</b> screen shows a case's full progress in a courier-tracking style. Open it from the <span class="g-ref">Case Tracking</span> button at the top-right of any case.</p>
   <div class="g-sub">What you see</div>
@@ -1600,7 +1645,8 @@ const GUIDE={
   <li>Type <b>anything</b>: name, code (full or just the letters e.g. <b>EI</b>), provider, diagnosis, or category.</li>
   <li>A live list shows each match with its <b>stage</b> (Step x/8).</li>
   <li>Click a row or press <b>Enter</b> → opens that case's Tracking.</li>
-  </ol>`
+  </ol>
+  <div class="g-note"><span class="ic">🔎</span><div><b>Global search (top bar):</b> the same search lives <b>top-right on every screen</b> — it finds cases, hospitals, diagnostics and doctors together (name · code · phone · diagnosis · license). Enter → opens the best match.</div></div>`
  },
  provcards:{
   el:`<div class="g-h2">🏥 Καρτέλες παρόχων & γιατρών</div>
