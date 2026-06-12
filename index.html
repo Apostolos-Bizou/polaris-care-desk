@@ -108,6 +108,7 @@
   .mini-rail{display:flex;align-items:center;gap:0}
   .mini-rail .seg{height:5px;width:16px;background:var(--line);border-radius:3px;margin-right:3px}
   .mini-rail .seg.done{background:var(--teal)} .mini-rail .seg.now{background:var(--gold)} .mini-rail .seg.block{background:var(--coral)}
+  .mini-rail .seg.skipped{background:transparent;border:1px dashed var(--line);height:3px}
   .case .stat-col{min-width:170px}
   .case .stat-col .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--slate-2);margin-bottom:6px}
   .case .nextcol{text-align:right;min-width:160px}
@@ -134,6 +135,58 @@
   .station.now.gate .node{border-color:var(--gold);color:var(--gold-d);box-shadow:0 0 0 5px rgba(224,164,59,.2)}
   .station .cap{font-size:10.5px;margin-top:9px;color:var(--slate-2);font-weight:500;line-height:1.25;max-width:86px}
   .station.done .cap,.station.now .cap{color:var(--ink)}
+  .station.skipped .node{background:var(--paper);border-style:dashed;border-color:var(--line);color:var(--slate-2);opacity:.7}
+  .station.skipped .cap{color:var(--slate-2);font-style:italic}
+  .station .cap .na{display:block;font-family:var(--mono);font-size:8px;letter-spacing:.5px;color:var(--coral);margin-top:2px;text-transform:uppercase;font-style:normal}
+  .tag.cat{background:var(--ink);color:#fff;font-family:var(--mono)}
+  .cat-now{font-family:var(--mono);font-size:14px;color:var(--teal-d);margin-top:2px}
+  .cat-note{font-size:11.5px;color:var(--slate-2);margin-top:10px;line-height:1.4}
+  .track-btn{margin-left:auto}
+  .track-btn svg{width:15px;height:15px}
+  .track-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+  .track-head h2{font-family:var(--disp);font-size:23px;font-weight:600;color:var(--ink);letter-spacing:-.3px}
+  .track-head .tk-ref{font-family:var(--mono);font-size:13px;color:var(--teal-d)}
+  .track-head .th-titles{display:flex;flex-direction:column;gap:1px;margin-right:4px}
+  .track-head .th-kicker{font-family:var(--mono);font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:var(--slate-2)}
+  .track-tbl td .th-sub{font-family:var(--mono);font-size:11px;color:var(--slate-2);margin-top:2px}
+  .track-scroll{overflow-x:auto}
+  .tr-rail{position:relative;display:flex;min-width:820px;padding-top:6px}
+  .tr-line{position:absolute;left:24px;right:24px;top:19px;height:12px;border-radius:8px;background:var(--line);opacity:.55}
+  .tr-line-fill{position:absolute;left:24px;top:19px;height:12px;border-radius:8px;background:var(--teal);transition:width .4s cubic-bezier(.4,0,.2,1)}
+  .tr-stop{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;z-index:2;padding:0 4px}
+  .tr-dot{width:32px;height:32px;border-radius:50%;background:#fff;border:3px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--slate-2);font-family:var(--mono);font-size:12px}
+  .tr-dot svg{width:15px;height:15px;color:#fff}
+  .tr-stop.done .tr-dot{background:var(--teal);border-color:var(--teal)}
+  .tr-stop.now .tr-dot{background:var(--coral);border-color:var(--coral);box-shadow:0 0 0 6px rgba(229,96,77,.18)}
+  .tr-stop.skipped .tr-dot{border-style:dashed;opacity:.6;color:var(--slate-2)}
+  .tr-cap{font-size:10.5px;margin-top:11px;color:var(--slate);font-weight:600;letter-spacing:.3px;text-transform:uppercase;max-width:100px;line-height:1.25}
+  .tr-stop.now .tr-cap{color:var(--coral)}
+  .tr-cap .na{display:block;font-size:8px;color:var(--coral);margin-top:2px}
+  .tr-date{font-size:10.5px;color:var(--slate-2);margin-top:6px;font-family:var(--mono);min-height:13px}
+  .track-card{padding:0;overflow:hidden}
+  .track-tbl{width:100%;border-collapse:collapse;font-size:13px;min-width:680px}
+  .track-tbl th{background:var(--paper);text-align:left;padding:12px 16px;font-family:var(--disp);font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--slate);border-bottom:1px solid var(--line);font-weight:600}
+  .track-tbl td{padding:13px 16px;border-bottom:1px solid var(--line);color:var(--slate);vertical-align:top}
+  .track-tbl tr:last-child td{border-bottom:none}
+  .track-tbl td.red{color:var(--coral);font-weight:600}
+  .track-tbl td.muted{color:var(--slate-2)}
+  .track-tbl tr.pending td{color:var(--slate-2);opacity:.65}
+  .track-tbl tr.cat td{background:rgba(224,164,59,.07)}
+  .tk-badge{display:inline-block;padding:5px 13px;border-radius:14px;border:1.5px solid var(--gold);color:var(--gold-d);font-weight:600;font-size:12px;white-space:nowrap}
+  .tk-badge.closed{border-color:var(--teal);color:var(--teal-d)}
+  .track-search{padding:16px 18px;margin-bottom:18px}
+  .ts-row{display:flex;align-items:center;gap:10px}
+  .ts-row .ts-ic{width:18px;height:18px;color:var(--slate-2);flex:0 0 auto}
+  .ts-row .ftext{flex:1;min-width:0}
+  .ts-results{margin-top:4px}
+  .ts-results:not(:empty){margin-top:12px;border-top:1px solid var(--line);padding-top:6px}
+  .ts-hit{display:flex;align-items:center;gap:12px;padding:10px 8px;border-radius:var(--r-s);cursor:pointer;transition:background .12s}
+  .ts-hit:hover{background:var(--paper)}
+  .ts-hit.cur{background:rgba(14,140,146,.07)}
+  .ts-hit .th-nm{font-weight:600;color:var(--ink);font-size:13.5px;min-width:150px}
+  .ts-hit .th-ref{font-family:var(--mono);font-size:12px;color:var(--teal-d)}
+  .ts-hit .th-st{margin-left:auto;font-size:12px;color:var(--slate-2)}
+  .ts-empty{padding:10px 8px;font-size:12.5px;color:var(--slate-2)}
 
   .detail-grid{display:grid;grid-template-columns:1fr 320px;gap:22px;align-items:start}
   .panel{padding:20px 22px}
@@ -204,6 +257,22 @@
   .provider .pv-meta{display:flex;gap:14px;margin-top:14px;padding-top:13px;border-top:1px solid var(--line)}
   .provider .pv-meta .m .mk{font-family:var(--mono);font-size:9.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--slate-2)}
   .provider .pv-meta .m .mv{font-size:13px;font-weight:600;color:var(--ink);margin-top:3px}
+  .provider.clickable{cursor:pointer;transition:box-shadow .14s,transform .14s}
+  .provider.clickable:hover{box-shadow:0 6px 20px rgba(11,31,42,.10);transform:translateY(-1px)}
+  .tag.prov{background:var(--teal);color:#fff}
+  .moa.expired{background:rgba(229,96,77,.14);color:var(--coral)}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .pill{display:inline-block;padding:5px 11px;border-radius:13px;background:var(--paper);border:1px solid var(--line);font-size:12px;color:var(--slate)}
+  .ftext-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--slate-2);margin:10px 0 6px}
+  .ftext-lbl:first-child{margin-top:0}
+  .seg-pick.wrap{flex-wrap:wrap;gap:6px}
+  .seg-pick.wrap button{flex:0 1 auto;min-width:0;padding:7px 11px;font-size:12px}
+  .net-bar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+  .net-bar .net-tabs{margin-bottom:0}
+  .net-bar .np-btn{margin-left:auto}
+  .prov-cases-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:16px 18px 4px}
+  .prov-cases-head h4{font-family:var(--disp);font-size:13px;font-weight:600;color:var(--ink);text-transform:uppercase;letter-spacing:.6px}
+  .pc-total{font-size:13px;color:var(--slate)}
   .moa{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:5px;font-weight:500;margin-left:auto}
   .moa.active{background:rgba(57,160,127,.14);color:#2c7d62}
   .moa.pending{background:rgba(224,164,59,.14);color:var(--gold-d)}
@@ -402,12 +471,12 @@
       </a>
       <a href="#" data-view="guide" onclick="go('guide',event)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
-        Guide · Οδηγός
+        Guide
       </a>
     </nav>
     <div class="side-foot">
       <b>Local ops build · CBMS export</b><br>
-      Fake seed data. Τα <b style="color:var(--on-navy)">πραγματικά</b> δεδομένα μένουν τοπικά.
+      Fake seed data. <b style="color:var(--on-navy)">Real</b> data stays on this machine.
       <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>Real-data path = local only · GDPR gate</span>
     </div>
   </aside>
@@ -450,7 +519,7 @@
       <div class="fgroup">
         <label>Member (Seafarer ID) <span class="star">*</span></label>
         <select class="fsel" id="m-member" onchange="memberPreview()">
-          <option value="">— επίλεξε μέλος —</option>
+          <option value="">— select member —</option>
         </select>
         <div class="member-preview" id="m-preview"></div>
       </div>
@@ -458,9 +527,9 @@
       <div class="fgroup">
         <label>Accredited provider <span class="star">*</span></label>
         <select class="fsel" id="m-provider" onchange="providerCheck()">
-          <option value="">— επίλεξε provider —</option>
+          <option value="">— select provider —</option>
         </select>
-        <div class="moa-warn" id="m-moawarn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0zM12 9v4M12 17h.01"/></svg>MOA pending — reimbursable μόνο, χωρίς direct billing</div>
+        <div class="moa-warn" id="m-moawarn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0zM12 9v4M12 17h.01"/></svg>MOA pending — reimbursable only, no direct billing</div>
       </div>
       <!-- 1.1-1.4 category -->
       <div class="fgroup">
@@ -488,23 +557,60 @@
       <!-- service type (Non-ER outpatient direct only) -->
       <div class="fgroup hidden" id="m-svc-group">
         <label>Service type <span class="star">*</span></label>
-        <select class="fsel" id="m-service" onchange="catReadout()"><option value="">— επίλεξε —</option></select>
+        <select class="fsel" id="m-service" onchange="catReadout()"><option value="">— select —</option></select>
       </div>
       <div class="category-readout" id="m-cov" style="margin-bottom:10px"></div>
       <!-- dx + amount -->
       <div class="fgroup">
         <label>Reason / diagnosis <span class="star">*</span></label>
-        <textarea class="ftext" id="m-dx" placeholder="π.χ. Acute appendicitis, RLQ pain"></textarea>
+        <textarea class="ftext" id="m-dx" placeholder="e.g. Acute appendicitis, RLQ pain"></textarea>
       </div>
       <div class="fgroup" style="margin-bottom:4px">
         <label>Estimated amount (Php)</label>
-        <input class="ftext" id="m-amt" type="number" min="0" step="100" placeholder="π.χ. 4500 — κενό αν άγνωστο (ER)">
+        <input class="ftext" id="m-amt" type="number" min="0" step="100" placeholder="e.g. 4500 — blank if unknown (ER)">
       </div>
     </div>
     <div class="modal-foot">
-      <button class="btn ghost" onclick="closeModal()">Άκυρο</button>
+      <button class="btn ghost" onclick="closeModal()">Cancel</button>
       <button class="btn primary" onclick="createCase()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Create case</button>
     </div>
+  </div>
+</div>
+
+<div class="modal-scrim" id="provModal" onclick="if(event.target===this)closeProvModal()">
+  <div class="modal">
+    <div class="modal-head"><h3>New provider</h3><button class="x" onclick="closeProvModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="modal-body">
+      <div class="fgroup"><label>Type <span class="star">*</span></label>
+        <select class="fsel" id="p-type" onchange="provTypeChange()"><option value="Hospital">🏥 Hospital</option><option value="Diagnostic">🔬 Diagnostic</option><option value="Doctor">🩺 Doctor</option></select></div>
+      <div class="fgroup"><label>Name / Full name <span class="star">*</span></label><input class="ftext" id="p-name" placeholder="e.g. Manila Doctors Hospital or Dr. Juan Dela Cruz"></div>
+      <div class="fgroup"><label id="p-loc-lbl">Location (city/region)</label><input class="ftext" id="p-loc" placeholder="e.g. Ermita, Manila"></div>
+      <div id="p-fac">
+        <div class="fgroup" id="p-level-g"><label>Hospital level (DOH)</label><select class="fsel" id="p-level"><option>1</option><option>2</option><option selected>3</option><option>4</option></select></div>
+        <div class="fgroup hidden" id="p-lab-g"><label>Clinical Lab class</label><select class="fsel" id="p-lab"><option>Primary</option><option>Secondary</option><option selected>Tertiary</option></select></div>
+        <div class="two-col"><div class="fgroup"><label>DOH License to Operate (LTO)</label><input class="ftext" id="p-lto" placeholder="LTO-NCR-2026-…"></div><div class="fgroup"><label>LTO expiry</label><input class="ftext" id="p-ltoexp" type="date"></div></div>
+        <div class="two-col"><div class="fgroup"><label>PhilHealth Accreditation (PAN)</label><input class="ftext" id="p-pan" placeholder="HCI-…"></div><div class="fgroup"><label>PAN expiry</label><input class="ftext" id="p-panexp" type="date"></div></div>
+        <div class="fgroup"><label>TIN</label><input class="ftext" id="p-tin" placeholder="000-000-000-000"></div>
+        <div class="two-col"><div class="fgroup"><label>Billing</label><select class="fsel" id="p-billing"><option>Direct billing</option><option>Reimbursable</option></select></div><div class="fgroup"><label>Tier</label><select class="fsel" id="p-ftier"><option>Tier 1</option><option selected>Tier 2</option><option>Tier 3</option></select></div></div>
+        <div class="two-col"><div class="fgroup"><label>Payment terms</label><input class="ftext" id="p-pay" placeholder="Net 30"></div><div class="fgroup"><label>Room rate</label><input class="ftext" id="p-room" placeholder="Private Php 4,500/day"></div></div>
+        <div class="fgroup"><label>Services (comma-separated)</label><input class="ftext" id="p-services" placeholder="Emergency, Surgery, Diagnostics"></div>
+        <div class="fgroup"><label>Billing officer</label><input class="ftext" id="p-officer" placeholder="Name — Billing"></div>
+      </div>
+      <div id="p-doc" class="hidden">
+        <div class="two-col"><div class="fgroup"><label>Specialty</label><input class="ftext" id="p-spec" placeholder="Internal Medicine"></div><div class="fgroup"><label>Sub-specialty</label><input class="ftext" id="p-sub" placeholder="—"></div></div>
+        <div class="fgroup"><label>Specialty board</label><input class="ftext" id="p-board" placeholder="PCP / PHA / PPS…"></div>
+        <div class="two-col"><div class="fgroup"><label>Affiliation (hospital)</label><input class="ftext" id="p-hosp" placeholder="Manila Doctors Hospital"></div><div class="fgroup"><label>Schedule</label><input class="ftext" id="p-sched" placeholder="Mon–Fri 09:00–13:00"></div></div>
+        <div class="two-col"><div class="fgroup"><label>PRC License No.</label><input class="ftext" id="p-prc" placeholder="0123456"></div><div class="fgroup"><label>PRC expiry</label><input class="ftext" id="p-prcexp" type="date"></div></div>
+        <div class="two-col"><div class="fgroup"><label>PTR No.</label><input class="ftext" id="p-ptr" placeholder="PTR-MNL-…"></div><div class="fgroup"><label>PTR year</label><input class="ftext" id="p-ptryear" placeholder="2026"></div></div>
+        <div class="two-col"><div class="fgroup"><label>S2 (PDEA) License</label><input class="ftext" id="p-s2" placeholder="blank if not prescribing controlled drugs"></div><div class="fgroup"><label>TIN</label><input class="ftext" id="p-dtin" placeholder="000-000-000-000"></div></div>
+        <div class="two-col"><div class="fgroup"><label>PhilHealth Accreditation</label><input class="ftext" id="p-dpan" placeholder="HCP-…"></div><div class="fgroup"><label>PF arrangement</label><select class="fsel" id="p-pf"><option>PF capped</option><option>Per visit</option><option>Package</option></select></div></div>
+        <div class="fgroup"><label>Tier</label><select class="fsel" id="p-dtier"><option selected>Accredited</option><option>Senior</option><option>Sub-specialist</option></select></div>
+      </div>
+      <div class="two-col"><div class="fgroup"><label>MOA status <span class="star">*</span></label><select class="fsel" id="p-moa"><option value="active">active</option><option value="pending">pending</option><option value="expired">expired</option></select></div><div class="fgroup"><label>MOA from · to</label><div class="two-col"><input class="ftext" id="p-moafrom" type="date"><input class="ftext" id="p-moato" type="date"></div></div></div>
+      <div class="two-col"><div class="fgroup"><label>Phone</label><input class="ftext" id="p-phone" placeholder="+63 …"></div><div class="fgroup"><label>Email</label><input class="ftext" id="p-email" placeholder="billing@…"></div></div>
+      <div class="fgroup"><label>Bank · Account name · Account no.</label><div class="two-col"><input class="ftext" id="p-bank" placeholder="BDO Unibank"><input class="ftext" id="p-bankacct" placeholder="Account name"></div><input class="ftext" id="p-bankno" placeholder="Account no." style="margin-top:8px"></div>
+    </div>
+    <div class="modal-foot"><button class="btn ghost" onclick="closeProvModal()">Cancel</button><button class="btn primary" onclick="saveProvider()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Create card</button></div>
   </div>
 </div>
 
@@ -513,11 +619,11 @@
 <script>
 /* ============================================================
    ============  DOMAIN  (portable → Next2MCL spec)  ==========
-   Αυτό το block είναι framework-agnostic: μεταφέρεται 1:1 σε
-   lib/lifecycle.ts (TypeScript) στο MCL. Δες companion .md.
+   This block is framework-agnostic: ported 1:1 to
+   lib/lifecycle.ts (TypeScript) in the MCL. See companion .md.
    ============================================================ */
 
-// 8 lifecycle steps ⇄ τα 8 βήματα του εγγράφου (18 May 2026)
+// 8 lifecycle steps ⇄ the 8 steps of the procedure (18 May 2026)
 const STEPS = [
   {key:'request',   cap:'Request',         no:1},
   {key:'membership',cap:'Membership',      no:2},
@@ -537,11 +643,13 @@ const RULES = {
   autoApprovePrelim: c => !c.inpatient && c.estAmount>0 && c.estAmount <= RULES.PRELIM_AUTO_LIMIT,
   // step 5: required documents by case type
   requiredDocs: c => c.inpatient
-      ? [{k:'d0',t:'Medical report',req:true},{k:'d1',t:'Itemized invoice (ή final SOA)',req:true}]
+      ? [{k:'d0',t:'Medical report',req:true},{k:'d1',t:'Itemized invoice (or final SOA)',req:true}]
       : [{k:'d0',t:'Medical abstract'+(c.amount>5000?' (>Php5,000 — required)':' (optional ≤Php5,000)'),req:c.amount>5000},
          {k:'d1',t:'Invoice',req:true}],
   // step 3: availment gate
   noAvailment: (c,m) => c.inpatient ? m.amblLeft<=0 : m.oamblLeft<=0,
+  // step 4 exception: ER (1.1 & 1.2) cannot be pre-authorised -> no Preliminary LOA
+  skipsPrelim: c => !!c.emergency,
 };
 
 /* --- CONFIG (local build; editable by finance/ops) --- */
@@ -582,20 +690,67 @@ function genLoa(){return Math.random().toString(36).slice(2,9).toUpperCase();}
 function genTrans(){return '26'+Math.floor(100000+Math.random()*899999);}
 
 /* ============================================================
-   SEED DATA — φανταστικό (maritime / Filipino · HPDC Manila)
+   SEED DATA — fictional (maritime / Filipino · HPDC Manila)
    ============================================================ */
 const PROVIDERS = [
-  {id:'MDH', name:'Manila Doctors Hospital', loc:'Ermita, Manila', kind:'clinic', moa:'active', tier:'Tier 1', rate:'Direct billing'},
-  {id:'SLM', name:"St. Luke's Medical Center", loc:'Quezon City', kind:'clinic', moa:'active', tier:'Tier 1', rate:'Direct billing'},
-  {id:'MCM', name:'Metro Cebu Medical Center', loc:'Cebu City', kind:'clinic', moa:'active', tier:'Tier 2', rate:'Direct billing'},
-  {id:'CDH', name:"Cebu Doctors' University Hosp.", loc:'Cebu City', kind:'clinic', moa:'pending', tier:'Tier 2', rate:'Reimbursable'},
-  {id:'MKT', name:'Makati Medical Center', loc:'Makati', kind:'clinic', moa:'active', tier:'Tier 1', rate:'Direct billing'},
+  {id:'MDH', name:'Manila Doctors Hospital', loc:'Ermita, Manila', kind:'clinic', facilityType:'Hospital', level:'3', moa:'active', moaFrom:'2024-01-15', moaTo:'2026-12-31', tier:'Tier 1', rate:'Direct billing',
+   lto:'LTO-NCR-2024-04521', ltoExp:'2026-09-30', pan:'HCI-0001-2345-67', panExp:'2026-12-31', tin:'004-521-118-000',
+   er247:true, paymentTerms:'Net 30', roomRate:'Private Php 4,500/day',
+   address:'667 United Nations Ave, Ermita, Manila, NCR', phone:'+63 2 8558 0888', email:'billing@maniladoctors.com.ph', officer:'Ma. Teresa Aquino — Billing',
+   bankName:'BDO Unibank', bankAcct:'Manila Doctors Hospital Inc.', bankNo:'0012-3456-7890',
+   services:['Emergency 24/7','Internal Medicine','Surgery','Cardiology','Diagnostics']},
+  {id:'SLM', name:"St. Luke's Medical Center", loc:'Quezon City', kind:'clinic', facilityType:'Hospital', level:'4', moa:'active', moaFrom:'2023-06-01', moaTo:'2026-05-31', tier:'Tier 1', rate:'Direct billing',
+   lto:'LTO-NCR-2023-00112', ltoExp:'2026-06-30', pan:'HCI-0001-0099-12', panExp:'2026-06-30', tin:'001-009-912-000',
+   er247:true, paymentTerms:'Net 30', roomRate:'Private Php 7,800/day',
+   address:'279 E. Rodriguez Sr. Ave, Quezon City, NCR', phone:'+63 2 8723 0101', email:'claims@stlukes.com.ph', officer:'Rafael Ong — Billing',
+   bankName:'BPI', bankAcct:"St. Luke's Medical Center Inc.", bankNo:'1234-0099-8821',
+   services:['Emergency 24/7','Oncology','Cardiology','Neurosurgery','Teaching hospital']},
+  {id:'MCM', name:'Metro Cebu Medical Center', loc:'Cebu City', kind:'clinic', facilityType:'Hospital', level:'2', moa:'active', moaFrom:'2024-03-10', moaTo:'2027-03-09', tier:'Tier 2', rate:'Direct billing',
+   lto:'LTO-R7-2024-02233', ltoExp:'2026-12-31', pan:'HCI-0007-4421-08', panExp:'2026-12-31', tin:'007-442-108-000',
+   er247:true, paymentTerms:'Net 45', roomRate:'Private Php 3,200/day',
+   address:'Cebu Business Park, Cebu City, Region VII', phone:'+63 32 255 5555', email:'billing@metrocebumed.ph', officer:'Liza Tan — Billing',
+   bankName:'Metrobank', bankAcct:'Metro Cebu Medical Center Inc.', bankNo:'0077-4421-0080',
+   services:['Emergency 24/7','General Medicine','Obstetrics','Pediatrics']},
+  {id:'CDH', name:"Cebu Doctors' University Hosp.", loc:'Cebu City', kind:'clinic', facilityType:'Hospital', level:'3', moa:'pending', moaFrom:'', moaTo:'', tier:'Tier 2', rate:'Reimbursable',
+   lto:'LTO-R7-2023-01987', ltoExp:'2026-08-31', pan:'HCI-0007-0211-55', panExp:'2026-08-31', tin:'007-021-155-000',
+   er247:true, paymentTerms:'Reimbursement', roomRate:'Private Php 3,800/day',
+   address:'Osmeña Blvd, Cebu City, Region VII', phone:'+63 32 255 5780', email:'info@cebudoctorshospital.ph', officer:'(MOA pending — no direct billing)',
+   bankName:'—', bankAcct:'—', bankNo:'—',
+   services:['Emergency','Surgery','Diagnostics','Teaching hospital']},
+  {id:'MKT', name:'Makati Medical Center', loc:'Makati', kind:'clinic', facilityType:'Hospital', level:'4', moa:'active', moaFrom:'2022-11-01', moaTo:'2026-10-31', tier:'Tier 1', rate:'Direct billing',
+   lto:'LTO-NCR-2022-00045', ltoExp:'2026-11-30', pan:'HCI-0001-0001-23', panExp:'2026-11-30', tin:'001-000-123-000',
+   er247:true, paymentTerms:'Net 30', roomRate:'Private Php 8,500/day',
+   address:'2 Amorsolo St, Legazpi Village, Makati, NCR', phone:'+63 2 8888 8999', email:'corporate.billing@makatimed.net.ph', officer:'Andrea Reyes — Corporate Billing',
+   bankName:'BDO Unibank', bankAcct:'Medical Doctors Inc. (Makati Med)', bankNo:'0001-0001-2300',
+   services:['Emergency 24/7','Cardiac surgery','Oncology','Transplant','Teaching hospital']},
+  {id:'HPD', name:'Hi-Precision Diagnostics', loc:'Ermita, Manila', kind:'clinic', facilityType:'Diagnostic', labClass:'Tertiary', moa:'active', moaFrom:'2024-02-01', moaTo:'2026-12-31', tier:'Tier 2', rate:'Direct billing',
+   lto:'LTO-LAB-NCR-2024-00781', ltoExp:'2026-12-31', pan:'HCI-LAB-0001-7781', panExp:'2026-12-31', tin:'221-778-100-000',
+   er247:false, paymentTerms:'Net 30', roomRate:'—',
+   address:'United Nations Ave, Ermita, Manila, NCR', phone:'+63 2 8741 7777', email:'corporate@hi-precision.com.ph', officer:'Joel Santos — Corporate',
+   bankName:'BPI', bankAcct:'Hi-Precision Diagnostics Inc.', bankNo:'3300-7781-0021',
+   services:['Clinical laboratory','Imaging / X-ray','CT & MRI','ECG','Drug testing']},
 ];
 const DOCTORS = [
-  {id:'DR1', name:'Dr. Elena Villanueva', loc:'Internal Medicine · Manila Doctors', kind:'doctor', moa:'active', tier:'Accredited', rate:'PF capped'},
-  {id:'DR2', name:'Dr. Ramon Bautista', loc:"Cardiology · St. Luke's", kind:'doctor', moa:'active', tier:'Accredited', rate:'PF capped'},
-  {id:'DR3', name:'Dr. Grace Lim', loc:'Pediatrics · Metro Cebu', kind:'doctor', moa:'active', tier:'Accredited', rate:'PF capped'},
-  {id:'DR4', name:'Dr. Antonio Cruz', loc:'Orthopedics · Makati Med', kind:'doctor', moa:'pending', tier:'Accredited', rate:'Per visit'},
+  {id:'DR1', name:'Dr. Elena Villanueva', loc:'Internal Medicine · Manila Doctors', kind:'doctor', specialty:'Internal Medicine', subspecialty:'—', hospital:'Manila Doctors Hospital', schedule:'Mon–Fri 09:00–13:00',
+   moa:'active', moaFrom:'2024-01-20', moaTo:'2026-12-31', tier:'Accredited', rate:'PF capped',
+   prc:'0123456', prcExp:'2027-03-31', ptr:'PTR-MNL-7788452', ptrYear:'2026', s2:null, tin:'214-556-001-000', pan:'HCP-009-1234567-8', board:'Philippine College of Physicians (PCP)',
+   phone:'+63 917 555 0101', email:'e.villanueva@maniladoctors.com.ph',
+   bankName:'BPI', bankAcct:'Elena Villanueva, MD', bankNo:'9001-2345-6789'},
+  {id:'DR2', name:'Dr. Ramon Bautista', loc:"Cardiology · St. Luke's", kind:'doctor', specialty:'Cardiology', subspecialty:'Interventional', hospital:"St. Luke's Medical Center", schedule:'Tue/Thu 14:00–18:00',
+   moa:'active', moaFrom:'2023-09-01', moaTo:'2026-08-31', tier:'Accredited', rate:'PF capped',
+   prc:'0098231', prcExp:'2026-09-30', ptr:'PTR-QC-5521900', ptrYear:'2026', s2:'S2-NCR-2026-04412', tin:'118-220-771-000', pan:'HCP-009-0982310-4', board:'Philippine Heart Association (PHA)',
+   phone:'+63 917 555 0202', email:'r.bautista@stlukes.com.ph',
+   bankName:'BDO Unibank', bankAcct:'Ramon Bautista, MD', bankNo:'0098-2310-4456'},
+  {id:'DR3', name:'Dr. Grace Lim', loc:'Pediatrics · Metro Cebu', kind:'doctor', specialty:'Pediatrics', subspecialty:'Neonatology', hospital:'Metro Cebu Medical Center', schedule:'Mon–Sat 10:00–15:00',
+   moa:'active', moaFrom:'2024-04-01', moaTo:'2027-03-31', tier:'Accredited', rate:'PF capped',
+   prc:'0144872', prcExp:'2027-06-30', ptr:'PTR-CEB-3390021', ptrYear:'2026', s2:'S2-R7-2026-00891', tin:'307-441-220-000', pan:'HCP-007-0144872-1', board:'Philippine Pediatric Society (PPS)',
+   phone:'+63 917 555 0303', email:'g.lim@metrocebumed.ph',
+   bankName:'Metrobank', bankAcct:'Grace Lim, MD', bankNo:'0144-8721-0033'},
+  {id:'DR4', name:'Dr. Antonio Cruz', loc:'Orthopedics · Makati Med', kind:'doctor', specialty:'Orthopedic Surgery', subspecialty:'Trauma', hospital:'Makati Medical Center', schedule:'Wed/Fri 08:00–12:00',
+   moa:'pending', moaFrom:'', moaTo:'', tier:'Accredited', rate:'Per visit',
+   prc:'0076540', prcExp:'2026-12-31', ptr:'PTR-MKT-1120876', ptrYear:'2026', s2:'S2-NCR-2026-07765', tin:'009-118-540-000', pan:'(accreditation pending)', board:'Philippine Orthopedic Association (POA)',
+   phone:'+63 917 555 0404', email:'a.cruz@makatimed.net.ph',
+   bankName:'(MOA pending)', bankAcct:'—', bankNo:'—'},
 ];
 const MEMBERS = {
   'PRS-100482':{name:'Reyes, Mariano', role:'AB Seaman · Aegean Crewing', relation:'Principal member',
@@ -632,7 +787,7 @@ let CASES = [
     timeline:[{t:'Request received (message)',m:'02 Jun · 09:15'},{t:'Membership verified',m:'02 Jun · 09:30'},{t:'Availment confirmed',m:'02 Jun · 09:41'},{t:'Preliminary LOA auto-approved',m:'02 Jun · 09:42'},{t:'Invoice + abstract received',m:'05 Jun · 13:20'}]},
   {ref:'PC-2605-118', member:'PRS-100204', provider:'MKT', emergency:true, inpatient:true,
     channel:'call', source:'provider', estAmount:140000, amount:152000, stage:'payment', dx:'NSTEMI — cardiac admission',
-    timeline:[{t:'ER request received (call)',m:'24 May · 03:10'},{t:'Membership verified',m:'24 May · 03:22'},{t:'Availment confirmed — ER',m:'24 May · 03:35'},{t:'Preliminary LOA issued',m:'24 May · 03:50'},{t:'Final SOA + report received',m:'01 Jun · 10:00'},{t:'Final LOA issued',m:'02 Jun · 09:00'}]},
+    timeline:[{t:'ER request received (call)',m:'24 May · 03:10'},{t:'Membership verified',m:'24 May · 03:22'},{t:'Availment confirmed — ER',m:'24 May · 03:35'},{t:'ER → no Preliminary LOA (proceeds to Final LOA)',m:'24 May · 03:50'},{t:'Final SOA + report received',m:'01 Jun · 10:00'},{t:'Final LOA issued',m:'02 Jun · 09:00'}]},
   {ref:'PC-2606-016', member:'PRS-100482', provider:'MDH', emergency:true, inpatient:true,
     channel:'call', source:'provider', estAmount:0, amount:0, stage:'availment', dx:'ER — chest trauma, fall on deck',
     timeline:[{t:'ER request received via provider (call)',m:'09 Jun · 22:05'},{t:'Membership verified',m:'09 Jun · 22:14'}]},
@@ -650,7 +805,7 @@ CASES.forEach(c=>{
 /* ============================================================
    STATE + HELPERS
    ============================================================ */
-let view='dashboard', currentRef=null, netTab='clinic';
+let view='dashboard', currentRef=null, currentProv=null, netTab='clinic';
 let gateState={}, docState={}, draft={channel:'',source:'',emergency:null,inpatient:null};
 let caseSeq=17;
 
@@ -658,6 +813,11 @@ const $ = s => document.querySelector(s);
 const php = n => 'Php ' + Number(n).toLocaleString('en-US');
 const provById = id => [...PROVIDERS,...DOCTORS].find(p=>p.id===id);
 function caseType(c){return (c.emergency?'ER':'Non-ER')+' '+(c.inpatient?'Inpatient':'Outpatient');}
+function catCode(c){return c.emergency?(c.inpatient?'1.1':'1.2'):(c.inpatient?'1.3':'1.4');}
+function trailStamp(){const now=new Date();return now.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+' · '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});}
+function fmtDate(d){if(!d)return '';const p=d.split('-');if(p.length<3)return d;const M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return `${p[2]} ${M[parseInt(p[1])-1]} ${p[0]}`;}
+function catLetters(c){return (c.emergency?'E':'N')+(c.inpatient?'I':'O');}
+function caseId(c){return `${c.ref}-${catLetters(c)}`;}
 function svgCheck(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>';}
 function chev(){return '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>';}
 function magicIcon(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';}
@@ -669,12 +829,14 @@ function go(v,e){if(e)e.preventDefault();view=v;currentRef=null;
   document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('active',a.dataset.view===v));
   $('#side').classList.remove('open');$('#scrim').classList.remove('open');render();}
 function openCase(ref){currentRef=ref;view='case';render();window.scrollTo(0,0);}
-const TITLES={dashboard:['Operations / Case Board','Case Board'],network:['Operations / Network','Accredited Network'],ledger:['Operations / Availment Ledger','Availment Ledger'],procedure:['Reference / Procedure','Procedure & Coverage'],guide:['Reference / Guide','User Guide'],export:['Operations / Export','CBMS Utilization Export'],case:['Operations / Case Board / Detail','Case Detail']};
+function openTrack(ref){currentRef=ref;view='track';render();window.scrollTo(0,0);}
+function openProvider(id){currentProv=id;view='provider';render();window.scrollTo(0,0);}
+const TITLES={dashboard:['Operations / Case Board','Case Board'],network:['Operations / Network','Accredited Network'],ledger:['Operations / Availment Ledger','Availment Ledger'],procedure:['Reference / Procedure','Procedure & Coverage'],guide:['Reference / Guide','User Guide'],export:['Operations / Export','CBMS Utilization Export'],case:['Operations / Case Board / Detail','Case Detail'],track:['Operations / Case Board / Tracking','Case Tracking'],provider:['Operations / Network / Provider','Provider Card']};
 function render(){
   const [crumb,title]=TITLES[view];
   $('#crumb').textContent=crumb;$('#title').textContent=title;
   $('#nav-cases').textContent=CASES.filter(c=>c.stage!=='ledger').length;
-  ({dashboard:renderDashboard,network:renderNetwork,ledger:renderLedger,procedure:renderProcedure,guide:renderGuide,export:renderExport,case:renderCase}[view])();
+  ({dashboard:renderDashboard,network:renderNetwork,ledger:renderLedger,procedure:renderProcedure,guide:renderGuide,export:renderExport,case:renderCase,track:renderTrack,provider:renderProvider}[view])();
 }
 
 /* ============================================================
@@ -687,20 +849,20 @@ function renderDashboard(){
   const erLow=CASES.filter(c=>c.emergency&&MEMBERS[c.member].amblLeft<10000).length;
 
   let h=`<div class="stats">
-    <div class="stat card"><div class="k">Active cases</div><div class="v">${active.length}</div><div class="meta">σε εξέλιξη στο δίκτυο</div><div class="stat-accent teal"></div></div>
-    <div class="stat card"><div class="k">Need action now</div><div class="v">${needAttn}</div><div class="meta">request / availment βήμα</div><div class="stat-accent gold"></div></div>
+    <div class="stat card"><div class="k">Active cases</div><div class="v">${active.length}</div><div class="meta">in progress across the network</div><div class="stat-accent teal"></div></div>
+    <div class="stat card"><div class="k">Need action now</div><div class="v">${needAttn}</div><div class="meta">request / availment step</div><div class="stat-accent gold"></div></div>
     <div class="stat card"><div class="k">Awaiting payment</div><div class="v">${awaitingPay}</div><div class="meta">final LOA → MOA payout</div><div class="stat-accent green"></div></div>
-    <div class="stat card"><div class="k">ER · low availment</div><div class="v">${erLow}</div><div class="meta"><b class="alert">inform principal</b> πιθανώς</div><div class="stat-accent coral"></div></div>
+    <div class="stat card"><div class="k">ER · low availment</div><div class="v">${erLow}</div><div class="meta"><b class="alert">inform principal</b> likely</div><div class="stat-accent coral"></div></div>
   </div>`;
-  h+=`<div class="section-head"><h3>Active cases</h3><span class="hint">Πάτα ένα case για το πλήρες lifecycle</span><div class="spacer"></div><button class="btn primary sm" onclick="openModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>New request</button></div>`;
+  h+=`<div class="section-head"><h3>Active cases</h3><span class="hint">Click a case for its full lifecycle</span><div class="spacer"></div><button class="btn primary sm" onclick="openModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>New request</button></div>`;
   h+=`<div class="caselist">`;
   active.forEach(c=>{
     const m=MEMBERS[c.member];const si=stepIndex(c.stage);const stepObj=STEPS[si];
     let rail='<div class="mini-rail">';
-    STEPS.forEach((s,i)=>{let cls=i<si?'done':(i===si?'now':'');if(i===si&&c.stage==='availment')cls='block';rail+=`<span class="seg ${cls}"></span>`;});
+    STEPS.forEach((s,i)=>{let cls=i<si?'done':(i===si?'now':'');if(i===si&&c.stage==='availment')cls='block';if(s.key==='prelim'&&RULES.skipsPrelim(c))cls='skipped';rail+=`<span class="seg ${cls}"></span>`;});
     rail+='</div>';
     h+=`<div class="case card" onclick="openCase('${c.ref}')">
-      <div class="who"><div class="nm">${m.name}</div><div class="rl">${m.role}</div><div class="id">${c.ref} · ${c.member}</div></div>
+      <div class="who"><div class="nm">${m.name}</div><div class="rl">${m.role}</div><div class="id">${caseId(c)} · ${c.member}</div></div>
       <div class="prov"><div class="p">${provById(c.provider).name}</div><div class="amt">${c.amount?php(c.amount):'amount TBD'} · ${c.dx}</div>
         <div class="tags"><span class="tag ${c.emergency?'er':'noner'}">${c.emergency?'ER':'Non-ER'}</span><span class="tag ${c.inpatient?'inp':'outp'}">${c.inpatient?'Inpatient':'Outpatient'}</span><span class="tag chan">${c.channel==='call'?'☎ call':'✉ message'}</span></div>
       </div>
@@ -721,12 +883,12 @@ function renderCase(){
   const m=MEMBERS[c.member];const si=stepIndex(c.stage);const prov=provById(c.provider);
   const progPct=(si/(STEPS.length-1))*100;
   let rail=`<div class="rail"><div class="prog" style="width:calc(${progPct}% - ${progPct*0.48}px)"></div>`;
-  STEPS.forEach((s,i)=>{let cls=i<si?'done':(i===si?'now':'');let gate=(i===si&&c.stage==='availment')?' gate':'';let inner=i<si?svgCheck():s.no;rail+=`<div class="station ${cls}${gate}"><div class="node">${inner}</div><div class="cap">${s.cap}</div></div>`;});
+  STEPS.forEach((s,i)=>{const skip=s.key==='prelim'&&RULES.skipsPrelim(c);let cls=skip?'skipped':(i<si?'done':(i===si?'now':''));let gate=(!skip&&i===si&&c.stage==='availment')?' gate':'';let inner=skip?'–':(i<si?svgCheck():s.no);rail+=`<div class="station ${cls}${gate}"><div class="node">${inner}</div><div class="cap">${s.cap}${skip?'<span class="na">N/A · ER</span>':''}</div></div>`;});
   rail+=`</div>`;
   function bar(lab,left,total){const pct=total?Math.max(2,Math.round(left/total*100)):0;const cls=left<=0?'zero':(left/total<0.2?'low':'');return `<div class="avail-bar"><div class="ab-top"><span class="lab">${lab}</span><span class="val">${php(left)} / ${php(total)}</span></div><div class="track"><div class="fill ${cls}" style="width:${pct}%"></div></div></div>`;}
 
   let h=`<a class="back" href="#" onclick="go('dashboard',event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>Case Board</a>`;
-  h+=`<div class="detail-head"><div class="h-main"><h2>${m.name}</h2><div class="sub"><span class="id">${c.ref}</span><span class="tag ${c.emergency?'er':'noner'}">${c.emergency?'ER':'Non-ER'}</span><span class="tag ${c.inpatient?'inp':'outp'}">${c.inpatient?'Inpatient':'Outpatient'}</span><span class="tag chan">${c.channel==='call'?'☎ call':'✉ message'} · ${c.source}</span><span style="font-size:12.5px;color:var(--slate-2)">${c.dx}</span></div></div></div>`;
+  h+=`<div class="detail-head"><div class="h-main"><h2>${m.name}</h2><div class="sub"><span class="id" title="Unique ID · ${catLetters(c)} = ${caseType(c)}">${caseId(c)}</span><span class="tag cat">${catCode(c)}</span><span class="tag ${c.emergency?'er':'noner'}">${c.emergency?'ER':'Non-ER'}</span><span class="tag ${c.inpatient?'inp':'outp'}">${c.inpatient?'Inpatient':'Outpatient'}</span><span class="tag chan">${c.channel==='call'?'☎ call':'✉ message'} · ${c.source}</span><span style="font-size:12.5px;color:var(--slate-2)">${c.dx}</span></div></div><button class="btn ghost sm track-btn" onclick="openTrack('${c.ref}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-6-5.7-6-10a6 6 0 0112 0c0 4.3-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg>Case Tracking</button></div>`;
   h+=`<div class="voyage card">${rail}</div>`;
   h+=`<div class="detail-grid"><div class="col-main">`+stepPanel(c,m,prov)+`</div><div class="col-side">`;
   h+=`<div class="panel card"><h4>Member</h4><dl class="facts">
@@ -742,6 +904,10 @@ function renderCase(){
       <dt>LOA No. · TRN</dt><dd class="mono">${c.loaNo} · ${c.transNo}</dd>
       <dt>Member ID · Corporate</dt><dd class="mono" style="font-size:11.5px">${m.amaphilId} · ${m.corporate}</dd>
     </dl>${(c.emergency&&c.inpatient)?`<button class="btn ghost sm" style="margin-top:12px" onclick="toggleSplit('${c.ref}')">${c.splitAdmission?'✓ ':''}ER→admission export line</button>`:''}</div>`;
+  h+=`<div class="panel card"><h4>Category (1.1–1.4)</h4><div class="cat-now"><b>${catCode(c)}</b> · ${caseType(c)}</div>
+      <div class="seg-pick two" style="margin-top:10px"><button class="${c.emergency?'sel':''}" onclick="reclassify('${c.ref}','emergency',true)">ER</button><button class="${!c.emergency?'sel':''}" onclick="reclassify('${c.ref}','emergency',false)">Non-ER</button></div>
+      <div class="seg-pick two" style="margin-top:6px"><button class="${c.inpatient?'sel':''}" onclick="reclassify('${c.ref}','inpatient',true)">Inpatient</button><button class="${!c.inpatient?'sel':''}" onclick="reclassify('${c.ref}','inpatient',false)">Outpatient</button></div>
+      <div class="cat-note">Changes during the flow — every change is logged in <b>Tracking</b>.${c.emergency?' <span style="color:var(--coral)">ER → no Preliminary LOA.</span>':''}</div></div>`;
   h+=`<div class="panel card"><h4>Provider</h4><dl class="facts"><dt>Accredited provider</dt><dd>${prov.name}</dd><dt>Location</dt><dd>${prov.loc}</dd><dt>MOA</dt><dd>${prov.moa==='active'?'Active · '+prov.rate:'⚠ Pending signature'}</dd><dt>Case amount</dt><dd class="mono">${c.amount?php(c.amount):'TBD on discharge'}</dd></dl></div>`;
   h+=`<div class="panel card"><h4>Audit trail</h4><div class="timeline">`;
   c.timeline.slice().reverse().forEach(ev=>{h+=`<div class="ev"><div class="pip"></div><div><div class="tx">${ev.t}</div><div class="tm">${ev.m}</div></div></div>`;});
@@ -753,35 +919,35 @@ function stepPanel(c,m,prov){
   const step=STEPS[stepIndex(c.stage)];
   const head=`<div class="panel card"><h4><span class="step-no">${step.no}</span>${step.cap}</h4>`;
 
-  if(c.stage==='request') return head+`<div class="desc">Αίτημα ελήφθη (${c.channel==='call'?'phone call':'message'}, από ${c.source==='patient'?'patient/member':'accredited provider'}). Επιβεβαίωσε ιδιότητα μέλους πριν προχωρήσεις.</div>
-    <div class="actionzone"><div style="font-size:13px;color:var(--slate);margin-bottom:6px">Έλεγχος Seafarer ID <b style="font-family:var(--mono);color:var(--teal-d)">${c.member}</b> στο master registry.</div>
-    <div class="magic-row"><button class="btn primary" onclick="advance('${c.ref}','Membership verified')">${magicIcon()}Verify membership</button><span class="magic-note">Magic Button → επόμενο λογικό βήμα.</span></div></div></div>`;
+  if(c.stage==='request') return head+`<div class="desc">Request received (${c.channel==='call'?'phone call':'message'}, from ${c.source==='patient'?'patient/member':'accredited provider'}). Verify membership before proceeding.</div>
+    <div class="actionzone"><div style="font-size:13px;color:var(--slate);margin-bottom:6px">Check Seafarer ID <b style="font-family:var(--mono);color:var(--teal-d)">${c.member}</b> in the master registry.</div>
+    <div class="magic-row"><button class="btn primary" onclick="advance('${c.ref}','Membership verified')">${magicIcon()}Verify membership</button><span class="magic-note">Magic Button → next logical step.</span></div></div></div>`;
 
-  if(c.stage==='membership') return head+`<div class="desc">Το μέλος επιβεβαιώθηκε. Προσδιόρισε remaining availment (AMBL · outpatient AMBL · inner limits).</div>
-    <div class="actionzone"><div class="magic-row"><button class="btn primary" onclick="advance('${c.ref}','Availment determination opened')">${magicIcon()}Check availment</button><span class="magic-note">Ανοίγει το forced-compliance gate.</span></div></div></div>`;
+  if(c.stage==='membership') return head+`<div class="desc">Member verified. Determine remaining availment (AMBL · outpatient AMBL · inner limits).</div>
+    <div class="actionzone"><div class="magic-row"><button class="btn primary" onclick="advance('${c.ref}','Availment determination opened')">${magicIcon()}Check availment</button><span class="magic-note">Opens the forced-compliance gate.</span></div></div></div>`;
 
   if(c.stage==='availment'){
     const g=gateState[c.ref]||(gateState[c.ref]={cbms:false,claims:false});
     const noAvail=RULES.noAvailment(c,m);const ready=g.cbms&&g.claims;
-    let body=`<div class="desc">Forced compliance: δεν εκδίδεται LOA αν το ledger δεν είναι ενημερωμένο ή υπάρχουν unencoded claims. Το μέλος ενημερώνεται για το remaining benefit.</div><div class="actionzone">`;
-    body+=`<div class="check-item ${g.cbms?'on':''}" onclick="flipGate('${c.ref}','cbms')"><span class="cb">${svgCheck()}</span><span class="ct">CBMS / ledger ενημερωμένο για αυτό το μέλος</span><span class="req">required</span></div>`;
-    body+=`<div class="check-item ${g.claims?'on':''}" onclick="flipGate('${c.ref}','claims')"><span class="cb">${svgCheck()}</span><span class="ct">Κανένα pending claim προς encoding</span><span class="req">required</span></div>`;
-    if(noAvail&&c.emergency){body+=`<div class="gate-warn block" style="margin-top:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg><div><div class="gw-t">ER admission · μηδενικό availment</div><div class="gw-b">Κατά το έγγραφο: σε ER χωρίς availment ενημερώνουμε τον principal. Δεν μπλοκάρεται η εισαγωγή — προχωρά με escalation.</div></div></div>`;}
-    else if(noAvail){body+=`<div class="gate-warn block" style="margin-top:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg><div><div class="gw-t">Δεν υπάρχει διαθέσιμο availment</div><div class="gw-b">Non-ER χωρίς υπόλοιπο — δεν εκδίδεται LOA. Ενημέρωσε το μέλος για το εξαντλημένο όριο.</div></div></div>`;}
-    if(!ready){body+=`<div class="gate-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg><div><div class="gw-t">Gate κλειστό</div><div class="gw-b">Ολοκλήρωσε τα δύο compliance checks για να ξεκλειδώσει η preliminary LOA.</div></div></div>`;}
+    let body=`<div class="desc">Forced compliance: no LOA is issued if the ledger isn't updated or there are unencoded claims. The member is informed of the remaining benefit.</div><div class="actionzone">`;
+    body+=`<div class="check-item ${g.cbms?'on':''}" onclick="flipGate('${c.ref}','cbms')"><span class="cb">${svgCheck()}</span><span class="ct">CBMS / ledger updated for this member</span><span class="req">required</span></div>`;
+    body+=`<div class="check-item ${g.claims?'on':''}" onclick="flipGate('${c.ref}','claims')"><span class="cb">${svgCheck()}</span><span class="ct">No pending claim for encoding</span><span class="req">required</span></div>`;
+    if(noAvail&&c.emergency){body+=`<div class="gate-warn block" style="margin-top:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg><div><div class="gw-t">ER admission · zero availment</div><div class="gw-b">Per the procedure: for ER with no availment we inform the principal. Admission is not blocked — proceed with escalation.</div></div></div>`;}
+    else if(noAvail){body+=`<div class="gate-warn block" style="margin-top:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg><div><div class="gw-t">No available availment</div><div class="gw-b">Non-ER with no balance — no LOA issued. Inform the member that the limit is exhausted.</div></div></div>`;}
+    if(!ready){body+=`<div class="gate-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg><div><div class="gw-t">Gate locked</div><div class="gw-b">Complete the two compliance checks to proceed with the case.</div></div></div>`;}
     const canProceed=ready&&!(noAvail&&!c.emergency);const escalate=ready&&noAvail&&c.emergency;
     body+=`<div class="magic-row">`;
-    if(escalate) body+=`<button class="btn gold" onclick="advance('${c.ref}','Principal informed — ER no availment','Principal ενημερώθηκε. Συνεχίζει σε preliminary LOA.')">${magicIcon()}Inform principal & proceed</button>`;
+    if(escalate) body+=`<button class="btn gold" onclick="advance('${c.ref}','Principal informed — ER no availment','Principal informed. Proceeds without Preliminary LOA (ER).')">${magicIcon()}Inform principal & proceed</button>`;
     else body+=`<button class="btn primary" ${canProceed?'':'disabled'} onclick="advance('${c.ref}','Availment confirmed — member informed')">${magicIcon()}Confirm & continue</button>`;
-    body+=`<span class="magic-note">Member ενημερώνεται για το remaining benefit.</span></div></div>`;
+    body+=`<span class="magic-note">Member is informed of the remaining benefit.</span></div></div>`;
     return head+body;
   }
 
   if(c.stage==='prelim'){
     const auto=RULES.autoApprovePrelim(c);
-    let body=`<div class="desc">Έκδοση Preliminary LOA. Αποστέλλεται και στους δύο αποδέκτες.</div><div class="actionzone">`;
-    if(auto){body+=`<div class="auto-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Auto-approved — outpatient ${php(c.estAmount)} ≤ Php 5,000</div><div style="font-size:12.5px;color:var(--slate-2)">Καμία χειροκίνητη έγκριση κατά το έγγραφο.</div>`;}
-    else{body+=`<div class="gate-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg><div><div class="gw-t">Subject to Polaris Admin control</div><div class="gw-b">${c.inpatient?'Inpatient case':'Outpatient > Php 5,000'} — χρειάζεται χειροκίνητη έγκριση χειριστή.</div></div></div>`;}
+    let body=`<div class="desc">Issue Preliminary LOA. Sent to both recipients.</div><div class="actionzone">`;
+    if(auto){body+=`<div class="auto-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Auto-approved — outpatient ${php(c.estAmount)} ≤ Php 5,000</div><div style="font-size:12.5px;color:var(--slate-2)">No manual approval per the procedure.</div>`;}
+    else{body+=`<div class="gate-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg><div><div class="gw-t">Subject to Polaris Admin control</div><div class="gw-b">${c.inpatient?'Inpatient case':'Outpatient > Php 5,000'} — requires manual operator approval.</div></div></div>`;}
     body+=`<div class="recip"><span class="rc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>Provider: ${prov.name}</span><span class="rc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>Patient: ${m.name}</span></div>`;
     body+=`<div class="magic-row"><button class="btn ${auto?'primary':'gold'}" onclick="advance('${c.ref}','Preliminary LOA ${auto?'auto-approved':'issued (admin control)'} → provider + patient')">${magicIcon()}${auto?'Issue Preliminary LOA':'Approve & issue LOA'}</button>${auto?'':'<button class="btn ghost" onclick="holdCase()">Hold</button>'}</div></div></div>`;
     return head+body;
@@ -789,30 +955,30 @@ function stepPanel(c,m,prov){
 
   if(c.stage==='discharge'){
     const ds=docState[c.ref]||(docState[c.ref]={});const docs=RULES.requiredDocs(c);
-    let body=`<div class="desc">On discharge — ο provider στέλνει τα παραστατικά. Επιβεβαίωσε λήψη.</div><div class="actionzone">`;
+    let body=`<div class="desc">On discharge — the provider sends the documents. Confirm receipt.</div><div class="actionzone">`;
     docs.forEach(d=>{body+=`<div class="check-item ${ds[d.k]?'on':''} ${d.req?'':'opt'}" onclick="flipDoc('${c.ref}','${d.k}')"><span class="cb">${svgCheck()}</span><span class="ct">${d.t}</span><span class="req">${d.req?'required':'optional'}</span></div>`;});
     const ready=docs.filter(d=>d.req).every(d=>ds[d.k]);
-    body+=`<div class="magic-row" style="margin-top:14px"><button class="btn primary" ${ready?'':'disabled'} onclick="advance('${c.ref}','Discharge documents received')">${magicIcon()}Confirm documents received</button><span class="magic-note">${ready?'Όλα τα required ελήφθησαν.':'Λείπουν required παραστατικά.'}</span></div></div></div>`;
+    body+=`<div class="magic-row" style="margin-top:14px"><button class="btn primary" ${ready?'':'disabled'} onclick="advance('${c.ref}','Discharge documents received')">${magicIcon()}Confirm documents received</button><span class="magic-note">${ready?'All required received.':'Missing required documents.'}</span></div></div></div>`;
     return head+body;
   }
 
-  if(c.stage==='final') return head+`<div class="desc">Έκδοση Final LOA προς provider + patient, βάσει τελικών παραστατικών.</div>
+  if(c.stage==='final') return head+`<div class="desc">Issue Final LOA to provider + patient, based on final documents.</div>
     <div class="actionzone"><dl class="facts" style="margin-bottom:6px"><dt>Final billed amount</dt><dd class="mono">${php(c.amount)}</dd><dt>Against</dt><dd>${c.inpatient?'AMBL (annual)':'Outpatient AMBL'} — remaining ${php(c.inpatient?m.amblLeft:m.oamblLeft)}</dd></dl>
     <div class="recip"><span class="rc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>${prov.name}</span><span class="rc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>${m.name}</span></div>
     <div class="magic-row"><button class="btn primary" onclick="advance('${c.ref}','Final LOA issued → provider + patient')">${magicIcon()}Issue Final LOA</button></div></div></div>`;
 
   if(c.stage==='payment'){
     const ewt=ewtAmt(c), net=netPaid(c);
-    let body=`<div class="desc">Πληρωμή κατά MOA + EWT + bank settlement. Τα bank πεδία τροφοδοτούν τις στήλες του export (PAID CLAIMS / FUNDED LOA).</div><div class="actionzone">`;
+    let body=`<div class="desc">Payment per MOA + EWT + bank settlement. The bank fields feed the export columns (PAID CLAIMS / FUNDED LOA).</div><div class="actionzone">`;
     body+=`<dl class="facts" style="margin-bottom:10px"><dt>Payable to</dt><dd>${prov.name} · per MOA</dd><dt>Actual claims</dt><dd class="mono">${php(c.amount)}</dd></dl>`;
     body+=`<div class="frow"><span>EWT (${(CONFIG.ewtRate*100).toFixed(1)}%)</span><span class="mono">${php(ewt)}</span></div>`;
     body+=`<div class="frow"><span><b>Net paid</b></span><span class="mono" style="font-weight:600">${php(net)}</span></div>`;
     body+=`<div class="bank-grid"><div><label>Bank Ref No.</label><input class="ftext sm" value="${c.bankRef||''}" onchange="setCaseField('${c.ref}','bankRef',this.value)" placeholder="UB…"></div><div><label>Date credited</label><input class="ftext sm" type="date" value="${c.dateCredited||''}" onchange="setCaseField('${c.ref}','dateCredited',this.value)"></div></div>`;
-    body+=`<div class="magic-row"><button class="btn green" onclick="advance('${c.ref}','Payment executed → ledger updated (8.4→8.1)','Πληρωμή καταχωρήθηκε.')">${magicIcon()}Mark paid & update ledger</button></div></div></div>`;
+    body+=`<div class="magic-row"><button class="btn green" onclick="advance('${c.ref}','Payment executed → ledger updated (8.4→8.1)','Payment recorded.')">${magicIcon()}Mark paid & update ledger</button></div></div></div>`;
     return head+body;
   }
 
-  return head+`<div class="done-stamp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Case closed — ledger ενημερώθηκε. Remaining availment ξαναμπαίνει στον κύκλο (8.1).</div></div>`;
+  return head+`<div class="done-stamp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Case closed — ledger updated. Remaining availment re-enters the cycle (8.1).</div></div>`;
 }
 
 /* ACTIONS */
@@ -820,13 +986,71 @@ function flipGate(ref,key){const g=gateState[ref]||(gateState[ref]={cbms:false,c
 function flipDoc(ref,key){const d=docState[ref]||(docState[ref]={});d[key]=!d[key];renderCase();}
 function holdCase(){toast('Mockup — hold / escalate flow');}
 function setCaseField(ref,f,v){const c=CASES.find(x=>x.ref===ref);if(c)c[f]=v;}
-function toggleSplit(ref){const c=CASES.find(x=>x.ref===ref);if(c){c.splitAdmission=!c.splitAdmission;toast(c.splitAdmission?'Admission line θα μπει στο export':'Admission line off');renderCase();}}
+function reclassify(ref,field,val){
+  const c=CASES.find(x=>x.ref===ref);if(!c||c[field]===val)return;
+  const before=catCode(c)+' · '+caseType(c);
+  c[field]=val;
+  if(!c.emergency && !c.inpatient){ if(!c.serviceType) c.serviceType='consultation'; } else { c.serviceType=null; }
+  const after=catCode(c)+' · '+caseType(c);
+  c.timeline.push({t:`Re-categorised ${before} → ${after}`,m:trailStamp(),cat:true});
+  toast('✓ Category → '+after);
+  renderCase();
+}
+function caseSearch(q){
+  q=(q||'').trim().toLowerCase(); if(!q) return [];
+  return CASES.filter(c=>{
+    const m=MEMBERS[c.member]||{}; const prov=provById(c.provider)||{};
+    const hay=[caseId(c),c.ref,c.member,m.name,m.amaphilId,m.employeeId,m.corporate,prov.name,prov.loc,c.dx,catCode(c),caseType(c),catLetters(c),c.loaNo,c.transNo,(c.emergency?'ER emergency':'Non-ER'),(c.inpatient?'inpatient':'outpatient'),STEPS[stepIndex(c.stage)].cap].join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+}
+function runCaseSearch(){
+  const inp=$('#case-q'); if(!inp) return; const q=inp.value; const box=$('#case-results'); if(!box) return;
+  if(!q.trim()){box.innerHTML='';return;}
+  const res=caseSearch(q);
+  if(!res.length){box.innerHTML='<div class="ts-empty">No match for «'+q+'».</div>';return;}
+  box.innerHTML=res.slice(0,8).map(c=>{const m=MEMBERS[c.member]||{};const st=STEPS[stepIndex(c.stage)];const cur=c.ref===currentRef;
+    return `<div class="ts-hit${cur?' cur':''}" onclick="openTrack('${c.ref}')"><span class="th-nm">${m.name||c.member}</span><span class="th-ref">${caseId(c)}</span><span class="tag ${c.emergency?'er':'noner'}">${catCode(c)}</span><span class="th-st">Step ${st.no}/8 · ${st.cap}</span></div>`;}).join('')
+    + (res.length>8?`<div class="ts-empty">…and ${res.length-8} more. Narrow the search.</div>`:'');
+}
+function submitCaseSearch(){const inp=$('#case-q'); if(!inp)return; const res=caseSearch(inp.value); if(res.length){openTrack(res[0].ref);} else {runCaseSearch();}}
+function renderTrack(){
+  const c=CASES.find(x=>x.ref===currentRef);if(!c){go('dashboard');return;}
+  const m=MEMBERS[c.member];const prov=provById(c.provider);const si=stepIndex(c.stage);
+  const last=c.timeline[c.timeline.length-1];const stepObj=STEPS[si];
+  const closed=c.stage==='ledger';
+  const prog=(si/(STEPS.length-1))*100;
+  let bar=`<div class="tr-rail"><div class="tr-line"></div><div class="tr-line-fill" style="width:calc((100% - 48px) * ${(prog/100).toFixed(4)})"></div>`;
+  STEPS.forEach((s,i)=>{
+    const skip=s.key==='prelim'&&RULES.skipsPrelim(c);
+    const cls=skip?'skipped':(i<si?'done':(i===si?'now':''));
+    const dt = skip?'' : (i===0 ? fmtDate(c.txnDate) : (i===si ? (last?last.m:'') : ''));
+    bar+=`<div class="tr-stop ${cls}"><div class="tr-dot">${skip?'–':(i<si?svgCheck():'')}</div><div class="tr-cap">${s.cap}${skip?'<span class="na">N/A · ER</span>':''}</div><div class="tr-date">${dt||''}</div></div>`;
+  });
+  bar+=`</div>`;
+  const remark = closed ? 'Case closed — the ledger was updated (8.1).' : 'Next: '+nextActionLabel(c)+'.';
+  let h=`<a class="back" href="#" onclick="openCase('${c.ref}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>Case detail</a>`;
+  h+=`<div class="track-head"><div class="th-titles"><div class="th-kicker">Case details · ${caseId(c)}</div><h2>${m.name}</h2></div><span class="tag cat">${catCode(c)}</span><span class="tag ${c.emergency?'er':'noner'}">${c.emergency?'ER':'Non-ER'}</span><span class="tag ${c.inpatient?'inp':'outp'}">${c.inpatient?'Inpatient':'Outpatient'}</span></div>`;
+  h+=`<div class="card track-search"><div class="ts-row"><svg class="ts-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="case-q" class="ftext" placeholder="Search a case: name, code, provider, diagnosis…" autocomplete="off" oninput="runCaseSearch()" onkeydown="if(event.key==='Enter')submitCaseSearch()"><button class="btn primary" onclick="submitCaseSearch()">Search</button></div><div id="case-results" class="ts-results"></div></div>`;
+  h+=`<div class="card" style="padding:24px 26px 18px;margin-bottom:18px"><div class="track-scroll">${bar}</div></div>`;
+  h+=`<div class="card track-card"><div class="track-scroll"><table class="track-tbl"><thead><tr><th>Member / Patient</th><th>No.</th><th>Status</th><th>Provider</th><th>Request date</th><th>Category</th><th>Remarks</th></tr></thead>
+  <tbody><tr><td><b>${m.name}</b><div class="th-sub">${c.member}</div></td><td class="mono">${caseId(c)}</td><td><span class="tk-badge ${closed?'closed':''}">${stepObj.cap}</span></td><td class="red">${prov.name}</td><td>${fmtDate(c.txnDate)}</td><td><b>${catCode(c)}</b> · ${caseType(c)}</td><td class="muted">${remark}</td></tr></tbody></table></div></div>`;
+  let rows='';
+  c.timeline.forEach(ev=>{rows+=`<tr class="${ev.cat?'cat':''}"><td>${ev.cat?'🔁 ':''}${ev.t}</td><td class="mono">${ev.m}</td><td class="muted">${ev.cat?'category change':'—'}</td></tr>`;});
+  STEPS.forEach((s,i)=>{ if(i<=si)return; if(s.key==='prelim'&&RULES.skipsPrelim(c))return; rows+=`<tr class="pending"><td>${s.cap}</td><td>—</td><td class="muted">pending</td></tr>`;});
+  h+=`<div class="card track-card" style="margin-top:18px"><div class="track-scroll"><table class="track-tbl flow"><thead><tr><th>Case Tracking</th><th>Checkpoint date</th><th>Info</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  h+=`<div class="ledger-note" style="margin-top:16px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg><div>Unique ID: <b>${caseId(c)}</b> — the last 2 letters indicate the category (<b>E</b>=ER / <b>N</b>=Non-ER · <b>I</b>=Inpatient / <b>O</b>=Outpatient). Mockup · demo data · the trail also includes category changes (1.1–1.4).</div></div>`;
+  $('#content').innerHTML=h;
+}
+function toggleSplit(ref){const c=CASES.find(x=>x.ref===ref);if(c){c.splitAdmission=!c.splitAdmission;toast(c.splitAdmission?'Admission line added to export':'Admission line off');renderCase();}}
 function advance(ref,trailMsg,customToast){
   const c=CASES.find(x=>x.ref===ref);if(!c)return;const si=stepIndex(c.stage);
   if(si<STEPS.length-1){
     if(c.stage==='discharge'&&!c.dischargeDate)c.dischargeDate=new Date().toISOString().slice(0,10);
     if(c.stage==='payment'){const m=MEMBERS[c.member];if(c.inpatient)m.amblLeft=Math.max(0,m.amblLeft-c.amount);else m.oamblLeft=Math.max(0,m.oamblLeft-c.amount);m.paid=(m.paid||0)+c.amount;}
-    c.stage=STEPS[si+1].key;
+    let ni=si+1;
+    if(STEPS[ni] && STEPS[ni].key==='prelim' && RULES.skipsPrelim(c)) ni++;   // ER skips Preliminary LOA
+    c.stage=STEPS[ni].key;
     const now=new Date();const stamp=now.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+' · '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
     c.timeline.push({t:trailMsg,m:stamp});
     toast(customToast||('✓ '+trailMsg));renderCase();
@@ -838,9 +1062,9 @@ function advance(ref,trailMsg,customToast){
    ============================================================ */
 function openModal(){
   draft={channel:'',source:'',emergency:null,inpatient:null,claimMode:'direct'};
-  const ms=$('#m-member');ms.innerHTML='<option value="">— επίλεξε μέλος —</option>'+Object.entries(MEMBERS).map(([id,m])=>`<option value="${id}">${m.name} · ${id}</option>`).join('');
-  const ps=$('#m-provider');ps.innerHTML='<option value="">— επίλεξε provider —</option>'+PROVIDERS.map(p=>`<option value="${p.id}">${p.name}${p.moa==='pending'?' (MOA pending)':''}</option>`).join('');
-  const svc=$('#m-service');svc.innerHTML='<option value="">— επίλεξε —</option>'+SERVICE_TYPES.map(x=>`<option value="${x.v}">${x.label}</option>`).join('');
+  const ms=$('#m-member');ms.innerHTML='<option value="">— select member —</option>'+Object.entries(MEMBERS).map(([id,m])=>`<option value="${id}">${m.name} · ${id}</option>`).join('');
+  const ps=$('#m-provider');ps.innerHTML='<option value="">— select provider —</option>'+PROVIDERS.map(p=>`<option value="${p.id}">${p.name}${p.moa==='pending'?' (MOA pending)':''}</option>`).join('');
+  const svc=$('#m-service');svc.innerHTML='<option value="">— select —</option>'+SERVICE_TYPES.map(x=>`<option value="${x.v}">${x.label}</option>`).join('');
   $('#m-dx').value='';$('#m-amt').value='';$('#m-preview').className='member-preview';$('#m-moawarn').className='moa-warn';$('#m-cat').textContent='';$('#m-cov').textContent='';
   document.querySelectorAll('.modal .seg-pick button').forEach(b=>b.classList.remove('sel'));
   const db=document.querySelector('.modal [data-f="claimMode"][data-v="direct"]');if(db)db.classList.add('sel');
@@ -863,7 +1087,7 @@ function catReadout(){
   if(draft.emergency===null||draft.inpatient===null){$('#m-cat').textContent='';$('#m-cov').textContent='';return;}
   const map={'1.1':[true,true],'1.2':[true,false],'1.3':[false,true],'1.4':[false,false]};
   const no=Object.keys(map).find(k=>map[k][0]===draft.emergency&&map[k][1]===draft.inpatient);
-  $('#m-cat').textContent=`→ Κατηγορία ${no}: ${draft.emergency?'ER':'Non-ER'} ${draft.inpatient?'inpatient':'outpatient'}`;
+  $('#m-cat').textContent=`→ Category ${no}: ${draft.emergency?'ER':'Non-ER'} ${draft.inpatient?'inpatient':'outpatient'}`;
   const probe={emergency:draft.emergency,inpatient:draft.inpatient,claimMode:draft.claimMode||'direct',serviceType:$('#m-service')?$('#m-service').value:null};
   $('#m-cov').textContent='→ Coverage code: '+RULES.deriveCoverage(probe);
 }
@@ -880,12 +1104,12 @@ function providerCheck(){
   w.className=(pr&&pr.moa==='pending')?'moa-warn show':'moa-warn';
 }
 function createCase(){
-  if(!draft.channel||!draft.source){toast('Συμπλήρωσε channel + source');return;}
+  if(!draft.channel||!draft.source){toast('Fill in channel + source');return;}
   const member=$('#m-member').value,provider=$('#m-provider').value,dx=$('#m-dx').value.trim();
-  if(!member||!provider||!dx||draft.emergency===null||draft.inpatient===null){toast('Λείπουν υποχρεωτικά πεδία');return;}
+  if(!member||!provider||!dx||draft.emergency===null||draft.inpatient===null){toast('Missing required fields');return;}
   const svcNeeded = draft.emergency===false && draft.inpatient===false && draft.claimMode==='direct';
   const serviceType = svcNeeded ? $('#m-service').value : null;
-  if(svcNeeded && !serviceType){toast('Διάλεξε service type');return;}
+  if(svcNeeded && !serviceType){toast('Select service type');return;}
   const amt=parseInt($('#m-amt').value)||0;
   const ref='PC-2606-0'+(caseSeq++);
   const today=new Date().toISOString().slice(0,10);
@@ -894,28 +1118,124 @@ function createCase(){
     claimMode:draft.claimMode,serviceType,estAmount:amt,amount:amt,stage:'request',dx,
     loaNo:genLoa(),transNo:genTrans(),txnDate:today,dischargeDate:'',bankRef:'',dateCredited:'',amtDeducted:'',dateDeducted:'',
     timeline:[{t:`Request received (${draft.channel}, from ${draft.source})`,m:stamp}]});
-  closeModal();toast('✓ Case '+ref+' δημιουργήθηκε');openCase(ref);
+  closeModal();toast('✓ Case '+ref+' created');openCase(ref);
+}
+let provSeq=10;
+function openProvModal(){
+  ['p-name','p-loc','p-lto','p-ltoexp','p-pan','p-panexp','p-tin','p-pay','p-room','p-services','p-officer','p-spec','p-sub','p-board','p-hosp','p-sched','p-prc','p-prcexp','p-ptr','p-ptryear','p-s2','p-dtin','p-dpan','p-moafrom','p-moato','p-phone','p-email','p-bank','p-bankacct','p-bankno'].forEach(id=>{const e=$('#'+id);if(e)e.value='';});
+  $('#p-type').value='Hospital'; provTypeChange(); $('#provModal').classList.add('open');
+}
+function closeProvModal(){$('#provModal').classList.remove('open');}
+function provTypeChange(){
+  const t=$('#p-type').value, isDoc=t==='Doctor';
+  $('#p-fac').classList.toggle('hidden',isDoc);
+  $('#p-doc').classList.toggle('hidden',!isDoc);
+  $('#p-level-g').classList.toggle('hidden',t!=='Hospital');
+  $('#p-lab-g').classList.toggle('hidden',t!=='Diagnostic');
+  $('#p-loc-lbl').textContent = isDoc?'City / base':'Location (city/region)';
+}
+function pval(id){const e=$('#'+id);return e?e.value.trim():'';}
+function saveProvider(){
+  const t=$('#p-type').value, name=pval('p-name');
+  if(!name){toast('Fill in the name');return;}
+  const common={moa:$('#p-moa').value, moaFrom:pval('p-moafrom'), moaTo:pval('p-moato'), phone:pval('p-phone'), email:pval('p-email'), bankName:pval('p-bank')||'—', bankAcct:pval('p-bankacct')||'—', bankNo:pval('p-bankno')||'—'};
+  if(t==='Doctor'){
+    const id='DR'+(provSeq++); const spec=pval('p-spec')||'—', hosp=pval('p-hosp')||'';
+    DOCTORS.push(Object.assign({id,name,kind:'doctor',loc:spec+(hosp?(' · '+hosp):''),specialty:spec,subspecialty:pval('p-sub')||'—',hospital:hosp||'—',schedule:pval('p-sched')||'—',
+      tier:$('#p-dtier').value,rate:$('#p-pf').value,prc:pval('p-prc'),prcExp:pval('p-prcexp'),ptr:pval('p-ptr'),ptrYear:pval('p-ptryear'),s2:pval('p-s2')||null,tin:pval('p-dtin'),pan:pval('p-dpan')||'—',board:pval('p-board')||'—',address:pval('p-loc')||hosp},common));
+    closeProvModal();toast('✓ Doctor created'); openProvider(id);
+  } else {
+    const id='PV'+(provSeq++);
+    PROVIDERS.push(Object.assign({id,name,kind:'clinic',loc:pval('p-loc')||'—',facilityType:t,
+      level:(t==='Hospital'?$('#p-level').value:''),labClass:(t==='Diagnostic'?$('#p-lab').value:''),
+      tier:$('#p-ftier').value,rate:$('#p-billing').value,lto:pval('p-lto'),ltoExp:pval('p-ltoexp'),pan:pval('p-pan')||'—',panExp:pval('p-panexp'),tin:pval('p-tin'),
+      paymentTerms:pval('p-pay')||'—',roomRate:pval('p-room')||'—',er247:false,
+      services:(pval('p-services')?pval('p-services').split(',').map(s=>s.trim()).filter(Boolean):[]),address:pval('p-loc'),officer:pval('p-officer')||'—'},common));
+    closeProvModal();toast('✓ Provider created'); openProvider(id);
+  }
 }
 
 /* ============================================================
    NETWORK
    ============================================================ */
 function renderNetwork(){
-  let h=`<div class="ledger-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg><div>Χειρόγραφες συμβάσεις (MOA) με κλινικές & γιατρούς. <b>Active MOA</b> = direct billing & LOA· <b>pending</b> = reimbursable μόνο.</div></div>`;
-  h+=`<div class="net-tabs"><button class="${netTab==='clinic'?'on':''}" onclick="setNet('clinic')">Clinics & Hospitals</button><button class="${netTab==='doctor'?'on':''}" onclick="setNet('doctor')">Doctors</button></div>`;
+  let h=`<div class="ledger-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg><div>Handwritten agreements (MOA) with clinics & doctors. <b>Active MOA</b> = direct billing & LOA· <b>pending</b> = reimbursable only.</div></div>`;
+  h+=`<div class="net-bar"><div class="net-tabs"><button class="${netTab==='clinic'?'on':''}" onclick="setNet('clinic')">Clinics & Hospitals</button><button class="${netTab==='doctor'?'on':''}" onclick="setNet('doctor')">Doctors</button></div><button class="btn primary sm np-btn" onclick="openProvModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>New provider</button></div>`;
   const list=netTab==='clinic'?PROVIDERS:DOCTORS;
   h+=`<div class="grid-cards">`;
-  list.forEach(p=>{h+=`<div class="provider card"><div class="pv-top"><div class="logo">${p.id.slice(0,2)}</div><div style="flex:1"><div class="nm">${p.name}</div><div class="loc">${p.loc}</div></div><span class="moa ${p.moa}">${p.moa==='active'?'MOA active':'MOA pending'}</span></div>
+  list.forEach(p=>{h+=`<div class="provider card clickable" onclick="openProvider('${p.id}')"><div class="pv-top"><div class="logo">${p.id.slice(0,2)}</div><div style="flex:1"><div class="nm">${p.name}</div><div class="loc">${p.loc}</div></div><span class="moa ${p.moa}">${p.moa==='active'?'MOA active':'MOA pending'}</span></div>
     <div class="pv-meta"><div class="m"><div class="mk">Tier</div><div class="mv">${p.tier}</div></div><div class="m"><div class="mk">Billing</div><div class="mv">${p.rate}</div></div><div class="m"><div class="mk">Open cases</div><div class="mv">${CASES.filter(c=>c.provider===p.id&&c.stage!=='ledger').length}</div></div></div></div>`;});
   h+=`</div>`;$('#content').innerHTML=h;
 }
 function setNet(t){netTab=t;renderNetwork();}
+function setProvField(id,f,v){const p=provById(id);if(!p)return;p[f]=v;toast('✓ Updated · '+f);renderProvider();}
+function renderProvider(){
+  const p=provById(currentProv); if(!p){go('network');return;}
+  const isDoc=p.kind==='doctor';
+  const open=CASES.filter(c=>c.provider===p.id&&c.stage!=='ledger');
+  const row=(k,v)=>`<dt>${k}</dt><dd>${(v===0||v)?v:'—'}</dd>`;
+  const moaLbl=s=>s==='active'?'MOA active':(s==='pending'?'MOA pending':'MOA expired');
+  let h=`<a class="back" href="#" onclick="go('network',event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>Network</a>`;
+  const lvlTag = isDoc ? '' : (p.facilityType==='Diagnostic' ? `<span class="tag">Lab · ${p.labClass||'—'}</span>` : (p.level?`<span class="tag">Level ${p.level}</span>`:''));
+  h+=`<div class="detail-head"><div class="h-main"><h2>${p.name}</h2><div class="sub"><span class="tag prov">${isDoc?(p.specialty||'Doctor'):(p.facilityType||'Facility')}</span>${lvlTag}<span class="tag">${p.tier}</span><span class="moa ${p.moa}">${moaLbl(p.moa)}</span><span style="font-size:12.5px;color:var(--slate-2)">${p.loc}</span></div></div></div>`;
+  h+=`<div class="detail-grid"><div class="col-main">`;
+  if(isDoc){
+    h+=`<div class="panel card"><h4>Identity & Licensing</h4><dl class="facts">
+      ${row('PRC License No.', p.prc?`${p.prc} · exp ${fmtDate(p.prcExp)}`:'')}
+      ${row('PTR No.', p.ptr?`${p.ptr} · ${p.ptrYear||''}`:'')}
+      ${row('S2 (PDEA) License', p.s2||'— (not prescribing controlled drugs)')}
+      ${row('TIN', p.tin)}
+      ${row('PhilHealth Accreditation', p.pan)}</dl></div>`;
+    h+=`<div class="panel card"><h4>Specialty</h4><dl class="facts">
+      ${row('Specialty', p.specialty)}${row('Sub-specialty', p.subspecialty)}${row('Specialty board', p.board)}${row('Affiliation', p.hospital)}${row('Schedule', p.schedule)}</dl></div>`;
+  } else {
+    h+=`<div class="panel card"><h4>Identity & Licensing</h4><dl class="facts">
+      ${row('Facility type', p.facilityType)}
+      ${row(p.facilityType==='Diagnostic'?'Clinical Lab class':'Hospital level', p.facilityType==='Diagnostic'?p.labClass:('Level '+(p.level||'—')))}
+      ${row('DOH License to Operate', p.lto?`${p.lto} · exp ${fmtDate(p.ltoExp)}`:'')}
+      ${row('PhilHealth Accreditation (PAN)', p.pan?`${p.pan} · exp ${fmtDate(p.panExp)}`:'')}
+      ${row('TIN', p.tin)}</dl></div>`;
+    h+=`<div class="panel card"><h4>Services</h4><div class="chips">${(p.services||[]).map(s=>`<span class="pill">${s}</span>`).join('')||'—'}</div></div>`;
+  }
+  h+=`<div class="panel card"><h4>Network & Commercial</h4><dl class="facts">
+      ${row('MOA status', moaLbl(p.moa)+(p.moaFrom?` · ${fmtDate(p.moaFrom)} → ${fmtDate(p.moaTo)}`:''))}
+      ${isDoc?row('PF arrangement', p.rate):row('Billing', p.rate)}
+      ${row('Tier', p.tier)}
+      ${isDoc?'':row('Payment terms', p.paymentTerms)}
+      ${isDoc?'':row('Room rate', p.roomRate)}
+      ${isDoc?'':row('24/7 ER', p.er247?'Yes':'No')}</dl></div>`;
+  h+=`<div class="panel card"><h4>Payments (payout)</h4><dl class="facts">
+      ${row('Bank', p.bankName)}${row('Account name', p.bankAcct)}${row('Account no.', p.bankNo)}</dl></div>`;
+  h+=`</div><div class="col-side">`;
+  h+=`<div class="panel card"><h4>Categorisation</h4>`;
+  if(!isDoc){
+    h+=`<div class="ftext-lbl">Type</div><div class="seg-pick wrap">`+['Hospital','Diagnostic','Ambulatory Surgical Clinic','Dialysis Clinic','Primary Care Facility','Infirmary'].map(x=>`<button class="${p.facilityType===x?'sel':''}" onclick="setProvField('${p.id}','facilityType','${x}')">${x}</button>`).join('')+`</div>`;
+  }
+  h+=`<div class="ftext-lbl">Tier</div><div class="seg-pick wrap">`+(isDoc?['Accredited','Senior','Sub-specialist']:['Tier 1','Tier 2','Tier 3']).map(x=>`<button class="${p.tier===x?'sel':''}" onclick="setProvField('${p.id}','tier','${x}')">${x}</button>`).join('')+`</div>`;
+  h+=`<div class="ftext-lbl">MOA</div><div class="seg-pick wrap">`+['active','pending','expired'].map(x=>`<button class="${p.moa===x?'sel':''}" onclick="setProvField('${p.id}','moa','${x}')">${x}</button>`).join('')+`</div>`;
+  h+=`<div class="ftext-lbl">${isDoc?'PF arrangement':'Billing'}</div><div class="seg-pick wrap">`+(isDoc?['PF capped','Per visit','Package']:['Direct billing','Reimbursable']).map(x=>`<button class="${p.rate===x?'sel':''}" onclick="setProvField('${p.id}','rate','${x}')">${x}</button>`).join('')+`</div>`;
+  h+=`<div class="cat-note">Changes apply immediately to the network.</div></div>`;
+  h+=`<div class="panel card"><h4>Contact</h4><dl class="facts">
+      ${row('Address', p.address||p.loc)}${row('Phone', p.phone)}${row('Email', p.email)}${isDoc?'':row('Billing officer', p.officer)}</dl></div>`;
+  const all=CASES.filter(c=>c.provider===p.id);
+  const pend=all.filter(c=>c.stage!=='ledger');
+  const chargedCases=all.filter(c=>['final','payment','ledger'].includes(c.stage));
+  const charged=chargedCases.reduce((s,c)=>s+(c.amount||0),0);
+  const stLabel=c=>({ledger:'Closed · paid',payment:'For payment',final:'Billed (Final LOA)'}[c.stage]||'In progress');
+  h+=`<div class="panel card"><h4>Summary</h4><dl class="facts">${row('In progress', pend.length)}${row('Completed', all.length-pend.length)}${row('Total charges', php(charged))}</dl></div>`;
+  h+=`</div></div>`;
+  h+=`<div class="card track-card" style="margin-top:18px"><div class="prov-cases-head"><h4>Cases at this provider — pending & charged (${all.length})</h4><span class="pc-total">Total charges: <b>${php(charged)}</b></span></div><div class="track-scroll"><table class="track-tbl"><thead><tr><th>Case ID</th><th>Member</th><th>Stage</th><th style="text-align:right">Amount (Php)</th><th>Status</th></tr></thead><tbody>`;
+  if(all.length){ all.forEach(c=>{ h+=`<tr style="cursor:pointer" onclick="openTrack('${c.ref}')"><td class="mono">${caseId(c)}</td><td><b>${MEMBERS[c.member].name}</b></td><td>${STEPS[stepIndex(c.stage)].cap}</td><td style="text-align:right" class="mono">${c.amount?php(c.amount):'—'}</td><td>${stLabel(c)}</td></tr>`; }); }
+  else { h+=`<tr><td colspan="5" class="muted">No cases at this provider.</td></tr>`; }
+  h+=`</tbody></table></div></div>`;
+  $('#content').innerHTML=h;
+}
 
 /* ============================================================
    LEDGER — manual CBMS substitute (8.1–8.4 explicit)
    ============================================================ */
 function renderLedger(){
-  let h=`<div class="ledger-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v8M8 12h8"/><circle cx="12" cy="12" r="10"/></svg><div>Manual <b>CBMS substitute</b> — single source of truth για availment όσο τρέχουμε χειροκίνητα. Οι 4 στήλες αντιστοιχούν στα 8.1–8.4 του εγγράφου.</div></div>`;
+  let h=`<div class="ledger-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v8M8 12h8"/><circle cx="12" cy="12" r="10"/></svg><div>Manual <b>CBMS substitute</b> — single source of truth for availment while we operate manually. The 4 columns map to 8.1–8.4 of the procedure.</div></div>`;
   h+=`<div class="card ledger-wrap"><table class="ledger"><thead><tr>
     <th>Member</th><th>Seafarer ID</th>
     <th class="num">Remaining AMBL<span class="sub8">8.1</span></th>
@@ -949,16 +1269,16 @@ function renderLedger(){
    ============================================================ */
 function renderProcedure(){
   const steps=[
-    {n:'1',t:'Request reception',d:'Message ή call από patient ή accredited provider.',subs:['1.1 ER inpatient','1.2 ER outpatient','1.3 Non-ER inpatient','1.4 Non-ER outpatient'],where:'Intake form (channel + source + κατηγορία) → Case Board'},
-    {n:'2',t:'Membership verification',d:'By Polaris Admin — έλεγχος Seafarer ID.',subs:[],where:'Case step 2 · Verify membership'},
-    {n:'3',t:'Determination of remaining availment',d:'AMBL · outpatient AMBL · inner limits. CBMS updated + no pending claims. Member informed. ER χωρίς availment → inform principal.',subs:['Forced-compliance gate','ER → inform principal'],where:'Case step 3 · gate + member availment bars'},
-    {n:'4',t:'Preliminary LOA issuance',d:'Προς provider + patient. Auto-approved outpatient ≤ Php5,000· αλλιώς admin control.',subs:['Auto ≤ Php5,000','Admin control'],where:'Case step 4 · auto-badge / approve + 2 recipients'},
-    {n:'5',t:'On discharge — documents',d:'Inpatient: medical report + itemized invoice / final SOA. Outpatient: medical abstract (>Php5,000) + invoice.',subs:['Inpatient docs','Outpatient docs'],where:'Case step 5 · doc checklist ανά τύπο'},
-    {n:'6',t:'Final LOA issuance',d:'Προς provider + patient βάσει τελικών παραστατικών.',subs:[],where:'Case step 6 · Issue Final LOA'},
+    {n:'1',t:'Request reception',d:'Message or call from patient or accredited provider.',subs:['1.1 ER inpatient','1.2 ER outpatient','1.3 Non-ER inpatient','1.4 Non-ER outpatient'],where:'Intake form (channel + source + category) → Case Board'},
+    {n:'2',t:'Membership verification',d:'By Polaris Admin — Seafarer ID check.',subs:[],where:'Case step 2 · Verify membership'},
+    {n:'3',t:'Determination of remaining availment',d:'AMBL · outpatient AMBL · inner limits. CBMS updated + no pending claims. Member informed. ER with no availment → inform principal.',subs:['Forced-compliance gate','ER → inform principal'],where:'Case step 3 · gate + member availment bars'},
+    {n:'4',t:'Preliminary LOA issuance',d:'To provider + patient. Auto-approved outpatient ≤ Php5,000; otherwise admin control. ER (1.1 & 1.2): skipped — approval as Final LOA.',subs:['Auto ≤ Php5,000','Admin control','ER → skip'],where:'Case step 4 · auto-badge / approve + 2 recipients · N/A for ER'},
+    {n:'5',t:'On discharge — documents',d:'Inpatient: medical report + itemized invoice / final SOA. Outpatient: medical abstract (>Php5,000) + invoice.',subs:['Inpatient docs','Outpatient docs'],where:'Case step 5 · doc checklist per type'},
+    {n:'6',t:'Final LOA issuance',d:'To provider + patient based on final documents.',subs:[],where:'Case step 6 · Issue Final LOA'},
     {n:'7',t:'Payment to provider',d:'As per respective MOA, by Polaris Admin.',subs:[],where:'Case step 7 · Mark paid (per MOA)'},
-    {n:'8',t:'CBMS update',d:'Remaining → conditional → final → executed/paid → loop στο 8.1.',subs:['8.1 Remaining','8.2 Conditional','8.3 Final','8.4 Executed/Paid'],where:'Availment Ledger · 4 στήλες + cycle strip'},
+    {n:'8',t:'CBMS update',d:'Remaining → conditional → final → executed/paid → loop to 8.1.',subs:['8.1 Remaining','8.2 Conditional','8.3 Final','8.4 Executed/Paid'],where:'Availment Ledger · 4 columns + cycle strip'},
   ];
-  let h=`<div class="ledger-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/></svg><div>Coverage audit — κάθε βήμα του εγγράφου <b>18 May 2026</b> αντιστοιχισμένο στο εργαλείο. Όλα ✓ covered.</div></div>`;
+  let h=`<div class="ledger-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/></svg><div>Coverage audit — every step of the <b>18 May 2026</b> procedure, mapped to the tool. All ✓ covered.</div></div>`;
   h+=`<div class="card">`;
   steps.forEach(s=>{h+=`<div class="proc-step"><div class="pn">${s.n}</div><div class="pbody"><div class="pt">${s.t}<span class="covered"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>covered</span></div><div class="pd">${s.d}</div>${s.subs.length?'<div class="subs">'+s.subs.map(x=>`<span class="sub">${x}</span>`).join('')+'</div>':''}<div class="where">↳ ${s.where}</div></div></div>`;});
   h+=`</div>`;$('#content').innerHTML=h;
@@ -976,6 +1296,9 @@ const GUIDE_TABS=[
  {id:'flow2',   icon:'\u2464',    el:'Βήματα 5–8',       en:'Steps 5–8'},
  {id:'rules',   icon:'\u{1F6E1}', el:'Κανόνες',          en:'Rules'},
  {id:'data',    icon:'\u{1F5C2}', el:'Δίκτυο & Ledger',  en:'Network & Ledger'},
+ {id:'idcat',   icon:'\u{1F194}', el:'Κωδικός & Κατηγορία', en:'Case ID & Category'},
+ {id:'tracking',icon:'\u{1F6F0}', el:'Πορεία & Αναζήτηση',  en:'Tracking & Search'},
+ {id:'provcards',icon:'\u{1F3E5}',el:'Καρτέλες παρόχων',    en:'Provider cards'},
  {id:'export',  icon:'\u{1F9FE}', el:'Export · CBMS',    en:'Export · CBMS'},
  {id:'glossary',icon:'\u{1F4D6}', el:'Γλωσσάριο',         en:'Glossary'},
 ];
@@ -996,7 +1319,9 @@ const GUIDE={
   <div class="g-sub">🏷️ Οι 4 κατηγορίες περιστατικού</div>
   <p class="g-p">Κάθε αίτημα είναι συνδυασμός <b>ER / Non-ER</b> και <b>Inpatient / Outpatient</b>:</p>
   <div class="g-legend"><span class="lg">1.1 · ER inpatient</span><span class="lg">1.2 · ER outpatient</span><span class="lg">1.3 · Non-ER inpatient</span><span class="lg">1.4 · Non-ER outpatient</span></div>
-  <p class="g-p">Η κατηγορία καθορίζει κανόνες παρακάτω (auto-approve ορίου, απαιτούμενα παραστατικά).</p>`,
+  <p class="g-p">Η κατηγορία καθορίζει κανόνες παρακάτω (auto-approve ορίου, απαιτούμενα παραστατικά).</p>
+  <div class="g-note"><span class="ic">🛟</span><div><b>ER (1.1 &amp; 1.2):</b> δεν εκδίδεται <b>Preliminary LOA</b> — το επείγον δεν προ-εγκρίνεται· η έγκριση γίνεται ως <b>Final LOA</b> μετά το εξιτήριο. Στο rail το βήμα 4 φαίνεται ως <b>N/A · ER</b>.</div></div>
+  <div class="g-note"><span class="ic">🔁</span><div><b>Συνδυαστικά &amp; μεταβαλλόμενα:</b> ένα περιστατικό μπορεί να <b>αλλάξει κατηγορία</b> μέσα στη ροή (π.χ. 1.2 ER outpatient → 1.1 ER inpatient, ή 1.4 → 1.3). Άλλαξέ τη από το panel <b>Κατηγορία</b> στο case· κάθε αλλαγή καταγράφεται στην <b>Πορεία περιστατικού</b>.</div></div>`,
   en:`<div class="g-h2">🚀 Getting started</div>
   <p class="g-lead"><b>Care Desk</b> is the Polaris Admin internal tool for handling direct-provider medical cases <b>manually</b> — until everything is digitised in MCL. All data here is sample data; no real personal information.</p>
   <div class="g-sub">🧭 The 4 areas</div>
@@ -1011,7 +1336,9 @@ const GUIDE={
   <div class="g-sub">🏷️ The 4 case categories</div>
   <p class="g-p">Each request is a combination of <b>ER / Non-ER</b> and <b>Inpatient / Outpatient</b>:</p>
   <div class="g-legend"><span class="lg">1.1 · ER inpatient</span><span class="lg">1.2 · ER outpatient</span><span class="lg">1.3 · Non-ER inpatient</span><span class="lg">1.4 · Non-ER outpatient</span></div>
-  <p class="g-p">The category drives the rules below (auto-approve threshold, required documents).</p>`
+  <p class="g-p">The category drives the rules below (auto-approve threshold, required documents).</p>
+  <div class="g-note"><span class="ic">🛟</span><div><b>ER (1.1 &amp; 1.2):</b> no <b>Preliminary LOA</b> is issued — an emergency cannot be pre-authorised; approval happens as the <b>Final LOA</b> after discharge. On the rail, step 4 shows as <b>N/A · ER</b>.</div></div>
+  <div class="g-note"><span class="ic">🔁</span><div><b>Combinable &amp; changing:</b> a case can <b>change category</b> during its flow (e.g. 1.2 ER outpatient → 1.1 ER inpatient, or 1.4 → 1.3). Change it from the <b>Category</b> panel on the case; every change is logged in the <b>Case Tracking</b> trail.</div></div>`
  },
  intake:{
   el:`<div class="g-h2">➕ Καταχώρηση νέου αιτήματος</div>
@@ -1065,7 +1392,8 @@ const GUIDE={
   <p class="g-p">Όσο αυτά δεν είναι τσεκαρισμένα, το κουμπί μένει κλειδωμένο. Το μέλος ενημερώνεται για το remaining benefit.</p>
   <div class="g-warn"><span class="ic">⚓</span><div><b>ER χωρίς διαθέσιμο όριο:</b> εμφανίζεται <span class="g-ref">Inform principal &amp; proceed</span> — ενημερώνεις τον principal και προχωράς. <b>Non-ER χωρίς όριο:</b> δεν εκδίδεται LOA· ενημερώνεις το μέλος.</div></div>
   <div class="g-sub">4 · Preliminary LOA</div>
-  <div class="g-ok"><span class="ic">✅</span><div><b>Auto-approve:</b> outpatient έως <b>Php 5.000</b> εγκρίνεται αυτόματα — καμία χειροκίνητη ενέργεια.</div></div>
+  <div class="g-warn"><span class="ic">🛟</span><div><b>ER (1.1 &amp; 1.2):</b> το βήμα αυτό <b>παρακάμπτεται</b> — δεν εκδίδεται Preliminary LOA. Το case πάει απευθείας σε <b>Discharge docs → Final LOA</b>.</div></div>
+  <div class="g-ok"><span class="ic">✅</span><div><b>Auto-approve (Non-ER):</b> outpatient έως <b>Php 5.000</b> εγκρίνεται αυτόματα — καμία χειροκίνητη ενέργεια.</div></div>
   <p class="g-p">Όλα τα άλλα (inpatient, ή outpatient &gt; Php 5.000) είναι <b>subject to admin control</b>: πάτα <span class="g-ref">Approve &amp; issue LOA</span>.</p>
   <p class="g-p">Το Preliminary LOA αποστέλλεται σε <b>δύο αποδέκτες</b>: τον provider και τον patient.</p>`,
   en:`<div class="g-h2">① Steps 1–4 · From the request to the Preliminary LOA</div>
@@ -1083,7 +1411,8 @@ const GUIDE={
   <p class="g-p">Until both are ticked, the button stays locked. The member is informed of the remaining benefit.</p>
   <div class="g-warn"><span class="ic">⚓</span><div><b>ER with no availment:</b> <span class="g-ref">Inform principal &amp; proceed</span> appears — you notify the principal and continue. <b>Non-ER with no availment:</b> no LOA is issued; you inform the member.</div></div>
   <div class="g-sub">4 · Preliminary LOA</div>
-  <div class="g-ok"><span class="ic">✅</span><div><b>Auto-approve:</b> outpatient up to <b>Php 5,000</b> is approved automatically — no manual action.</div></div>
+  <div class="g-warn"><span class="ic">🛟</span><div><b>ER (1.1 &amp; 1.2):</b> this step is <b>skipped</b> — no Preliminary LOA. The case goes straight to <b>Discharge docs → Final LOA</b>.</div></div>
+  <div class="g-ok"><span class="ic">✅</span><div><b>Auto-approve (Non-ER):</b> outpatient up to <b>Php 5,000</b> is approved automatically — no manual action.</div></div>
   <p class="g-p">Everything else (inpatient, or outpatient &gt; Php 5,000) is <b>subject to admin control</b>: click <span class="g-ref">Approve &amp; issue LOA</span>.</p>
   <p class="g-p">The Preliminary LOA is sent to <b>two recipients</b>: the provider and the patient.</p>`
  },
@@ -1213,6 +1542,100 @@ const GUIDE={
 
   <div class="g-note"><span class="ic">🔒</span><div><b>GDPR:</b> exporting with <b>real</b> data runs <b>locally only</b> — never from the public demo. Data never leaves the machine.</div></div>`
  },
+ idcat:{
+  el:`<div class="g-h2">🆔 Κωδικός περιστατικού & Κατηγορία</div>
+  <p class="g-lead">Κάθε περιστατικό έχει έναν <b>μοναδικό κωδικό</b> που τον επικοινωνείς και μπαίνει και στο export. Ο κωδικός «διαβάζεται»: τα 2 τελευταία γράμματα δηλώνουν την κατηγορία.</p>
+  <div class="g-sub">Πώς διαβάζεται</div>
+  <p class="g-p">Μορφή: <span class="g-ref">PC-YYMM-NNN-XX</span>. Το <b>PC-YYMM-NNN</b> είναι ο σταθερός αριθμός (για επικοινωνία)· τα <b>XX</b> είναι η κατηγορία:</p>
+  <div class="g-legend"><span class="lg">E = ER</span><span class="lg">N = Non-ER</span><span class="lg">I = Inpatient</span><span class="lg">O = Outpatient</span></div>
+  <p class="g-p"><b>EI</b> = ER inpatient (1.1) · <b>EO</b> = ER outpatient (1.2) · <b>NI</b> = Non-ER inpatient (1.3) · <b>NO</b> = Non-ER outpatient (1.4). Φαίνεται στο Case Board, στην καρτέλα του case, στην Πορεία και ως πρώτη στήλη στο export.</p>
+  <div class="g-note"><span class="ic">🔁</span><div>Αν αλλάξεις κατηγορία μέσα στη ροή, τα 2 γράμματα ενημερώνονται· ο αριθμητικός πυρήνας μένει ίδιος.</div></div>
+  <div class="g-sub">Αλλαγή κατηγορίας (re-classify)</div>
+  <ol class="g-ol">
+  <li>Άνοιξε το case → δεξιά, panel <span class="g-ref">Category (1.1–1.4)</span>.</li>
+  <li>Πάτα <b>ER/Non-ER</b> ή <b>Inpatient/Outpatient</b> για να το αλλάξεις.</li>
+  <li>Η αλλαγή καταγράφεται αυτόματα στην <b>Πορεία</b> ως «Re-categorised 1.2 → 1.1».</li>
+  <li>Οι κανόνες ξαναϋπολογίζονται live (απαιτούμενα παραστατικά, coverage code, και το Preliminary LOA).</li>
+  </ol>
+  <div class="g-warn"><span class="ic">🛟</span><div><b>ER (1.1 & 1.2):</b> δεν εκδίδεται Preliminary LOA — έγκριση ως <b>Final LOA</b> μετά το εξιτήριο. Στο rail το βήμα 4 = <b>N/A · ER</b>.</div></div>`,
+  en:`<div class="g-h2">🆔 Case ID & Category</div>
+  <p class="g-lead">Every case has a <b>unique ID</b> you can communicate and that also appears in the export. The code is readable: the last 2 letters indicate the category.</p>
+  <div class="g-sub">How to read it</div>
+  <p class="g-p">Format: <span class="g-ref">PC-YYMM-NNN-XX</span>. <b>PC-YYMM-NNN</b> is the stable number (for communication); <b>XX</b> is the category:</p>
+  <div class="g-legend"><span class="lg">E = ER</span><span class="lg">N = Non-ER</span><span class="lg">I = Inpatient</span><span class="lg">O = Outpatient</span></div>
+  <p class="g-p"><b>EI</b> = ER inpatient (1.1) · <b>EO</b> = ER outpatient (1.2) · <b>NI</b> = Non-ER inpatient (1.3) · <b>NO</b> = Non-ER outpatient (1.4). It shows on the Case Board, the case detail, the Tracking screen and as the first column of the export.</p>
+  <div class="g-note"><span class="ic">🔁</span><div>If you change category during the flow, the 2 letters update; the numeric core stays the same.</div></div>
+  <div class="g-sub">Re-classify</div>
+  <ol class="g-ol">
+  <li>Open the case → on the right, the <span class="g-ref">Category (1.1–1.4)</span> panel.</li>
+  <li>Click <b>ER/Non-ER</b> or <b>Inpatient/Outpatient</b> to change it.</li>
+  <li>The change is auto-logged in <b>Tracking</b> as "Re-categorised 1.2 → 1.1".</li>
+  <li>Rules recompute live (required documents, coverage code, and the Preliminary LOA).</li>
+  </ol>
+  <div class="g-warn"><span class="ic">🛟</span><div><b>ER (1.1 & 1.2):</b> no Preliminary LOA — approval happens as the <b>Final LOA</b> after discharge. On the rail, step 4 = <b>N/A · ER</b>.</div></div>`
+ },
+ tracking:{
+  el:`<div class="g-h2">🛰️ Πορεία περιστατικού & Αναζήτηση</div>
+  <p class="g-lead">Η οθόνη <b>Πορεία</b> δείχνει όλη την εξέλιξη ενός case σε στυλ courier-tracking. Άνοιξέ την από το κουμπί <span class="g-ref">Case Tracking</span> πάνω-δεξιά σε κάθε case.</p>
+  <div class="g-sub">Τι βλέπεις</div>
+  <p class="g-p"><b>Milestone bar</b> — οι σταθμοί του lifecycle, με την τρέχουσα θέση κόκκινη και ημερομηνίες στα ολοκληρωμένα.</p>
+  <p class="g-p"><b>Summary</b> — Μέλος/Ασθενής, μοναδικός κωδικός, κατάσταση, πάροχος, κατηγορία, παρατηρήσεις.</p>
+  <p class="g-p"><b>Πίνακας πορείας</b> — όλα τα checkpoints με ημ/νία· όσα εκκρεμούν είναι γκρι, και οι αλλαγές κατηγορίας μπαίνουν με 🔁.</p>
+  <div class="g-sub">Αναζήτηση οποιουδήποτε case</div>
+  <ol class="g-ol">
+  <li>Στην κορυφή της οθόνης Πορεία υπάρχει το πεδίο <span class="g-ref">Search a case</span>.</li>
+  <li>Γράψε <b>οτιδήποτε</b>: όνομα, κωδικό (πλήρη ή μόνο τα γράμματα π.χ. <b>EI</b>), πάροχο, διάγνωση, ή κατηγορία.</li>
+  <li>Εμφανίζεται live λίστα με τη <b>σταδιοποίηση</b> κάθε match (Step x/8).</li>
+  <li>Κλικ στη γραμμή ή <b>Enter</b> → ανοίγει η Πορεία εκείνου του case.</li>
+  </ol>`,
+  en:`<div class="g-h2">🛰️ Case Tracking & Search</div>
+  <p class="g-lead">The <b>Tracking</b> screen shows a case's full progress in a courier-tracking style. Open it from the <span class="g-ref">Case Tracking</span> button at the top-right of any case.</p>
+  <div class="g-sub">What you see</div>
+  <p class="g-p"><b>Milestone bar</b> — the lifecycle stations, with the current position in red and dates on completed ones.</p>
+  <p class="g-p"><b>Summary</b> — Member/Patient, unique ID, status, provider, category, remarks.</p>
+  <p class="g-p"><b>Progress table</b> — all checkpoints with dates; pending ones are greyed, and category changes appear with 🔁.</p>
+  <div class="g-sub">Search any case</div>
+  <ol class="g-ol">
+  <li>At the top of the Tracking screen there is the <span class="g-ref">Search a case</span> field.</li>
+  <li>Type <b>anything</b>: name, code (full or just the letters e.g. <b>EI</b>), provider, diagnosis, or category.</li>
+  <li>A live list shows each match with its <b>stage</b> (Step x/8).</li>
+  <li>Click a row or press <b>Enter</b> → opens that case's Tracking.</li>
+  </ol>`
+ },
+ provcards:{
+  el:`<div class="g-h2">🏥 Καρτέλες παρόχων & γιατρών</div>
+  <p class="g-lead">Στο <span class="g-ref">Network</span>, κάθε κάρτα (νοσοκομείο, διαγνωστικό, γιατρός) ανοίγει με κλικ σε πλήρη <b>καρτέλα</b>.</p>
+  <div class="g-sub">Τι περιέχει</div>
+  <p class="g-p"><b>Νοσοκομείο / Διαγνωστικό:</b> τύπος & επίπεδο (Hospital Level ή Lab class), <b>DOH LTO</b>, <b>PhilHealth PAN</b>, <b>TIN</b>, υπηρεσίες, MOA + ισχύς, billing/tier/payment terms, επικοινωνία, <b>bank payout</b>.</p>
+  <p class="g-p"><b>Γιατρός:</b> <b>PRC License</b>, <b>PTR</b>, <b>S2 (PDEA)</b>, <b>TIN</b>, <b>PhilHealth accreditation</b>, specialty/board, affiliation, ωράριο, PF arrangement, bank.</p>
+  <div class="g-sub">Κατηγοριοποίηση</div>
+  <p class="g-p">Δεξιά, στο panel <span class="g-ref">Categorisation</span>, αλλάζεις Τύπο / Tier / MOA / Billing(PF) — ισχύουν άμεσα στο δίκτυο.</p>
+  <div class="g-sub">Χρεώσεις νοσοκομείου</div>
+  <p class="g-p">Κάτω στην καρτέλα νοσοκομείου υπάρχει πίνακας με όλα τα cases του παρόχου — <b>εκκρεμή & χρεωμένα</b> — με ποσό, κατάσταση και <b>Total charges</b>. Κλικ σε γραμμή → Πορεία του case.</p>
+  <div class="g-sub">Νέος πάροχος (χειροκίνητα)</div>
+  <ol class="g-ol">
+  <li>Στο Network πάτα <span class="g-ref">New provider</span>.</li>
+  <li>Διάλεξε τύπο: <b>Νοσοκομείο / Διαγνωστικό / Γιατρός</b> — τα πεδία προσαρμόζονται.</li>
+  <li>Συμπλήρωσε τα στοιχεία (PH πεδία) και πάτα <span class="g-ref">Create card</span>.</li>
+  <li>Η καρτέλα δημιουργείται και ανοίγει αμέσως.</li>
+  </ol>`,
+  en:`<div class="g-h2">🏥 Provider & doctor cards</div>
+  <p class="g-lead">In <span class="g-ref">Network</span>, every card (hospital, diagnostic, doctor) opens on click into a full <b>card</b>.</p>
+  <div class="g-sub">What it contains</div>
+  <p class="g-p"><b>Hospital / Diagnostic:</b> type & level (Hospital Level or Lab class), <b>DOH LTO</b>, <b>PhilHealth PAN</b>, <b>TIN</b>, services, MOA + validity, billing/tier/payment terms, contact, <b>bank payout</b>.</p>
+  <p class="g-p"><b>Doctor:</b> <b>PRC License</b>, <b>PTR</b>, <b>S2 (PDEA)</b>, <b>TIN</b>, <b>PhilHealth accreditation</b>, specialty/board, affiliation, schedule, PF arrangement, bank.</p>
+  <div class="g-sub">Categorisation</div>
+  <p class="g-p">On the right, the <span class="g-ref">Categorisation</span> panel lets you change Type / Tier / MOA / Billing(PF) — applied immediately to the network.</p>
+  <div class="g-sub">Hospital charges</div>
+  <p class="g-p">At the bottom of a hospital card there is a table of all the provider's cases — <b>pending & charged</b> — with amount, status and <b>Total charges</b>. Click a row → the case's Tracking.</p>
+  <div class="g-sub">New provider (manual)</div>
+  <ol class="g-ol">
+  <li>In Network click <span class="g-ref">New provider</span>.</li>
+  <li>Pick a type: <b>Hospital / Diagnostic / Doctor</b> — the fields adapt.</li>
+  <li>Fill in the details (PH fields) and click <span class="g-ref">Create card</span>.</li>
+  <li>The card is created and opens immediately.</li>
+  </ol>`
+ },
  glossary:{
   el:`<div class="g-h2">📖 Γλωσσάριο</div>
   <p class="g-lead">Οι βασικοί όροι που θα συναντήσεις στο εργαλείο.</p>
@@ -1271,8 +1694,8 @@ function setGuideTab(id){guideTab=id;renderGuide();window.scrollTo(0,0);}
 /* ============================================================
    EXPORT — CBMS utilization feed (PAID CLAIMS + FUNDED LOA)
    ============================================================ */
-const PC_HEADERS=['Transaction Date','DISCHARGE DATE','Member Name','Member ID','Employee ID','Corporate','TRN Status','Coverage','generated_by','LOA No.','DIAGNOSIS','Provider','LOA Amount','ACTUAL CLAIMS','EWT','NET PAID','AMT DEDUCTED IN BANK','DATE DEDUCTED','BANK REF. NO.','DATE CREDITED','TRN'];
-const FL_HEADERS=['corp_name','Date Issued/Discharged','loa_no','trans_no','coverage_code','provider_name','LOA Amt.','Claim Amt.','Claim - LOA Amt','bank_acc_name','bank_no','Date Funded','Part of','Bank ref. no.'];
+const PC_HEADERS=['Case ID','Transaction Date','DISCHARGE DATE','Member Name','Member ID','Employee ID','Corporate','TRN Status','Coverage','generated_by','LOA No.','DIAGNOSIS','Provider','LOA Amount','ACTUAL CLAIMS','EWT','NET PAID','AMT DEDUCTED IN BANK','DATE DEDUCTED','BANK REF. NO.','DATE CREDITED','TRN'];
+const FL_HEADERS=['Case ID','corp_name','Date Issued/Discharged','loa_no','trans_no','coverage_code','provider_name','LOA Amt.','Claim Amt.','Claim - LOA Amt','bank_acc_name','bank_no','Date Funded','Part of','Bank ref. no.'];
 let EXPORT_HISTORY=[];
 function loadHistory(){try{const j=localStorage.getItem('cd_export_history');if(j)EXPORT_HISTORY=JSON.parse(j);}catch(e){}}
 function logExport(from,to,rows,fn){EXPORT_HISTORY.unshift({period:(from||'…')+' → '+(to||'…'),generated:new Date().toISOString().slice(0,16).replace('T',' '),rows,file:fn});try{localStorage.setItem('cd_export_history',JSON.stringify(EXPORT_HISTORY.slice(0,50)));}catch(e){}}
@@ -1284,20 +1707,20 @@ function casesInRange(from,to){
 }
 function pcRowsFor(c){
   const m=MEMBERS[c.member], p=provById(c.provider);
-  const base=cov=>({'Transaction Date':c.txnDate,'DISCHARGE DATE':c.dischargeDate||'','Member Name':m.name,'Member ID':m.amaphilId,'Employee ID':m.employeeId,'Corporate':m.corporate||CONFIG.corpDefault,'TRN Status':RULES.deriveTrn(c),'Coverage':cov,'generated_by':CONFIG.generatedBy,'LOA No.':c.loaNo,'DIAGNOSIS':c.dx,'Provider':p.name,'LOA Amount':c.estAmount||c.amount,'ACTUAL CLAIMS':c.amount,'EWT':ewtAmt(c),'NET PAID':netPaid(c),'AMT DEDUCTED IN BANK':c.amtDeducted||'','DATE DEDUCTED':c.dateDeducted||'','BANK REF. NO.':c.bankRef||'','DATE CREDITED':c.dateCredited||'','TRN':c.transNo});
+  const base=cov=>({'Case ID':caseId(c),'Transaction Date':c.txnDate,'DISCHARGE DATE':c.dischargeDate||'','Member Name':m.name,'Member ID':m.amaphilId,'Employee ID':m.employeeId,'Corporate':m.corporate||CONFIG.corpDefault,'TRN Status':RULES.deriveTrn(c),'Coverage':cov,'generated_by':CONFIG.generatedBy,'LOA No.':c.loaNo,'DIAGNOSIS':c.dx,'Provider':p.name,'LOA Amount':c.estAmount||c.amount,'ACTUAL CLAIMS':c.amount,'EWT':ewtAmt(c),'NET PAID':netPaid(c),'AMT DEDUCTED IN BANK':c.amtDeducted||'','DATE DEDUCTED':c.dateDeducted||'','BANK REF. NO.':c.bankRef||'','DATE CREDITED':c.dateCredited||'','TRN':c.transNo});
   if(c.splitAdmission&&c.emergency&&c.inpatient) return [base('EMERGENCY'),base('INPATIENT-ADMISSION')];
   return [base(RULES.deriveCoverage(c))];
 }
 function flRowFor(c){
   const m=MEMBERS[c.member], p=provById(c.provider);
   const loa=c.estAmount||c.amount, claim=c.amount;
-  return {'corp_name':m.corporate||CONFIG.corpDefault,'Date Issued/Discharged':c.dischargeDate||c.txnDate,'loa_no':c.loaNo,'trans_no':c.transNo,'coverage_code':RULES.deriveCoverage(c),'provider_name':p.name,'LOA Amt.':loa,'Claim Amt.':claim,'Claim - LOA Amt':Math.round((claim-loa)*100)/100,'bank_acc_name':CONFIG.disbursingAccountName,'bank_no':CONFIG.disbursingBankNo,'Date Funded':c.dateCredited||'','Part of':c.fundedBatch||'','Bank ref. no.':c.bankRef||''};
+  return {'Case ID':caseId(c),'corp_name':m.corporate||CONFIG.corpDefault,'Date Issued/Discharged':c.dischargeDate||c.txnDate,'loa_no':c.loaNo,'trans_no':c.transNo,'coverage_code':RULES.deriveCoverage(c),'provider_name':p.name,'LOA Amt.':loa,'Claim Amt.':claim,'Claim - LOA Amt':Math.round((claim-loa)*100)/100,'bank_acc_name':CONFIG.disbursingAccountName,'bank_no':CONFIG.disbursingBankNo,'Date Funded':c.dateCredited||'','Part of':c.fundedBatch||'','Bank ref. no.':c.bankRef||''};
 }
 function doExport(){
-  if(typeof XLSX==='undefined'){toast('SheetJS δεν φορτώθηκε (χρειάζεται internet)');return;}
+  if(typeof XLSX==='undefined'){toast('SheetJS not loaded (needs internet)');return;}
   const from=$('#x-from').value, to=$('#x-to').value;
   const cs=casesInRange(from,to);
-  if(!cs.length){toast('Καμία εγγραφή με LOA στο διάστημα');return;}
+  if(!cs.length){toast('No records with LOA in the range');return;}
   let pc=[]; cs.forEach(c=>pc.push(...pcRowsFor(c)));
   const fl=cs.map(flRowFor);
   const wb=XLSX.utils.book_new();
@@ -1310,7 +1733,7 @@ function doExport(){
   renderExport();
 }
 function reconcile(){
-  const txt=($('#x-recon').value||'').trim(); if(!txt){toast('Επικόλλησε bank lines');return;}
+  const txt=($('#x-recon').value||'').trim(); if(!txt){toast('Paste bank lines');return;}
   let matched=0;
   txt.split(/\r?\n/).forEach(line=>{
     const parts=line.split(/[\t,;]+|\s{2,}/).map(x=>x.trim()).filter(Boolean);
@@ -1319,7 +1742,7 @@ function reconcile(){
     const c=CASES.find(x=>x.loaNo && x.loaNo.toUpperCase()===String(loa).toUpperCase());
     if(c){c.bankRef=ref||c.bankRef; if(date)c.dateCredited=date; c.amtDeducted=c.amount; matched++;}
   });
-  toast(matched?('✓ Reconciled '+matched+' LOAs'):'Κανένα match — έλεγξε LOA No.');
+  toast(matched?('✓ Reconciled '+matched+' LOAs'):'No match — check LOA No.');
   renderExport();
 }
 function dlIcon(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>';}
@@ -1329,20 +1752,20 @@ function renderExport(){
   const minD=dates[0]||'2026-05-01', today=new Date().toISOString().slice(0,10);
   const fromV=$('#x-from')?$('#x-from').value:minD, toV=$('#x-to')?$('#x-to').value:today;
   const inRange=casesInRange(fromV,toV);
-  let h=`<div class="ledger-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg><div>Εξαγωγή στο <b>ίδιο schema</b> με το utilization report που τροφοδοτεί το CBMS — sheets <b>PAID CLAIMS</b> + <b>FUNDED LOA</b>. Τρέχει τοπικά· τα δεδομένα δεν φεύγουν από το μηχάνημα (GDPR gate).</div></div>`;
-  h+=`<div class="card" style="padding:22px 24px;margin-bottom:18px"><div class="section-head"><h3>Utilization export</h3><span class="hint">φίλτρο στο Transaction Date</span></div>
+  let h=`<div class="ledger-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg><div>Export in the <b>same schema</b> as the utilization report that feeds CBMS — sheets <b>PAID CLAIMS</b> + <b>FUNDED LOA</b>. Runs locally; data never leaves the machine (GDPR gate).</div></div>`;
+  h+=`<div class="card" style="padding:22px 24px;margin-bottom:18px"><div class="section-head"><h3>Utilization export</h3><span class="hint">filter on Transaction Date</span></div>
     <div class="x-row">
-      <div><label class="x-lab">Από</label><input class="ftext" type="date" id="x-from" value="${fromV}" onchange="renderExport()"></div>
-      <div><label class="x-lab">Έως</label><input class="ftext" type="date" id="x-to" value="${toV}" onchange="renderExport()"></div>
-      <div class="x-count"><span class="mono" style="font-size:15px;color:var(--ink);font-weight:600">${inRange.length}</span> cases με LOA στο διάστημα</div>
+      <div><label class="x-lab">From</label><input class="ftext" type="date" id="x-from" value="${fromV}" onchange="renderExport()"></div>
+      <div><label class="x-lab">To</label><input class="ftext" type="date" id="x-to" value="${toV}" onchange="renderExport()"></div>
+      <div class="x-count"><span class="mono" style="font-size:15px;color:var(--ink);font-weight:600">${inRange.length}</span> cases with LOA in the range</div>
     </div>
-    <div class="magic-row"><button class="btn primary" onclick="doExport()">${dlIcon()}Generate .xlsx (PAID CLAIMS + FUNDED LOA)</button><span class="magic-note">CareDesk_Utilization_&lt;από&gt;-&lt;έως&gt;.xlsx</span></div>
+    <div class="magic-row"><button class="btn primary" onclick="doExport()">${dlIcon()}Generate .xlsx (PAID CLAIMS + FUNDED LOA)</button><span class="magic-note">CareDesk_Utilization_&lt;from&gt;-&lt;to&gt;.xlsx</span></div>
   </div>`;
-  h+=`<div class="card" style="padding:22px 24px;margin-bottom:18px"><div class="section-head"><h3>Bank reconciliation</h3><span class="hint">γραμμές: LOA_No, Bank_Ref, Date</span></div>
+  h+=`<div class="card" style="padding:22px 24px;margin-bottom:18px"><div class="section-head"><h3>Bank reconciliation</h3><span class="hint">lines: LOA_No, Bank_Ref, Date</span></div>
     <textarea class="ftext" id="x-recon" style="min-height:88px;font-family:var(--mono);font-size:12px" placeholder="X1MEH8X, UB249229, 2026-05-27&#10;O4S016J, UB248835, 2026-05-27"></textarea>
-    <div class="magic-row"><button class="btn ghost" onclick="reconcile()">Match & fill bank columns</button><span class="magic-note">Συμπληρώνει Bank Ref · Date credited · Amt deducted ανά LOA.</span></div></div>`;
+    <div class="magic-row"><button class="btn ghost" onclick="reconcile()">Match & fill bank columns</button><span class="magic-note">Fills Bank Ref · Date credited · Amt deducted per LOA.</span></div></div>`;
   h+=`<div class="card" style="padding:22px 24px"><div class="section-head"><h3>Export history</h3></div>`;
-  if(!EXPORT_HISTORY.length) h+=`<div style="font-size:13px;color:var(--slate-2)">Καμία εξαγωγή ακόμα.</div>`;
+  if(!EXPORT_HISTORY.length) h+=`<div style="font-size:13px;color:var(--slate-2)">No exports yet.</div>`;
   else{ h+=`<div class="ledger-wrap"><table class="ledger"><thead><tr><th>Generated</th><th>Period</th><th class="num">Rows</th><th>File</th></tr></thead><tbody>`;
     EXPORT_HISTORY.forEach(e=>{h+=`<tr><td class="mono" style="font-size:12px">${e.generated}</td><td>${e.period}</td><td class="num">${e.rows}</td><td class="mono" style="font-size:11px">${e.file}</td></tr>`;});
     h+=`</tbody></table></div>`; }
