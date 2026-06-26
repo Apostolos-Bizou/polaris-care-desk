@@ -24,6 +24,13 @@ local-only (GDPR gate). Το export χρειάζεται internet μία φορ�
 
 - `Polaris-Care-Desk_MCL-Portability.docx` — πώς μεταφέρεται το domain logic στο MCL
 
+## Operator documentation
+
+Τεκμηρίωση για τους χειριστές (στο φάκελο `docs/`):
+
+- [Operator Guide](docs/Polaris_Care_Desk_Operator_Guide.docx) — full step-by-step guide για τον χειρισμό των cases
+- Quick Reference (1-page printable) — *θα προστεθεί σύντομα*
+
 ## MCL portability
 
 Το domain logic (8 lifecycle steps + business rules) είναι απομονωμένο ως framework-agnostic block και προορίζεται να μεταφερθεί στο MCL **Next2Care** build ως `lib/lifecycle.ts`.
