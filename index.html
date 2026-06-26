@@ -444,6 +444,26 @@
   .bank-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
   .ftext.sm{padding:8px 10px}
   .local-pill{font-family:var(--mono);font-size:10.5px;letter-spacing:.8px;text-transform:uppercase;color:#b8392a;background:rgba(229,96,77,.12);border:1px solid rgba(229,96,77,.4);padding:5px 11px;border-radius:20px;font-weight:500}
+  /* ===== CW meeting features ===== */
+  .rail5{min-width:560px}
+  .rail5 .subcap{font-family:var(--mono);font-size:9.5px;color:var(--gold);margin-top:3px;letter-spacing:.2px}
+  .mini-rail .seg{width:18px}
+  .inv-box{background:rgba(0,0,0,.02);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:14px 0}
+  .inv-h{font-family:var(--mono);font-size:10.5px;letter-spacing:.6px;text-transform:uppercase;color:var(--slate-2);margin-bottom:10px}
+  .inv-note{font-size:12px;color:var(--slate-2);margin-top:8px}
+  .inv-partial{font-size:12.5px;color:var(--coral);font-weight:600;margin-top:8px}
+  .link-add{background:none;border:none;color:var(--teal);font-size:12.5px;cursor:pointer;padding:8px 0 0;font-family:inherit}
+  .newmember{margin-top:12px;padding:14px;border:1px dashed var(--line);border-radius:12px}
+  .fsel.sm{padding:8px 10px}
+  .nm-out{font-family:var(--mono);font-size:12px;color:var(--teal);margin-top:10px;font-weight:600}
+  .payrun-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+  .pk{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .pk-n{font-size:26px;font-weight:700;line-height:1}
+  .pk-l{font-size:11px;color:var(--slate-2);text-transform:uppercase;letter-spacing:.5px;margin-top:6px}
+  .pk-s{font-size:13px;margin-top:4px}
+  .pill-coral{background:rgba(229,96,77,.14);color:#b8392a;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
+  .pill-gold{background:rgba(193,142,42,.16);color:#8a6410;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
+  .pill-slate{background:rgba(100,116,139,.14);color:var(--slate-2);padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
@@ -476,6 +496,10 @@
       <a href="#" data-view="ledger" onclick="go('ledger',event)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
         Availment Ledger
+      </a>
+      <a href="#" data-view="payrun" onclick="go('payrun',event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        Payment Run
       </a>
       <div class="lab" style="margin-top:18px">Reference</div>
       <a href="#" data-view="procedure" onclick="go('procedure',event)">
@@ -540,6 +564,18 @@
           <option value="">— select member —</option>
         </select>
         <div class="member-preview" id="m-preview"></div>
+        <button type="button" class="link-add" id="m-newtoggle" onclick="toggleNewMember()">＋ New member (auto member number)</button>
+        <div class="newmember hidden" id="m-newbox">
+          <div class="bank-grid">
+            <div><label>Full name</label><input class="ftext sm" id="nm-name" placeholder="Surname, Given"></div>
+            <div><label>Corporate / principal</label><input class="ftext sm" id="nm-corp" placeholder="e.g. AEGEAN CREWING"></div>
+          </div>
+          <div class="bank-grid" style="margin-top:10px">
+            <div><label>Relation</label><select class="fsel sm" id="nm-rel"><option value="Principal member">Principal member</option><option value="Dependent">Dependent</option></select></div>
+            <div style="display:flex;align-items:flex-end"><button type="button" class="btn primary sm" style="width:100%" onclick="createMember()">Create member + assign No.</button></div>
+          </div>
+          <div class="nm-out" id="nm-out"></div>
+        </div>
       </div>
       <!-- provider -->
       <div class="fgroup">
@@ -647,12 +683,26 @@ const STEPS = [
   {key:'membership',cap:'Membership',      no:2},
   {key:'availment', cap:'Availment',       no:3},
   {key:'prelim',    cap:'Preliminary LOA', no:4},
-  {key:'discharge', cap:'Discharge docs',  no:5},
+  {key:'discharge', cap:'Invoice / Proforma', no:5},
   {key:'final',     cap:'Final LOA',        no:6},
   {key:'payment',   cap:'Payment',          no:7},
   {key:'ledger',    cap:'Ledger update',    no:8},
 ];
 const stepIndex = k => STEPS.findIndex(s=>s.key===k);
+// 5 visual phases over the 8 internal steps (CW decision: group 8→5)
+const PHASES=[
+ {no:1,key:'report', cap:'Loss report',        steps:['request']},
+ {no:2,key:'prelim', cap:'Preliminary LOA',    steps:['membership','availment','prelim']},
+ {no:3,key:'invoice',cap:'Invoice / Proforma', steps:['discharge']},
+ {no:4,key:'final',  cap:'Final LOA',           steps:['final']},
+ {no:5,key:'settle', cap:'Settlement',          steps:['payment','ledger']},
+];
+const phaseOf = stage => PHASES.find(ph=>ph.steps.includes(stage)) || PHASES[0];
+const phaseNo = stage => phaseOf(stage).no;
+function addWorkingDays(dateStr,n){ if(!dateStr) return ''; const d=new Date(dateStr+'T00:00:00'); let a=0; while(a<n){ d.setDate(d.getDate()+1); const wd=d.getDay(); if(wd!==0&&wd!==6) a++; } return d.toISOString().slice(0,10); }
+function caseTerms(c){ const p=provById(c.provider); return (p&&p.termsDays)||CONFIG.paymentTermsDays; }
+function dueDate(c){ return c.finalLoaDate ? addWorkingDays(c.finalLoaDate, caseTerms(c)) : ''; }
+function genMemberNo(){ const ids=new Set(Object.values(MEMBERS).map(m=>m.amaphilId)); let n; do{ const seq=String(Math.floor(10+Math.random()*89)); const tail=String(Math.floor(100000000+Math.random()*899999999)); n='8-0001'+seq+'-'+tail; }while(ids.has(n)); return n; }
 
 // --- business RULES (the moat of this mockup; carry to MCL) ---
 const RULES = {
@@ -677,6 +727,7 @@ const CONFIG = {
   disbursingBankNo: '101790002171',
   corpDefault: 'POLARIS FINANCIAL SERVICES',
   generatedBy: 'Care Desk (manual)',
+  paymentTermsDays: 5,   // working days to settle per hospital MOA (per-case)
 };
 const SERVICE_TYPES = [
   {v:'consultation', label:'Consultation',            code:'OUTPATIENT-BASIC-CONSULTATION'},
@@ -818,6 +869,9 @@ CASES.forEach(c=>{
   if(!c.txnDate){ const mm = c.ref.includes('-2605-')?'05':'06'; const dd=(10+(parseInt(c.ref.slice(-2))||1)%18); c.txnDate='2026-'+mm+'-'+String(dd).padStart(2,'0'); }
   c.dischargeDate = c.dischargeDate || (stepIndex(c.stage)>stepIndex('discharge') ? c.txnDate : '');
   c.bankRef = c.bankRef || ''; c.dateCredited = c.dateCredited || ''; c.amtDeducted = c.amtDeducted || ''; c.dateDeducted = c.dateDeducted || '';
+  if(c.invoiceNominal===undefined) c.invoiceNominal = c.amount||0;
+  if(c.invoicePayable===undefined) c.invoicePayable = c.amount||0;
+  if(!c.finalLoaDate && stepIndex(c.stage)>=stepIndex('payment')) c.finalLoaDate = c.txnDate;
 });
 
 /* ============================================================
@@ -850,12 +904,12 @@ function openCase(ref){currentRef=ref;view='case';render();window.scrollTo(0,0);
 function clearGlobalSearch(){const q=$('#g-q'); if(q)q.value=''; const r=$('#g-results'); if(r)r.innerHTML='';}
 function openTrack(ref){clearGlobalSearch();currentRef=ref;view='track';render();window.scrollTo(0,0);}
 function openProvider(id){clearGlobalSearch();currentProv=id;view='provider';render();window.scrollTo(0,0);}
-const TITLES={dashboard:['Operations / Case Board','Case Board'],network:['Operations / Network','Accredited Network'],ledger:['Operations / Availment Ledger','Availment Ledger'],procedure:['Reference / Procedure','Procedure & Coverage'],guide:['Reference / Guide','User Guide'],export:['Operations / Export','CBMS Utilization Export'],case:['Operations / Case Board / Detail','Case Detail'],track:['Operations / Case Board / Tracking','Case Tracking'],provider:['Operations / Network / Provider','Provider Card']};
+const TITLES={dashboard:['Operations / Case Board','Case Board'],network:['Operations / Network','Accredited Network'],ledger:['Operations / Availment Ledger','Availment Ledger'],procedure:['Reference / Procedure','Procedure & Coverage'],guide:['Reference / Guide','User Guide'],export:['Operations / Export','CBMS Utilization Export'],payrun:['Operations / Payment Run','Daily Payment Run'],case:['Operations / Case Board / Detail','Case Detail'],track:['Operations / Case Board / Tracking','Case Tracking'],provider:['Operations / Network / Provider','Provider Card']};
 function render(){
   const [crumb,title]=TITLES[view];
   $('#crumb').textContent=crumb;$('#title').textContent=title;
   $('#nav-cases').textContent=CASES.filter(c=>c.stage!=='ledger').length;
-  ({dashboard:renderDashboard,network:renderNetwork,ledger:renderLedger,procedure:renderProcedure,guide:renderGuide,export:renderExport,case:renderCase,track:renderTrack,provider:renderProvider}[view])();
+  ({dashboard:renderDashboard,network:renderNetwork,ledger:renderLedger,procedure:renderProcedure,guide:renderGuide,export:renderExport,payrun:renderPaymentRun,case:renderCase,track:renderTrack,provider:renderProvider}[view])();
 }
 
 /* ============================================================
@@ -878,14 +932,14 @@ function renderDashboard(){
   active.forEach(c=>{
     const m=MEMBERS[c.member];const si=stepIndex(c.stage);const stepObj=STEPS[si];
     let rail='<div class="mini-rail">';
-    STEPS.forEach((s,i)=>{let cls=i<si?'done':(i===si?'now':'');if(i===si&&c.stage==='availment')cls='block';if(s.key==='prelim'&&RULES.skipsPrelim(c))cls='skipped';rail+=`<span class="seg ${cls}"></span>`;});
+    PHASES.forEach(ph=>{const last=Math.max(...ph.steps.map(stepIndex)),first=Math.min(...ph.steps.map(stepIndex));let cls=si>last?'done':((si>=first&&si<=last)?'now':'');if(cls==='now'&&c.stage==='availment')cls='block';rail+=`<span class="seg ${cls}"></span>`;});
     rail+='</div>';
     h+=`<div class="case card" onclick="openCase('${c.ref}')">
       <div class="who"><div class="nm">${m.name}</div><div class="rl">${m.role}</div><div class="id">${caseId(c)} · ${c.member}</div></div>
       <div class="prov"><div class="p">${provById(c.provider).name}</div><div class="amt">${c.amount?php(c.amount):'amount TBD'} · ${c.dx}</div>
         <div class="tags"><span class="tag ${c.emergency?'er':'noner'}">${c.emergency?'ER':'Non-ER'}</span><span class="tag ${c.inpatient?'inp':'outp'}">${c.inpatient?'Inpatient':'Outpatient'}</span><span class="tag chan">${c.channel==='call'?'☎ call':'✉ message'}</span></div>
       </div>
-      <div class="stat-col"><div class="lbl">Step ${stepObj.no}/8 · ${stepObj.cap}</div>${rail}</div>
+      <div class="stat-col"><div class="lbl">Phase ${phaseNo(c.stage)}/5 · ${phaseOf(c.stage).cap}</div>${rail}</div>
       <div class="row"><div class="nextcol"><div class="na">Next action</div><span class="btn ${c.stage==='availment'?'gold':'primary'} sm">${nextActionLabel(c)}</span></div>${chev()}</div>
     </div>`;
   });
@@ -900,9 +954,10 @@ function nextActionLabel(c){return {request:'Verify membership',membership:'Chec
 function renderCase(){
   const c=CASES.find(x=>x.ref===currentRef);if(!c){go('dashboard');return;}
   const m=MEMBERS[c.member];const si=stepIndex(c.stage);const prov=provById(c.provider);
-  const progPct=(si/(STEPS.length-1))*100;
-  let rail=`<div class="rail"><div class="prog" style="width:calc(${progPct}% - ${progPct*0.48}px)"></div>`;
-  STEPS.forEach((s,i)=>{const skip=s.key==='prelim'&&RULES.skipsPrelim(c);let cls=skip?'skipped':(i<si?'done':(i===si?'now':''));let gate=(!skip&&i===si&&c.stage==='availment')?' gate':'';let inner=skip?'–':(i<si?svgCheck():s.no);rail+=`<div class="station ${cls}${gate}"><div class="node">${inner}</div><div class="cap">${s.cap}${skip?'<span class="na">N/A · ER</span>':''}</div></div>`;});
+  const phIdx=PHASES.indexOf(phaseOf(c.stage));
+  const progPct=PHASES.length>1?(phIdx/(PHASES.length-1))*100:0;
+  let rail=`<div class="rail rail5"><div class="prog" style="width:calc(${progPct}% - ${progPct*0.48}px)"></div>`;
+  PHASES.forEach((ph,i)=>{const last=Math.max(...ph.steps.map(stepIndex)),first=Math.min(...ph.steps.map(stepIndex));const done=si>last,now=si>=first&&si<=last;const gate=(now&&c.stage==='availment')?' gate':'';const inner=done?svgCheck():ph.no;let sub='';if(now&&ph.steps.length>1)sub=`<div class="subcap">→ ${STEPS[si].cap}</div>`;if(ph.key==='prelim'&&RULES.skipsPrelim(c))sub+=`<div class="subcap" style="color:var(--coral)">ER · no Prelim</div>`;rail+=`<div class="station ${done?'done':(now?'now':'')}${gate}"><div class="node">${inner}</div><div class="cap">${ph.cap}</div>${sub}</div>`;});
   rail+=`</div>`;
   function bar(lab,left,total){const pct=total?Math.max(2,Math.round(left/total*100)):0;const cls=left<=0?'zero':(left/total<0.2?'low':'');return `<div class="avail-bar"><div class="ab-top"><span class="lab">${lab}</span><span class="val">${php(left)} / ${php(total)}</span></div><div class="track"><div class="fill ${cls}" style="width:${pct}%"></div></div></div>`;}
 
@@ -977,12 +1032,22 @@ function stepPanel(c,m,prov){
     let body=`<div class="desc">On discharge — the provider sends the documents. Confirm receipt.</div><div class="actionzone">`;
     docs.forEach(d=>{body+=`<div class="check-item ${ds[d.k]?'on':''} ${d.req?'':'opt'}" onclick="flipDoc('${c.ref}','${d.k}')"><span class="cb">${svgCheck()}</span><span class="ct">${d.t}</span><span class="req">${d.req?'required':'optional'}</span></div>`;});
     const ready=docs.filter(d=>d.req).every(d=>ds[d.k]);
+    const inv=c.invoiceNominal||0, pay=c.invoicePayable||0, remain=c.inpatient?m.amblLeft:m.oamblLeft;
+    const suggest=inv?Math.min(inv,(c.estAmount||inv),remain):0;
+    body+=`<div class="inv-box"><div class="inv-h">🧾 Invoice / Proforma — nominal vs payable</div>
+      <div class="bank-grid">
+        <div><label>Invoice nominal (Php)</label><input class="ftext sm" type="number" min="0" value="${inv||''}" onchange="setInvoice('${c.ref}','nominal',this.value)" placeholder="face value"></div>
+        <div><label>Invoice payable (Php)</label><input class="ftext sm" type="number" min="0" value="${pay||''}" onchange="setInvoice('${c.ref}','payable',this.value)" placeholder="what we pay"></div>
+      </div>
+      ${inv?`<div class="inv-note">Suggested payable = min(nominal, LOA, remaining ${php(remain)}) = <b>${php(suggest)}</b> <button class="btn ghost sm" style="margin-left:8px" onclick="setInvoice('${c.ref}','payable',${suggest})">Apply</button></div>`:''}
+      ${(inv&&pay&&pay<inv)?`<div class="inv-partial">⚠ Partial settlement — patient share ${php(inv-pay)}</div>`:''}
+    </div>`;
     body+=`<div class="magic-row" style="margin-top:14px"><button class="btn primary" ${ready?'':'disabled'} onclick="advance('${c.ref}','Discharge documents received')">${magicIcon()}Confirm documents received</button><span class="magic-note">${ready?'All required received.':'Missing required documents.'}</span></div></div></div>`;
     return head+body;
   }
 
   if(c.stage==='final') return head+`<div class="desc">Issue Final LOA to provider + patient, based on final documents.</div>
-    <div class="actionzone"><dl class="facts" style="margin-bottom:6px"><dt>Final billed amount</dt><dd class="mono">${php(c.amount)}</dd><dt>Against</dt><dd>${c.inpatient?'AMBL (annual)':'Outpatient AMBL'} — remaining ${php(c.inpatient?m.amblLeft:m.oamblLeft)}</dd></dl>
+    <div class="actionzone"><dl class="facts" style="margin-bottom:6px"><dt>Invoice nominal</dt><dd class="mono">${php(c.invoiceNominal||c.amount)}</dd><dt>Invoice payable</dt><dd class="mono" style="font-weight:600">${php(c.invoicePayable||c.amount)}</dd>${(c.invoiceNominal&&c.invoicePayable&&c.invoicePayable<c.invoiceNominal)?`<dt>Patient share</dt><dd class="mono" style="color:var(--coral)">${php(c.invoiceNominal-c.invoicePayable)}</dd>`:''}<dt>Against</dt><dd>${c.inpatient?'AMBL (annual)':'Outpatient AMBL'} — remaining ${php(c.inpatient?m.amblLeft:m.oamblLeft)}</dd></dl>
     <div class="recip"><span class="rc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>${prov.name}</span><span class="rc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>${m.name}</span></div>
     <div class="magic-row"><button class="btn primary" onclick="advance('${c.ref}','Final LOA issued → provider + patient')">${magicIcon()}Issue Final LOA</button></div></div></div>`;
 
@@ -1005,6 +1070,7 @@ function flipGate(ref,key){const g=gateState[ref]||(gateState[ref]={cbms:false,c
 function flipDoc(ref,key){const d=docState[ref]||(docState[ref]={});d[key]=!d[key];renderCase();}
 function holdCase(){toast('Mockup — hold / escalate flow');}
 function setCaseField(ref,f,v){const c=CASES.find(x=>x.ref===ref);if(c)c[f]=v;}
+function setInvoice(ref,f,v){const c=CASES.find(x=>x.ref===ref);if(!c)return;v=parseInt(v)||0;if(f==='nominal'){c.invoiceNominal=v;if(!c.invoicePayable)c.invoicePayable=v;}else{c.invoicePayable=v;}c.amount=c.invoicePayable||c.amount;renderCase();}
 function reclassify(ref,field,val){
   const c=CASES.find(x=>x.ref===ref);if(!c||c[field]===val)return;
   const before=catCode(c)+' · '+caseType(c);
@@ -1091,6 +1157,7 @@ function advance(ref,trailMsg,customToast){
   const c=CASES.find(x=>x.ref===ref);if(!c)return;const si=stepIndex(c.stage);
   if(si<STEPS.length-1){
     if(c.stage==='discharge'&&!c.dischargeDate)c.dischargeDate=new Date().toISOString().slice(0,10);
+    if(c.stage==='final'&&!c.finalLoaDate)c.finalLoaDate=new Date().toISOString().slice(0,10);
     if(c.stage==='payment'){const m=MEMBERS[c.member];if(c.inpatient)m.amblLeft=Math.max(0,m.amblLeft-c.amount);else m.oamblLeft=Math.max(0,m.oamblLeft-c.amount);m.paid=(m.paid||0)+c.amount;}
     let ni=si+1;
     if(STEPS[ni] && STEPS[ni].key==='prelim' && RULES.skipsPrelim(c)) ni++;   // ER skips Preliminary LOA
@@ -1116,6 +1183,20 @@ function openModal(){
   $('#modal').classList.add('open');
 }
 function closeModal(){$('#modal').classList.remove('open');}
+function toggleNewMember(){$('#m-newbox').classList.toggle('hidden');}
+function createMember(){
+  const name=($('#nm-name').value||'').trim(), corp=($('#nm-corp').value||'').trim().toUpperCase(), rel=$('#nm-rel').value;
+  if(!name||!corp){toast('Enter name + corporate');return;}
+  const no=genMemberNo();
+  const empId='30'+no.slice(-9);
+  const id='M-'+no.slice(-6);
+  MEMBERS[id]={name,role:rel+' · '+corp,relation:rel,amaphilId:no,employeeId:empId,corporate:corp,
+    amblTotal:500000,amblLeft:500000,oamblTotal:60000,oamblLeft:60000,inner:'—',paid:0};
+  const ms=$('#m-member');ms.innerHTML='<option value="">— select member —</option>'+Object.entries(MEMBERS).map(([k,m])=>`<option value="${k}">${m.name} · ${k}</option>`).join('');
+  ms.value=id;memberPreview();
+  $('#nm-out').textContent='✓ Member No. '+no+' — auto-assigned';
+  toast('✓ New member · '+no);
+}
 function pick(btn){
   const f=btn.dataset.f;
   btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('sel'));
@@ -1351,14 +1432,17 @@ const GUIDE={
  start:{
   el:`<div class="g-h2">🚀 Ξεκίνημα</div>
   <p class="g-lead">Το <b>Care Desk</b> είναι το εσωτερικό εργαλείο του Polaris Admin για να χειρίζεσαι <b>χειροκίνητα</b> τα ιατρικά περιστατικά από το δίκτυο direct providers — μέχρι να ψηφιοποιηθεί πλήρως στο MCL. Όλα τα δεδομένα εδώ είναι δοκιμαστικά· καθόλου πραγματικά προσωπικά στοιχεία.</p>
-  <div class="g-sub">🧭 Οι 4 περιοχές</div>
+  <div class="g-sub">🧭 Οι περιοχές</div>
   <p class="g-p"><b>Case Board</b> — όλα τα ενεργά περιστατικά και το κουμπί <span class="g-ref">+ New request</span>.</p>
   <p class="g-p"><b>Network</b> — κλινικές &amp; γιατροί με την κατάσταση της σύμβασης (MOA).</p>
   <p class="g-p"><b>Availment Ledger</b> — τα υπόλοιπα ορίων ανά μέλος (το χειροκίνητο CBMS).</p>
+  <p class="g-p"><b>Payment Run</b> — η ημερήσια σειρά πληρωμών <b>ανά περιστατικό</b> (εξόφληση εντός 5 εργασίμων).</p>
   <p class="g-p"><b>Procedure &amp; Coverage</b> — η αντιστοίχιση με το επίσημο έγγραφο, για έλεγχο πληρότητας.</p>
+  <p class="g-p"><b>Export · CBMS feed</b> — εξαγωγή του utilization Excel (PAID CLAIMS + FUNDED LOA).</p>
   <div class="g-sub">🚢 Πώς «ταξιδεύει» ένα περιστατικό</div>
-  <p class="g-p">Κάθε περιστατικό περνά από 8 σταθμούς (το voyage rail στην κορυφή του case):</p>
-  <p class="g-p">Request → Membership → Availment → Preliminary LOA → Discharge docs → Final LOA → Payment → Ledger update.</p>
+  <p class="g-p">Κάθε περιστατικό περνά από <b>8 εσωτερικά βήματα</b>, ομαδοποιημένα οπτικά σε <b>5 φάσεις</b> (το voyage rail στην κορυφή του case):</p>
+  <div class="g-legend"><span class="lg">1 · Αναγγελία ζημιάς</span><span class="lg">2 · Preliminary LOA</span><span class="lg">3 · Invoice / Proforma</span><span class="lg">4 · Final LOA</span><span class="lg">5 · Εξόφληση</span></div>
+  <p class="g-p"><b>Αναγγελία ζημιάς</b> = τηλ/email από ασθενή ή νοσοκομείο — <b>δεν αφορά το λογιστήριο</b>. Τα 8 βήματα παραμένουν εσωτερικά για το audit.</p>
   <div class="g-note"><span class="ic">💡</span><div>Σε κάθε βήμα υπάρχει ένα <b>Magic Button</b> που σε πάει στο επόμενο λογικό βήμα — δεν χρειάζεται να θυμάσαι τη σειρά.</div></div>
   <div class="g-sub">🏷️ Οι 4 κατηγορίες περιστατικού</div>
   <p class="g-p">Κάθε αίτημα είναι συνδυασμός <b>ER / Non-ER</b> και <b>Inpatient / Outpatient</b>:</p>
@@ -1368,14 +1452,17 @@ const GUIDE={
   <div class="g-note"><span class="ic">🔁</span><div><b>Συνδυαστικά &amp; μεταβαλλόμενα:</b> ένα περιστατικό μπορεί να <b>αλλάξει κατηγορία</b> μέσα στη ροή (π.χ. 1.2 ER outpatient → 1.1 ER inpatient, ή 1.4 → 1.3). Άλλαξέ τη από το panel <b>Κατηγορία</b> στο case· κάθε αλλαγή καταγράφεται στην <b>Πορεία περιστατικού</b>.</div></div>`,
   en:`<div class="g-h2">🚀 Getting started</div>
   <p class="g-lead"><b>Care Desk</b> is the Polaris Admin internal tool for handling direct-provider medical cases <b>manually</b> — until everything is digitised in MCL. All data here is sample data; no real personal information.</p>
-  <div class="g-sub">🧭 The 4 areas</div>
+  <div class="g-sub">🧭 The areas</div>
   <p class="g-p"><b>Case Board</b> — every active case plus the <span class="g-ref">+ New request</span> button.</p>
   <p class="g-p"><b>Network</b> — clinics &amp; doctors with their agreement (MOA) status.</p>
   <p class="g-p"><b>Availment Ledger</b> — remaining limits per member (the manual CBMS).</p>
+  <p class="g-p"><b>Payment Run</b> — the daily settlement queue <b>per case</b> (paid within 5 working days).</p>
   <p class="g-p"><b>Procedure &amp; Coverage</b> — the mapping to the official document, for a completeness check.</p>
+  <p class="g-p"><b>Export · CBMS feed</b> — export of the utilization Excel (PAID CLAIMS + FUNDED LOA).</p>
   <div class="g-sub">🚢 How a case "travels"</div>
-  <p class="g-p">Every case moves through 8 stations (the voyage rail at the top of each case):</p>
-  <p class="g-p">Request → Membership → Availment → Preliminary LOA → Discharge docs → Final LOA → Payment → Ledger update.</p>
+  <p class="g-p">Every case moves through <b>8 internal steps</b>, visually grouped into <b>5 phases</b> (the voyage rail at the top of each case):</p>
+  <div class="g-legend"><span class="lg">1 · Loss report</span><span class="lg">2 · Preliminary LOA</span><span class="lg">3 · Invoice / Proforma</span><span class="lg">4 · Final LOA</span><span class="lg">5 · Settlement</span></div>
+  <p class="g-p"><b>Loss report</b> = phone/email from patient or hospital — <b>accounting is not involved</b>. The 8 steps remain internal for audit.</p>
   <div class="g-note"><span class="ic">💡</span><div>Each step has a <b>Magic Button</b> that advances you to the next logical step — you don't need to memorise the order.</div></div>
   <div class="g-sub">🏷️ The 4 case categories</div>
   <p class="g-p">Each request is a combination of <b>ER / Non-ER</b> and <b>Inpatient / Outpatient</b>:</p>
@@ -1401,7 +1488,7 @@ const GUIDE={
   <li>Πάτα <span class="g-ref">Create case</span> → το περιστατικό μπαίνει στο Board στο βήμα 1 και ανοίγει αυτόματα.</li>
   </ol>
   <div class="g-warn"><span class="ic">⚠️</span><div>Τα πεδία με <b>*</b> είναι υποχρεωτικά. Αν λείπει κάποιο, το <b>Create case</b> δεν προχωράει.</div></div>
-  <div class="g-note"><span class="ic">⚙️</span><div><b>Τι ενημερώνεται αυτόματα:</b> μετά τη δημιουργία, ο <b>coverage code</b> και το <b>TRN status</b> βγαίνουν μόνα τους (panel «Claim coding» του case) — δεν τα γράφεις χειροκίνητα. Το <b>Availment Ledger</b> ενημερώνεται στο βήμα 8· το CBMS Excel φεύγει από το <span class="g-ref">Export · CBMS feed</span>.</div></div>`,
+  <div class="g-note"><span class="ic">⚙️</span><div><b>Τι ενημερώνεται αυτόματα:</b> μετά τη δημιουργία, ο <b>coverage code</b> και το <b>TRN status</b> βγαίνουν μόνα τους (panel «Claim coding» του case) — δεν τα γράφεις χειροκίνητα. Το <b>Availment Ledger</b> ενημερώνεται στο βήμα 8· το CBMS Excel φεύγει από το <span class="g-ref">Export · CBMS feed</span>. Κάθε <b>νέο μέλος</b> (κουμπί ＋ Νέο μέλος) παίρνει <b>αυτόματα μοναδικό αριθμό συναλλασσομένου</b> με την εγγραφή.</div></div>`,
   en:`<div class="g-h2">➕ Registering a new request</div>
   <p class="g-lead">When a request comes in (phone call or message), here is how you register it:</p>
   <ol class="g-ol">
@@ -1418,7 +1505,7 @@ const GUIDE={
   <li>Click <span class="g-ref">Create case</span> → the case enters the Board at step 1 and opens automatically.</li>
   </ol>
   <div class="g-warn"><span class="ic">⚠️</span><div>Fields marked <b>*</b> are required. If one is missing, <b>Create case</b> will not proceed.</div></div>
-  <div class="g-note"><span class="ic">⚙️</span><div><b>What updates automatically:</b> after creation, the <b>coverage code</b> and <b>TRN status</b> are derived on their own (the case's "Claim coding" panel) — you don't type them. The <b>Availment Ledger</b> updates at step 8; the CBMS Excel goes out from <span class="g-ref">Export · CBMS feed</span>.</div></div>`
+  <div class="g-note"><span class="ic">⚙️</span><div><b>What updates automatically:</b> after creation, the <b>coverage code</b> and <b>TRN status</b> are derived on their own (the case's "Claim coding" panel) — you don't type them. The <b>Availment Ledger</b> updates at step 8; the CBMS Excel goes out from <span class="g-ref">Export · CBMS feed</span>. Every <b>new member</b> (＋ New member) is auto-assigned a <b>unique member number</b> on registration.</div></div>`
  },
  flow1:{
   el:`<div class="g-h2">① Βήματα 1–4 · Από το αίτημα στο Preliminary LOA</div>
@@ -1467,10 +1554,12 @@ const GUIDE={
   <p class="g-p"><b>Inpatient:</b> Medical report + Itemized invoice (ή final SOA).</p>
   <p class="g-p"><b>Outpatient:</b> Invoice + Medical abstract (μόνο αν το ποσό &gt; Php 5.000).</p>
   <p class="g-p">Τσέκαρε τα required και πάτα <span class="g-ref">Confirm documents received</span>. Όσο λείπει required, το κουμπί μένει κλειδωμένο.</p>
+  <p class="g-p"><b>Invoice / Proforma — ονομαστική vs πληρωτέα:</b> καταχώρησε <b>Invoice nominal</b> (ονομαστική) και <b>Invoice payable</b> (πληρωτέα). Πρόταση payable = min(nominal, LOA, υπόλοιπο). Αν payable &lt; nominal → <b>μερική εξόφληση</b> (patient share)· το availment μειώνεται κατά το payable. Εξάγονται στο CBMS (INVOICE NOMINAL + INVOICE PAYABLE).</p>
   <div class="g-sub">6 · Final LOA</div>
   <p class="g-p">Με βάση το τελικό ποσό, πάτα <span class="g-ref">Issue Final LOA</span>. Φεύγει ξανά σε provider + patient.</p>
-  <div class="g-sub">7 · Payment</div>
-  <p class="g-p">Πληρωμή στον provider <b>κατά το αντίστοιχο MOA</b>. Πάτα <span class="g-ref">Mark paid &amp; update ledger</span>.</p>
+  <div class="g-sub">7 · Payment · εξόφληση εντός 5 εργασίμων</div>
+  <p class="g-p">Πληρωμή στον provider <b>κατά το MOA</b>, με <b>EWT</b> (Net paid = Actual − EWT) και bank settlement. Πάτα <span class="g-ref">Mark paid &amp; update ledger</span>.</p>
+  <p class="g-p">Η εξόφληση γίνεται <b>εντός 5 εργασίμων</b> από το Final LOA, κατά τη σύμβαση με το νοσοκομείο. Όλα τα εκκρεμή φαίνονται στο <span class="g-ref">Payment Run</span> με ημερομηνία due — <b>αυστηρά ανά περιστατικό</b>.</p>
   <div class="g-sub">8 · Ledger update</div>
   <p class="g-p">Το remaining μειώνεται, το ποσό καταγράφεται στο <b>Executed / Paid (8.4)</b> και ο κύκλος γυρνά στο 8.1. Το περιστατικό κλείνει.</p>
   <div class="g-note"><span class="ic">🔁</span><div>Ο κύκλος του εγγράφου: <b>8.1</b> Remaining → <b>8.2</b> Conditional LOAs → <b>8.3</b> Final LOAs → <b>8.4</b> Executed/Paid → πίσω στο <b>8.1</b>.</div></div>`,
@@ -1480,10 +1569,12 @@ const GUIDE={
   <p class="g-p"><b>Inpatient:</b> Medical report + Itemized invoice (or final SOA).</p>
   <p class="g-p"><b>Outpatient:</b> Invoice + Medical abstract (only if the amount &gt; Php 5,000).</p>
   <p class="g-p">Tick the required ones and click <span class="g-ref">Confirm documents received</span>. While a required item is missing, the button stays locked.</p>
+  <p class="g-p"><b>Invoice / Proforma — nominal vs payable:</b> enter <b>Invoice nominal</b> (face value) and <b>Invoice payable</b> (what we pay). Suggested payable = min(nominal, LOA, remaining). If payable &lt; nominal → <b>partial settlement</b> (patient share); availment decreases by the payable. Both exported to CBMS (INVOICE NOMINAL + INVOICE PAYABLE).</p>
   <div class="g-sub">6 · Final LOA</div>
   <p class="g-p">Based on the final amount, click <span class="g-ref">Issue Final LOA</span>. It goes again to provider + patient.</p>
-  <div class="g-sub">7 · Payment</div>
-  <p class="g-p">Payment to the provider <b>as per the respective MOA</b>. Click <span class="g-ref">Mark paid &amp; update ledger</span>.</p>
+  <div class="g-sub">7 · Payment · settle within 5 working days</div>
+  <p class="g-p">Payment to the provider <b>as per the MOA</b>, with <b>EWT</b> (Net paid = Actual − EWT) and bank settlement. Click <span class="g-ref">Mark paid &amp; update ledger</span>.</p>
+  <p class="g-p">Settlement happens <b>within 5 working days</b> of the Final LOA, per the hospital agreement. All pending cases appear in <span class="g-ref">Payment Run</span> with their due date — <b>strictly per case</b>.</p>
   <div class="g-sub">8 · Ledger update</div>
   <p class="g-p">Remaining decreases, the amount is recorded under <b>Executed / Paid (8.4)</b>, and the cycle loops back to 8.1. The case closes.</p>
   <div class="g-note"><span class="ic">🔁</span><div>The document's cycle: <b>8.1</b> Remaining → <b>8.2</b> Conditional LOAs → <b>8.3</b> Final LOAs → <b>8.4</b> Executed/Paid → back to <b>8.1</b>.</div></div>`
@@ -1534,7 +1625,7 @@ const GUIDE={
  },
  export:{
   el:`<div class="g-h2">🧾 Export · CBMS feed</div>
-  <p class="g-lead">Το Care Desk βγάζει <b>ακριβώς το ίδιο Excel</b> που τροφοδοτεί το CBMS — όπως ακριβώς το παράγει και η ψηφιακή ροή. Δύο φύλλα: <b>PAID CLAIMS</b> (21 στήλες) και <b>FUNDED LOA</b> (14 στήλες).</p>
+  <p class="g-lead">Το Care Desk βγάζει <b>ακριβώς το ίδιο Excel</b> που τροφοδοτεί το CBMS — όπως ακριβώς το παράγει και η ψηφιακή ροή. Δύο φύλλα: <b>PAID CLAIMS</b> (24 στήλες) και <b>FUNDED LOA</b> (17 στήλες) — με <b>Case ID</b> + <b>INVOICE NOMINAL/PAYABLE</b>.</p>
 
   <div class="g-sub">🆕 Δύο νέα πεδία στην Καταχώρηση</div>
   <p class="g-p"><b>Claim mode</b> — <b>Direct LOA</b> (η κανονική direct-provider ροή) ή <b>Reimbursement</b> (το μέλος πλήρωσε και ζητά επιστροφή).</p>
@@ -1560,7 +1651,7 @@ const GUIDE={
 
   <div class="g-note"><span class="ic">🔒</span><div><b>GDPR:</b> το export με <b>πραγματικά</b> δεδομένα τρέχει <b>μόνο τοπικά</b> — ποτέ από το δημόσιο demo. Τα δεδομένα δεν φεύγουν από τον υπολογιστή.</div></div>`,
   en:`<div class="g-h2">🧾 Export · CBMS feed</div>
-  <p class="g-lead">Care Desk produces <b>the exact same Excel</b> that feeds CBMS — just like the digital flow does. Two sheets: <b>PAID CLAIMS</b> (21 columns) and <b>FUNDED LOA</b> (14 columns).</p>
+  <p class="g-lead">Care Desk produces <b>the exact same Excel</b> that feeds CBMS — just like the digital flow does. Two sheets: <b>PAID CLAIMS</b> (24 columns) and <b>FUNDED LOA</b> (17 columns) — with <b>Case ID</b> + <b>INVOICE NOMINAL/PAYABLE</b>.</p>
 
   <div class="g-sub">🆕 Two new fields on New request</div>
   <p class="g-p"><b>Claim mode</b> — <b>Direct LOA</b> (the normal direct-provider flow) or <b>Reimbursement</b> (member paid and claims it back).</p>
@@ -1740,8 +1831,31 @@ function setGuideTab(id){guideTab=id;renderGuide();window.scrollTo(0,0);}
 /* ============================================================
    EXPORT — CBMS utilization feed (PAID CLAIMS + FUNDED LOA)
    ============================================================ */
-const PC_HEADERS=['Case ID','Transaction Date','DISCHARGE DATE','Member Name','Member ID','Employee ID','Corporate','TRN Status','Coverage','generated_by','LOA No.','DIAGNOSIS','Provider','LOA Amount','ACTUAL CLAIMS','EWT','NET PAID','AMT DEDUCTED IN BANK','DATE DEDUCTED','BANK REF. NO.','DATE CREDITED','TRN'];
-const FL_HEADERS=['Case ID','corp_name','Date Issued/Discharged','loa_no','trans_no','coverage_code','provider_name','LOA Amt.','Claim Amt.','Claim - LOA Amt','bank_acc_name','bank_no','Date Funded','Part of','Bank ref. no.'];
+function renderPaymentRun(){
+  const today=new Date().toISOString().slice(0,10);
+  const due=CASES.filter(c=>c.stage==='payment').map(c=>({c,due:dueDate(c)})).sort((a,b)=>(a.due||'9999')<(b.due||'9999')?-1:1);
+  const overdue=due.filter(x=>x.due&&x.due<today);
+  const todayDue=due.filter(x=>x.due===today);
+  const sum=arr=>arr.reduce((t,x)=>t+(x.c.invoicePayable||x.c.amount||0),0);
+  let h=`<div class="ledger-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><div>Daily settlement queue — <b>strictly per case</b>. Each case is paid within <b>${CONFIG.paymentTermsDays} working days</b> of the Final LOA, per the hospital agreement. (No grouping by hospital.)</div></div>`;
+  h+=`<div class="payrun-kpis">
+    <div class="pk"><div class="pk-n" style="color:var(--coral)">${overdue.length}</div><div class="pk-l">Overdue</div><div class="pk-s mono">${php(sum(overdue))}</div></div>
+    <div class="pk"><div class="pk-n" style="color:var(--gold)">${todayDue.length}</div><div class="pk-l">Due today</div><div class="pk-s mono">${php(sum(todayDue))}</div></div>
+    <div class="pk"><div class="pk-n">${due.length}</div><div class="pk-l">Total awaiting</div><div class="pk-s mono">${php(sum(due))}</div></div>
+  </div>`;
+  h+=`<div class="card" style="padding:0"><div class="ledger-wrap"><table class="ledger"><thead><tr><th>Case ID</th><th>Member</th><th>Provider</th><th class="num">Payable</th><th>Final LOA</th><th>Due (${CONFIG.paymentTermsDays}d)</th><th>Status</th><th></th></tr></thead><tbody>`;
+  if(!due.length) h+=`<tr><td colspan="8" style="padding:22px;color:var(--slate-2)">No pending payments — every case is either before Final LOA or already settled.</td></tr>`;
+  due.forEach(({c,due:d})=>{
+    const m=MEMBERS[c.member],p=provById(c.provider);
+    const st = d&&d<today?['Overdue','coral'] : (d===today?['Due today','gold'] : ['Upcoming','slate']);
+    h+=`<tr><td class="mono">${caseId(c)}</td><td>${m.name}</td><td>${p.name}</td><td class="num mono">${php(c.invoicePayable||c.amount)}</td><td class="mono" style="font-size:12px">${c.finalLoaDate||'—'}</td><td class="mono" style="font-size:12px">${d||'—'}</td><td><span class="pill-${st[1]}">${st[0]}</span></td><td><button class="btn ghost sm" onclick="openCase('${c.ref}')">Open</button></td></tr>`;
+  });
+  h+=`</tbody></table></div></div>`;
+  $('#content').innerHTML=h;
+}
+
+const PC_HEADERS=['Case ID','Transaction Date','DISCHARGE DATE','Member Name','Member ID','Employee ID','Corporate','TRN Status','Coverage','generated_by','LOA No.','DIAGNOSIS','Provider','LOA Amount','ACTUAL CLAIMS','INVOICE NOMINAL','INVOICE PAYABLE','EWT','NET PAID','AMT DEDUCTED IN BANK','DATE DEDUCTED','BANK REF. NO.','DATE CREDITED','TRN'];
+const FL_HEADERS=['Case ID','corp_name','Date Issued/Discharged','loa_no','trans_no','coverage_code','provider_name','LOA Amt.','Claim Amt.','Invoice Nominal','Invoice Payable','Claim - LOA Amt','bank_acc_name','bank_no','Date Funded','Part of','Bank ref. no.'];
 let EXPORT_HISTORY=[];
 function loadHistory(){try{const j=localStorage.getItem('cd_export_history');if(j)EXPORT_HISTORY=JSON.parse(j);}catch(e){}}
 function logExport(from,to,rows,fn){EXPORT_HISTORY.unshift({period:(from||'…')+' → '+(to||'…'),generated:new Date().toISOString().slice(0,16).replace('T',' '),rows,file:fn});try{localStorage.setItem('cd_export_history',JSON.stringify(EXPORT_HISTORY.slice(0,50)));}catch(e){}}
@@ -1753,14 +1867,14 @@ function casesInRange(from,to){
 }
 function pcRowsFor(c){
   const m=MEMBERS[c.member], p=provById(c.provider);
-  const base=cov=>({'Case ID':caseId(c),'Transaction Date':c.txnDate,'DISCHARGE DATE':c.dischargeDate||'','Member Name':m.name,'Member ID':m.amaphilId,'Employee ID':m.employeeId,'Corporate':m.corporate||CONFIG.corpDefault,'TRN Status':RULES.deriveTrn(c),'Coverage':cov,'generated_by':CONFIG.generatedBy,'LOA No.':c.loaNo,'DIAGNOSIS':c.dx,'Provider':p.name,'LOA Amount':c.estAmount||c.amount,'ACTUAL CLAIMS':c.amount,'EWT':ewtAmt(c),'NET PAID':netPaid(c),'AMT DEDUCTED IN BANK':c.amtDeducted||'','DATE DEDUCTED':c.dateDeducted||'','BANK REF. NO.':c.bankRef||'','DATE CREDITED':c.dateCredited||'','TRN':c.transNo});
+  const base=cov=>({'Case ID':caseId(c),'Transaction Date':c.txnDate,'DISCHARGE DATE':c.dischargeDate||'','Member Name':m.name,'Member ID':m.amaphilId,'Employee ID':m.employeeId,'Corporate':m.corporate||CONFIG.corpDefault,'TRN Status':RULES.deriveTrn(c),'Coverage':cov,'generated_by':CONFIG.generatedBy,'LOA No.':c.loaNo,'DIAGNOSIS':c.dx,'Provider':p.name,'LOA Amount':c.estAmount||c.amount,'ACTUAL CLAIMS':c.invoicePayable||c.amount,'INVOICE NOMINAL':c.invoiceNominal||c.amount,'INVOICE PAYABLE':c.invoicePayable||c.amount,'EWT':ewtAmt(c),'NET PAID':netPaid(c),'AMT DEDUCTED IN BANK':c.amtDeducted||'','DATE DEDUCTED':c.dateDeducted||'','BANK REF. NO.':c.bankRef||'','DATE CREDITED':c.dateCredited||'','TRN':c.transNo});
   if(c.splitAdmission&&c.emergency&&c.inpatient) return [base('EMERGENCY'),base('INPATIENT-ADMISSION')];
   return [base(RULES.deriveCoverage(c))];
 }
 function flRowFor(c){
   const m=MEMBERS[c.member], p=provById(c.provider);
-  const loa=c.estAmount||c.amount, claim=c.amount;
-  return {'Case ID':caseId(c),'corp_name':m.corporate||CONFIG.corpDefault,'Date Issued/Discharged':c.dischargeDate||c.txnDate,'loa_no':c.loaNo,'trans_no':c.transNo,'coverage_code':RULES.deriveCoverage(c),'provider_name':p.name,'LOA Amt.':loa,'Claim Amt.':claim,'Claim - LOA Amt':Math.round((claim-loa)*100)/100,'bank_acc_name':CONFIG.disbursingAccountName,'bank_no':CONFIG.disbursingBankNo,'Date Funded':c.dateCredited||'','Part of':c.fundedBatch||'','Bank ref. no.':c.bankRef||''};
+  const loa=c.estAmount||c.amount, claim=c.invoicePayable||c.amount, nominal=c.invoiceNominal||c.amount;
+  return {'Case ID':caseId(c),'corp_name':m.corporate||CONFIG.corpDefault,'Date Issued/Discharged':c.dischargeDate||c.txnDate,'loa_no':c.loaNo,'trans_no':c.transNo,'coverage_code':RULES.deriveCoverage(c),'provider_name':p.name,'LOA Amt.':loa,'Claim Amt.':claim,'Invoice Nominal':nominal,'Invoice Payable':claim,'Claim - LOA Amt':Math.round((claim-loa)*100)/100,'bank_acc_name':CONFIG.disbursingAccountName,'bank_no':CONFIG.disbursingBankNo,'Date Funded':c.dateCredited||'','Part of':c.fundedBatch||'','Bank ref. no.':c.bankRef||''};
 }
 function doExport(){
   if(typeof XLSX==='undefined'){toast('SheetJS not loaded (needs internet)');return;}
