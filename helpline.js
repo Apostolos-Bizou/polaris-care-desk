@@ -39,10 +39,11 @@ const HL = (() => {
     statuses: ['New', 'In Progress', 'Waiting AMAPHIL', 'Waiting Member', 'Escalated', 'Resolved', 'Not Resolved'],
     sla: { Urgent: { first: 0.25, resolve: 1 }, High: { first: 1, resolve: 8 }, Normal: { first: 4, resolve: 48 } },
     staff: [
-      { id: 'JK', n: 'Jinky', role: 'Agent', shift: '07:00–16:00', on: true },
-      { id: 'ST', n: 'Stella', role: 'Agent', shift: '09:00–18:00', on: true },
-      { id: 'JP', n: 'Japheth', role: 'Agent', shift: '13:00–22:00', on: true },
-      { id: 'SV', n: 'Ops Supervisor', role: 'Supervisor', shift: '08:00–17:00', on: true },
+      { id: 'AD', n: 'Admin', role: 'Admin', shift: '—', on: true, user: 'admin', pw: 'Admin#2026', active: true },
+      { id: 'SV', n: 'Ops Supervisor', role: 'Supervisor', shift: '08:00–17:00', on: true, user: 'supervisor', pw: 'Super#2026', active: true },
+      { id: 'JK', n: 'Jinky', role: 'Agent', shift: '07:00–16:00', on: true, user: 'jinky', pw: 'Jinky#2026', active: true },
+      { id: 'ST', n: 'Stella', role: 'Agent', shift: '09:00–18:00', on: true, user: 'stella', pw: 'Stella#2026', active: true },
+      { id: 'JP', n: 'Japheth', role: 'Agent', shift: '13:00–22:00', on: true, user: 'japheth', pw: 'Japheth#2026', active: true },
     ],
     hours: 'Mon–Sat 07:00–22:00 · Sunday on-call for Urgent',
   };
@@ -78,7 +79,20 @@ const HL = (() => {
   let composeMode = 'reply', kpiYear = null, kpiCompany = '', draftHL = {};
   let QA = [];            // evaluations
   let wallTimer = null, pendingLink = null;
-  const ME = 'JK';
+  let ME = null;             // signed-in user id
+  let lastAct = 0, fails = {}, lockUntil = {};
+  const SESSION_MIN = 30;    // auto sign-out after 30 minutes without activity
+  const AUDIT = [];          // append-only activity log
+  const ROLE_TABS = {
+    Agent: ['mywork', 'inbox', 'board', 'kb'],
+    Supervisor: ['mywork', 'inbox', 'board', 'wall', 'kpi', 'kb', 'qa', 'audit'],
+    Admin: ['mywork', 'inbox', 'board', 'wall', 'kpi', 'kb', 'qa', 'audit', 'admin'],
+  };
+  const me = () => S.staff.find(u => u.id === ME);
+  const role = () => (me() || {}).role || '';
+  const canTab = k => k === 'ticket' || (ROLE_TABS[role()] || []).includes(k);
+  const canManage = () => ['Supervisor', 'Admin'].includes(role());
+  function audit(a, ref, d, at, who) { AUDIT.unshift({ t: at || Date.now(), u: who || ME || '—', a, ref: ref || '', d: d || '' }); }
 
   // ───────── helpers ─────────
   const H = 3600e3, D = 24 * H;
@@ -250,15 +264,17 @@ const HL = (() => {
 
   // ───────── navigation ─────────
   const TABS = [
-    { k: 'inbox', n: 'Inbox', ic: '📥' }, { k: 'board', n: 'Board', ic: '🗂️' }, { k: 'wall', n: 'Supervisor', ic: '📡' },
-    { k: 'kpi', n: 'KPIs & Reports', ic: '📊' }, { k: 'kb', n: 'Knowledge & Macros', ic: '📚' }, { k: 'qa', n: 'Quality', ic: '🎯' }, { k: 'admin', n: 'Admin', ic: '⚙️' },
+    { k: 'mywork', n: 'My work', ic: '👤' }, { k: 'inbox', n: 'Inbox', ic: '📥' }, { k: 'board', n: 'Board', ic: '🗂️' }, { k: 'wall', n: 'Supervisor', ic: '📡' },
+    { k: 'kpi', n: 'KPIs & Reports', ic: '📊' }, { k: 'kb', n: 'Knowledge & Macros', ic: '📚' }, { k: 'qa', n: 'Quality', ic: '🎯' }, { k: 'audit', n: 'Activity log', ic: '🧾' }, { k: 'admin', n: 'Admin', ic: '⚙️' },
   ];
   function nav(k) { tab = k; current = null; view = 'hl'; document.querySelectorAll('.nav a').forEach(a => a.classList.toggle('active', a.dataset.view === 'hl-' + k || (k === 'inbox' && a.dataset.view === 'hl'))); render(); window.scrollTo(0, 0); }
-  function open(id) { current = id; tab = 'ticket'; view = 'hl'; render(); window.scrollTo(0, 0); }
+  function open(id) { if (ME && current !== id) audit('Viewed ticket', id, ''); current = id; tab = 'ticket'; view = 'hl'; render(); window.scrollTo(0, 0); }
   function tabsBar() {
     const openN = T.filter(isOpen).length;
-    return `<div class="hl-tabs">${TABS.map(x => `<button class="${tab === x.k ? 'on' : ''}" onclick="HL.nav('${x.k}')">${x.ic} ${x.n}${x.k === 'inbox' ? ` <span class="n">${openN}</span>` : ''}</button>`).join('')}
-      <span style="flex:1"></span><button class="on" style="background:var(--teal);border-color:var(--teal)" onclick="HL.newTicket()">＋ New request</button></div>`;
+    const u = me();
+    return `<div class="hl-tabs">${TABS.filter(x => canTab(x.k)).map(x => `<button class="${tab === x.k ? 'on' : ''}" onclick="HL.nav('${x.k}')">${x.ic} ${x.n}${x.k === 'inbox' ? ` <span class="n">${openN}</span>` : ''}</button>`).join('')}
+      <span style="flex:1"></span><button class="on" style="background:var(--teal);border-color:var(--teal)" onclick="HL.newTicket()">＋ New request</button>
+      <span class="hl-user"><span class="hl-av">${u.id}</span><span><b>${esc(u.n)}</b><br><small>${u.role}</small></span><button onclick="HL.logout()" title="Sign out">⎋ Sign out</button></span></div>`;
   }
   function setTitle(crumb, title) { $('#crumb').textContent = 'Helpline / ' + crumb; $('#title').textContent = title; }
   function navCount() { const el = document.getElementById('nav-hl'); if (el) el.textContent = T.filter(isOpen).length; }
@@ -266,7 +282,11 @@ const HL = (() => {
   function renderAll() {
     navCount();
     if (wallTimer) { clearInterval(wallTimer); wallTimer = null; }
-    const map = { inbox: renderInbox, board: renderBoard, wall: renderWall, kpi: renderKpi, kb: renderKb, qa: renderQa, admin: renderAdmin, ticket: renderTicket };
+    if (ME && now() - lastAct > SESSION_MIN * 60e3) { audit('Session expired', '', 'no activity for ' + SESSION_MIN + ' min'); ME = null; toast('Signed out after ' + SESSION_MIN + ' minutes without activity'); }
+    if (!ME) return renderLogin();
+    lastAct = now();
+    if (!canTab(tab)) { toast('Your role (' + role() + ') has no access to this screen'); tab = role() === 'Agent' ? 'mywork' : 'inbox'; }
+    const map = { mywork: renderMyWork, audit: renderAudit, inbox: renderInbox, board: renderBoard, wall: renderWall, kpi: renderKpi, kb: renderKb, qa: renderQa, admin: renderAdmin, ticket: renderTicket };
     (map[tab] || renderInbox)();
   }
 
@@ -348,7 +368,8 @@ const HL = (() => {
   function setStatus(t, st) {
     const was = t.status; t.status = st;
     if (st === 'Resolved' || st === 'Not Resolved') t.resolvedAt = t.resolvedAt || now(); else t.resolvedAt = null;
-    t.msgs.push({ w: 'system', t: now(), x: `Status: ${was} → ${st}` });
+    t.msgs.push({ w: 'system', t: now(), x: `Status: ${was} → ${st} · by ${(me() || {}).n || 'system'}` });
+    audit(st === 'Resolved' ? 'Resolved' : 'Status changed', t.id, `${was} → ${st}`);
     toast(t.id + ' · ' + st);
   }
   function resolve(t, sol, fcr) {
@@ -368,7 +389,7 @@ const HL = (() => {
       <span class="hl-sla ${sl.cls}">${sl.txt}</span><span class="spacer"></span>
       <select onchange="HL.set('status',this.value)">${S.statuses.map(s => `<option ${s === t.status ? 'selected' : ''}>${s}</option>`).join('')}</select>
       <select onchange="HL.set('priority',this.value)">${['Urgent', 'High', 'Normal'].map(s => `<option ${s === t.priority ? 'selected' : ''}>${s}</option>`).join('')}</select>
-      <select onchange="HL.set('assignee',this.value)"><option value="">Unassigned</option>${S.staff.map(s => `<option value="${s.id}" ${s.id === t.assignee ? 'selected' : ''}>${s.n}</option>`).join('')}</select>
+      <select onchange="HL.set('assignee',this.value)" ${canManage() ? '' : 'disabled title="Only a supervisor can reassign"'}><option value="">Unassigned</option>${S.staff.filter(u => u.active).map(s => `<option value="${s.id}" ${s.id === t.assignee ? 'selected' : ''}>${s.n}</option>`).join('')}</select>
       ${!t.assignee ? `<button class="btn sm" onclick="HL.set('assignee','${ME}')">Take it</button>` : ''}
       <button class="btn ghost sm" onclick="HL.set('status','Escalated');HL.set('assignee','SV')">⤴ Escalate</button>
       ${t.caseRef ? `<button class="btn gold sm" onclick="openCase('${t.caseRef}')">🔗 Open case ${t.caseRef}</button>` : `<button class="btn gold sm" onclick="HL.toCase()">＋ Care Desk case</button>`}
@@ -406,7 +427,12 @@ const HL = (() => {
   function set(k, v) {
     const t = cur(); if (!t) return;
     if (k === 'status') { if (v === 'Resolved') return resolvePrompt(); setStatus(t, v); }
-    else { t[k] = v || null; t.msgs.push({ w: 'system', t: now(), x: k === 'assignee' ? 'Assigned to ' + ((staff(v) || {}).n || 'nobody') : 'Priority: ' + v }); }
+    else {
+      if (k === 'assignee' && !canManage() && v !== ME) return toast('Only a supervisor can assign to someone else');
+      const old = t[k]; t[k] = v || null;
+      t.msgs.push({ w: 'system', t: now(), x: (k === 'assignee' ? 'Assigned to ' + ((staff(v) || {}).n || 'nobody') : 'Priority: ' + v) + ' · by ' + me().n });
+      audit(k === 'assignee' ? 'Assigned' : 'Priority changed', t.id, k === 'assignee' ? ((staff(old) || {}).n || 'nobody') + ' → ' + ((staff(v) || {}).n || 'nobody') : old + ' → ' + v);
+    }
     render();
   }
   function resolvePrompt() {
@@ -418,8 +444,9 @@ const HL = (() => {
   function insertKb(i) { const a = document.getElementById('hl-text'); if (!a) return; a.value = (a.value ? a.value + '\n' : '') + KB[i].b; KB[i].u++; a.focus(); }
   function send() {
     const t = cur(), a = document.getElementById('hl-text'), x = (a.value || '').trim(); if (!x) return toast('Write something first');
-    if (composeMode === 'note') t.msgs.push({ w: 'note', by: ME, t: now(), x });
+    if (composeMode === 'note') { t.msgs.push({ w: 'note', by: ME, t: now(), x }); audit('Internal note', t.id, x.slice(0, 80)); }
     else {
+      audit('Replied to member', t.id, t.channel + ' · ' + x.slice(0, 60));
       t.msgs.push({ w: 'agent', ch: t.channel, by: ME, t: now(), x });
       if (!t.firstReply) t.firstReply = now();
       if (!t.assignee) t.assignee = ME;
@@ -438,6 +465,7 @@ const HL = (() => {
   function afterCaseCreated(ref) {
     if (!pendingLink) return; const t = T.find(x => x.id === pendingLink); pendingLink = null; if (!t) return;
     t.caseRef = ref; t.msgs.push({ w: 'system', t: now(), x: 'Care Desk case ' + ref + ' opened from this ticket' });
+    audit('Care Desk case linked', t.id, ref);
   }
 
   // ───────── NEW TICKET ─────────
@@ -502,6 +530,7 @@ const HL = (() => {
       fcr: false, csat: null, caseRef: null, msgs: [{ w: 'member', ch: draftHL.channel, t: now(), x: v('hl-n-det') }],
     };
     T.unshift(t);
+    audit('Ticket created', t.id, t.channel + ' · ' + t.company + ' · ' + t.category);
     if (done) { t.firstReply = now(); t.assignee = t.assignee || ME; resolve(t, v('hl-n-sol'), true); }
     else if (t.assignee) t.status = 'In Progress';
     closeNew(); toast('✓ ' + t.id + ' saved'); open(t.id);
@@ -519,7 +548,7 @@ const HL = (() => {
     let h = tabsBar() + `<div class="section-head"><h3>Live · refreshes every 30 seconds</h3><span class="hint">${new Date().toLocaleTimeString('en-GB')}</span></div>
       <div class="hl-wall">${big('Open now', op.length)}${big('Unassigned', unass, unass ? 'red' : 'green')}${big('Overdue', op.filter(t => slaInfo(t).over).length, 'red')}${big('Urgent open', op.filter(t => t.priority === 'Urgent').length, 'red')}
       ${big('Resolved today', todayClosed.length, 'green')}${big('SLA met today', todayClosed.length ? pct(met, todayClosed.length) + '%' : '—', 'green')}${big('Oldest open', dur(oldest), oldest > 48 ? 'red' : 'gold')}${big('Open complaints', op.filter(t => t.complaint).length, 'red')}</div>`;
-    const ag = S.staff.map(s => {
+    const ag = S.staff.filter(s => s.role !== 'Admin' && s.active).map(s => {
       const mine = op.filter(t => t.assignee === s.id), rt = todayClosed.filter(t => t.assignee === s.id);
       const last30 = T.filter(t => t.assignee === s.id && t.resolvedAt && t.resolvedAt > now() - 30 * D);
       const fcr = pct(last30.filter(t => t.fcr).length, last30.length), cs = last30.filter(t => t.csat);
@@ -608,6 +637,7 @@ const HL = (() => {
     });
     const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = `helpline-kpis-${kpiYear}.csv`; a.click();
+    audit('Exported KPIs CSV', '', kpiYear + (kpiCompany ? ' · ' + kpiCompany : ''));
     toast('CSV exported');
   }
 
@@ -620,8 +650,8 @@ const HL = (() => {
       ${MACROS.map(m => `<div class="hl-art"><h6>${esc(m.t)}</h6><p>${esc(m.x)}</p><div class="m">${esc(m.c)} · placeholders: {name} {id} {sla} {providers}</div></div>`).join('')}</div></div>`;
     $('#content').innerHTML = h;
   }
-  function addKb() { ask('New knowledge article', 'Title *', false, (t, f, b) => { KB.push({ t, c: 'Other', b, u: 0 }); render(); }, 'Answer text'); }
-  function addMacro() { ask('New quick reply', 'Title *', false, (t, f, x) => { MACROS.push({ t, c: 'Other', x }); render(); }, 'Text (you can use {name}, {id}, {sla})'); }
+  function addKb() { ask('New knowledge article', 'Title *', false, (t, f, b) => { KB.push({ t, c: 'Other', b, u: 0 }); audit('Knowledge article added', '', t); render(); }, 'Answer text'); }
+  function addMacro() { ask('New quick reply', 'Title *', false, (t, f, x) => { MACROS.push({ t, c: 'Other', x }); audit('Quick reply added', '', t); render(); }, 'Text (you can use {name}, {id}, {sla})'); }
 
   // ───────── QUALITY (QA) ─────────
   let qaPick = null;
@@ -647,7 +677,8 @@ const HL = (() => {
   function qaSave() {
     const t = T.find(x => x.id === qaPick); if (!t) return;
     const sc = QA_CRIT.map((c, i) => ({ k: c.k, w: c.w, v: +document.getElementById('qa-' + i).value }));
-    QA.push({ id: t.id, agent: t.assignee, at: now(), by: 'SV', scores: sc, total: Math.round(sc.reduce((a, s) => a + s.w * s.v, 0)) });
+    QA.push({ id: t.id, agent: t.assignee, at: now(), by: ME, scores: sc, total: Math.round(sc.reduce((a, s) => a + s.w * s.v, 0)) });
+    audit('QA evaluation', t.id, (staff(t.assignee) || {}).n + ' · ' + QA[QA.length - 1].total + '/100');
     qaPick = null; toast('Evaluation saved'); render();
   }
 
@@ -661,7 +692,15 @@ const HL = (() => {
         <div style="font-size:11.5px;color:var(--slate-2);margin-top:8px">Business hours: ${esc(S.hours)}. Complaints: High priority, close within 7 days, supervisor review.</div></div>
       <div class="card"><h3 style="font-family:var(--disp);font-size:14px;margin:0 0 8px">🏷 Categories & auto-tagging words</h3><table><thead><tr><th>Category</th><th>Words that trigger it</th></tr></thead><tbody>${S.categories.map((c, i) => `<tr><td><b>${c.n}</b></td><td><input type="text" value="${esc(c.kw)}" onchange="HL.adm('cat',${i},'kw',this.value)"></td></tr>`).join('')}</tbody></table></div>
       <div class="card"><h3 style="font-family:var(--disp);font-size:14px;margin:0 0 8px">📡 Channels & automatic replies</h3><table><thead><tr><th>On</th><th>Channel</th><th>Auto-reply</th></tr></thead><tbody>${S.channels.map((c, i) => `<tr><td><input type="checkbox" ${c.on ? 'checked' : ''} onchange="HL.adm('ch',${i},'on',this.checked)"></td><td>${c.ic} <b>${c.k}</b></td><td><input type="text" value="${esc(c.auto)}" placeholder="no auto-reply" onchange="HL.adm('ch',${i},'auto',this.value)"></td></tr>`).join('')}</tbody></table></div>
-      <div class="card"><h3 style="font-family:var(--disp);font-size:14px;margin:0 0 8px">👥 Team & shifts</h3><table><thead><tr><th>Name</th><th>Role</th><th>Shift</th><th>On duty</th></tr></thead><tbody>${S.staff.map((s, i) => `<tr><td><span class="hl-av">${s.id}</span> <b>${s.n}</b></td><td>${s.role}</td><td><input type="text" value="${s.shift}" onchange="HL.adm('st',${i},'shift',this.value)"></td><td><input type="checkbox" ${s.on ? 'checked' : ''} onchange="HL.adm('st',${i},'on',this.checked)"></td></tr>`).join('')}</tbody></table></div>
+      <div class="card" style="grid-column:1/-1"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><h3 style="font-family:var(--disp);font-size:14px;margin:0">👥 Users, roles & shifts</h3><span style="flex:1"></span><button class="btn sm" onclick="HL.addUser()">＋ Add user</button></div>
+        <table><thead><tr><th>User</th><th>Username</th><th>Role</th><th>Shift</th><th>On duty</th><th>Active</th><th>Last sign-in</th><th></th></tr></thead><tbody>${S.staff.map((s, i) => { const last = AUDIT.find(e => e.u === s.id && e.a === 'Signed in'); return `<tr style="${s.active ? '' : 'opacity:.5'}"><td><span class="hl-av">${s.id}</span> <b>${esc(s.n)}</b></td><td style="font-family:var(--mono)">${esc(s.user)}</td>
+          <td><select onchange="HL.adm('st',${i},'role',this.value)" ${s.id === ME ? 'disabled title="You cannot change your own role"' : ''}>${['Agent', 'Supervisor', 'Admin'].map(r => `<option ${r === s.role ? 'selected' : ''}>${r}</option>`).join('')}</select></td>
+          <td><input type="text" value="${s.shift}" onchange="HL.adm('st',${i},'shift',this.value)"></td><td><input type="checkbox" ${s.on ? 'checked' : ''} onchange="HL.adm('st',${i},'on',this.checked)"></td>
+          <td><input type="checkbox" ${s.active ? 'checked' : ''} ${s.id === ME ? 'disabled' : ''} onchange="HL.adm('st',${i},'active',this.checked)"></td><td style="font-size:11.5px">${last ? fmtT(last.t) : '—'}</td>
+          <td><button class="btn ghost sm" onclick="HL.resetPw(${i})">Reset password</button></td></tr>`; }).join('')}</tbody></table>
+        <table style="margin-top:12px"><thead><tr><th>What each role can do</th><th>Agent</th><th>Supervisor</th><th>Admin</th></tr></thead><tbody>
+          ${[['My work, Inbox, Board, Knowledge', 1, 1, 1], ['Reply, note, resolve, open Care Desk case', 1, 1, 1], ['Assign tickets to other people', 0, 1, 1], ['Supervisor wallboard, KPIs & reports, export', 0, 1, 1], ['Quality evaluations', 0, 1, 1], ['Activity log (who did what)', 0, 1, 1], ['Admin: users, roles, SLA, companies, channels', 0, 0, 1]].map(r => `<tr><td>${r[0]}</td>${r.slice(1).map(x => `<td>${x ? '<span class="hl-on">✓</span>' : '<span class="hl-off">—</span>'}</td>`).join('')}</tr>`).join('')}</tbody></table>
+        <div style="font-size:11.5px;color:var(--slate-2);margin-top:8px">Demo only: passwords live in this page. In the ERP: passwords are stored hashed on the server, MFA on every sign-in, roles checked on the server, account locks after 5 wrong attempts.</div></div>
       <div class="card"><h3 style="font-family:var(--disp);font-size:14px;margin:0 0 8px">🔌 Integrations</h3>
         ${[['✉️ Helpline e-mail inbox', 'Every 5 min · new e-mail = ticket + auto-reply', 1], ['🟢 WhatsApp Business Platform', 'Needs business number (Meta)', 0], ['🟣 Viber Business', 'Needs Viber business account', 0], ['💬 Facebook Messenger', 'Page inbox webhook', 0], ['📱 SMS gateway', 'Inbound SMS to ticket', 0], ['🗄 CBMS', 'Members, companies, AMBL nightly sync', 1], ['🏥 Care Desk cases', 'Ticket → case with one click', 1], ['📊 CBMS dashboard & presentations', 'KPIs feed nightly', 1]].map(x => `<div class="hl-int"><span><b>${x[0]}</b><br><span style="font-size:11.5px;color:var(--slate-2)">${x[1]}</span></span>${x[2] ? '<span class="hl-on">● Connected (demo)</span>' : '<span class="hl-off">○ Not connected</span>'}</div>`).join('')}</div>
     </div>`;
@@ -670,12 +709,131 @@ const HL = (() => {
   function adm(sec, i, k, v) {
     if (sec === 'co') S.companies[i][k] = v; else if (sec === 'sla') S.sla[i][k] = v; else if (sec === 'cat') S.categories[i][k] = v;
     else if (sec === 'ch') S.channels[i][k] = v; else if (sec === 'st') S.staff[i][k] = v;
+    const name = sec === 'co' ? S.companies[i].n : sec === 'sla' ? 'SLA ' + i : sec === 'cat' ? S.categories[i].n : sec === 'ch' ? S.channels[i].k : S.staff[i].n;
+    audit(sec === 'st' ? 'User changed' : 'Settings changed', name, k + ' = ' + v);
     toast('Saved');
   }
 
+
+  // ───────── SIGN-IN ─────────
+  function renderLogin() {
+    $('#crumb').textContent = 'Helpline'; $('#title').textContent = 'Helpline · Sign in';
+    $('#content').innerHTML = `<div class="hl-login"><div class="card hl-login-card">
+      <div style="font-size:30px">🔐</div><h3>Sign in to the Helpline</h3><p>Every action is recorded with your name and time.</p>
+      <form onsubmit="event.preventDefault();HL.login()" class="hl-form" style="display:block">
+        <label>Username</label><input id="hl-u" autocomplete="username" autofocus>
+        <label style="margin-top:12px">Password</label><input id="hl-p" type="password" autocomplete="current-password">
+        <div id="hl-login-err" style="color:var(--coral);font-size:12.5px;min-height:18px;margin-top:8px"></div>
+        <button class="btn primary" style="width:100%;justify-content:center;margin-top:4px">Sign in</button></form>
+      <details style="margin-top:16px;font-size:12px;color:var(--slate-2)"><summary style="cursor:pointer">Demo accounts (mock-up only)</summary>
+        <table class="hl-table" style="margin-top:8px"><tbody>${S.staff.filter(u => u.active).map(u => `<tr class="row" onclick="document.getElementById('hl-u').value='${u.user}';document.getElementById('hl-p').value='${u.pw}'"><td><b>${u.role}</b></td><td style="font-family:var(--mono)">${u.user}</td><td style="font-family:var(--mono)">${u.pw}</td></tr>`).join('')}</tbody></table>
+        <div style="margin-top:6px">Click a row to fill it in.</div></details></div></div>`;
+  }
+  function login() {
+    const un = (document.getElementById('hl-u').value || '').trim().toLowerCase(), pw = document.getElementById('hl-p').value || '';
+    const err = m => { document.getElementById('hl-login-err').textContent = m; };
+    if (lockUntil[un] && lockUntil[un] > now()) return err('Account locked for ' + Math.ceil((lockUntil[un] - now()) / 60e3) + ' more minute(s) after 5 wrong attempts.');
+    const u = S.staff.find(x => x.user === un);
+    if (!u || u.pw !== pw) {
+      fails[un] = (fails[un] || 0) + 1; audit('Failed sign-in', '', 'username: ' + (un || '(empty)'), null, u ? u.id : '—');
+      if (fails[un] >= 5) { lockUntil[un] = now() + 5 * 60e3; fails[un] = 0; audit('Account locked', '', un, null, u ? u.id : '—'); return err('Too many attempts. Account locked for 5 minutes.'); }
+      return err('Wrong username or password (' + fails[un] + '/5).');
+    }
+    if (!u.active) return err('This account is disabled. Contact the admin.');
+    fails[un] = 0; ME = u.id; lastAct = now(); audit('Signed in', '', u.role);
+    tab = u.role === 'Agent' ? 'mywork' : 'inbox'; toast('Welcome, ' + u.n); render();
+  }
+  function logout() { audit('Signed out', '', ''); ME = null; current = null; render(); }
+
+  // ───────── MY WORK ─────────
+  function renderMyWork() {
+    const u = me(); setTitle('My work', 'Helpline · My work · ' + u.n);
+    const today = new Date().toDateString(), d30 = now() - 30 * D;
+    const mine = T.filter(t => t.assignee === ME), op = mine.filter(isOpen);
+    const closedToday = mine.filter(t => t.resolvedAt && new Date(t.resolvedAt).toDateString() === today);
+    const acts = AUDIT.filter(e => e.u === ME && new Date(e.t).toDateString() === today);
+    const l30 = mine.filter(t => t.resolvedAt && t.resolvedAt > d30), cs = l30.filter(t => t.csat), fr = l30.map(firstH).filter(x => x != null);
+    const qa = QA.filter(e => e.agent === ME);
+    const card = (k, v, m, a) => `<div class="stat card"><div class="k">${k}</div><div class="v">${v}</div><div class="meta">${m}</div><div class="stat-accent ${a}"></div></div>`;
+    let h = tabsBar() + `<div class="hl-stats">${card('My open', op.length, op.filter(t => slaInfo(t).over).length + ' overdue', 'gold')}${card('Closed today', closedToday.length, 'by me', 'green')}
+      ${card('Actions today', acts.length, 'replies, notes, changes', 'teal')}${card('First reply · 30d', fr.length ? dur(fr.reduce((a, b) => a + b, 0) / fr.length) : '—', 'average', 'teal')}
+      ${card('FCR · 30d', pct(l30.filter(t => t.fcr).length, l30.length) + '%', 'solved on first contact', 'green')}${card('CSAT · 30d', cs.length ? (cs.reduce((a, t) => a + t.csat, 0) / cs.length).toFixed(1) + ' ★' : '—', qa.length ? 'QA ' + Math.round(qa.reduce((a, e) => a + e.total, 0) / qa.length) + '/100' : 'no QA yet', 'coral')}</div>
+      <div class="hl-two"><div class="card"><div style="padding:14px 16px"><h3 style="font-family:var(--disp);font-size:14px;margin:0 0 8px">My open tickets · most urgent first</h3>
+      <table class="hl-table"><tbody>${op.sort((a, b) => (a.created + S.sla[a.priority].resolve * H) - (b.created + S.sla[b.priority].resolve * H)).map(t => `<tr class="row" onclick="HL.open('${t.id}')"><td><span class="hl-dot ${t.priority}"></span><span class="hl-id">${t.id}</span></td><td>${chIc(t.channel)}</td><td><b>${esc(t.subject)}</b><div class="sub">${esc(t.name)} · ${esc(t.company)}</div></td><td><span class="hl-st ${stCls(t.status)}">${t.status}</span></td><td><span class="hl-sla ${slaInfo(t).cls}">${slaInfo(t).txt}</span></td></tr>`).join('') || '<tr><td class="hl-empty">No open tickets 🎉</td></tr>'}</tbody></table></div></div>
+      <div class="card"><div style="padding:14px 16px"><h3 style="font-family:var(--disp);font-size:14px;margin:0 0 8px">My activity today</h3>${auditRows(acts.slice(0, 15), true)}</div></div></div>`;
+    $('#content').innerHTML = h;
+  }
+
+  // ───────── ACTIVITY LOG ─────────
+  let aUser = '', aAct = '', aDays = '7', aQ = '';
+  function auditList() {
+    const from = aDays === 'all' ? 0 : aDays === 'today' ? new Date(new Date().toDateString()).getTime() : now() - (+aDays) * D, s = aQ.toLowerCase();
+    return AUDIT.filter(e => e.t >= from && (!aUser || e.u === aUser) && (!aAct || e.a === aAct) && (!s || [e.ref, e.d, e.a].join(' ').toLowerCase().includes(s)));
+  }
+  function auditRows(list, compact) {
+    if (!list.length) return '<div class="hl-empty">No activity.</div>';
+    return `<table class="hl-table"><thead><tr><th>Time</th>${compact ? '' : '<th>User</th>'}<th>Action</th><th>Ticket / item</th><th>Details</th></tr></thead><tbody>${list.slice(0, 300).map(e => {
+      const u = staff(e.u), bad = /Failed|locked|expired/i.test(e.a);
+      return `<tr><td style="white-space:nowrap;font-family:var(--mono);font-size:11.5px">${fmtT(e.t)}</td>${compact ? '' : `<td>${u ? `<span class="hl-av">${u.id}</span> ${esc(u.n)}<div class="sub">${u.role}</div>` : '—'}</td>`}
+        <td><span class="hl-act ${bad ? 'bad' : ''}">${esc(e.a)}</span></td><td>${/^HL-/.test(e.ref) ? `<a class="hl-id" style="cursor:pointer" onclick="HL.open('${e.ref}')">${e.ref}</a>` : esc(e.ref)}</td><td style="color:var(--slate)">${esc(e.d)}</td></tr>`;
+    }).join('')}</tbody></table>`;
+  }
+  function renderAudit() {
+    setTitle('Activity log', 'Helpline · Activity log');
+    const list = auditList(), acts = [...new Set(AUDIT.map(e => e.a))].sort();
+    let h = tabsBar() + `<div class="card"><div class="hl-filter">
+      <select onchange="HL.aSet('u',this.value)"><option value="">All users</option>${S.staff.map(u => `<option value="${u.id}" ${aUser === u.id ? 'selected' : ''}>${esc(u.n)}</option>`).join('')}</select>
+      <select onchange="HL.aSet('a',this.value)"><option value="">All actions</option>${acts.map(a => `<option ${aAct === a ? 'selected' : ''}>${a}</option>`).join('')}</select>
+      <select onchange="HL.aSet('d',this.value)">${[['today', 'Today'], ['7', 'Last 7 days'], ['30', 'Last 30 days'], ['all', 'All time']].map(x => `<option value="${x[0]}" ${aDays === x[0] ? 'selected' : ''}>${x[1]}</option>`).join('')}</select>
+      <input placeholder="Search ticket or detail…" value="${esc(aQ)}" onchange="HL.aSet('q',this.value)">
+      <span style="color:var(--slate-2);font-size:12px">${list.length} entries</span><button class="btn ghost sm" onclick="HL.copyAudit()">⧉ Copy as CSV</button></div>
+      <div style="padding:10px 14px;font-size:11.5px;color:var(--slate-2);border-bottom:1px solid var(--line)">🔒 Append-only: nobody can edit or delete an entry, not even the admin. In the ERP the log is stored in the database and kept for audits.</div>
+      <div style="overflow:auto">${auditRows(list)}</div></div>`;
+    $('#content').innerHTML = h;
+  }
+  function aSet(k, v) { if (k === 'u') aUser = v; else if (k === 'a') aAct = v; else if (k === 'd') aDays = v; else aQ = v; render(); }
+  function copyAudit() {
+    const rows = [['Time', 'User', 'Role', 'Action', 'Item', 'Details']].concat(auditList().map(e => { const u = staff(e.u) || {}; return [fmtT(e.t), u.n || e.u, u.role || '', e.a, e.ref, e.d]; }));
+    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+    try { navigator.clipboard.writeText(csv).then(() => toast('Copied ' + (rows.length - 1) + ' entries'), () => toast('Copy not allowed here')); } catch (e) { toast('Copy not allowed here'); }
+    audit('Copied activity log', '', (rows.length - 1) + ' entries');
+  }
+
+  // ───────── USER ADMIN ─────────
+  function addUser() {
+    ask('New user', 'Full name *', false, (n, f, un) => {
+      un = (un || n.split(' ')[0]).toLowerCase().replace(/[^a-z0-9.]/g, '');
+      if (S.staff.some(u => u.user === un)) return toast('Username already exists');
+      const id = (n.replace(/[^A-Za-z]/g, '').slice(0, 2) || 'U').toUpperCase() + (S.staff.length + 1);
+      S.staff.push({ id, n, role: 'Agent', shift: '09:00–18:00', on: true, user: un, pw: 'Welcome#2026', active: true });
+      audit('User created', n, 'username ' + un + ' · role Agent'); toast('User ' + un + ' created · temporary password Welcome#2026'); render();
+    }, 'Username (optional)');
+  }
+  function resetPw(i) { const u = S.staff[i]; u.pw = 'Temp#' + (1000 + Math.floor(Math.random() * 9000)); audit('Password reset', u.n, 'temporary password issued'); toast(u.n + ': temporary password ' + u.pw); }
+  function seedAudit() {
+    const from = now() - 7 * D;
+    T.filter(t => t.assignee && t.created > from).forEach(t => {
+      audit('Ticket created', t.id, t.channel + ' · ' + t.company + ' · ' + t.category, t.created + 30e3, t.assignee);
+      if (t.firstReply) audit('Replied to member', t.id, t.channel, t.firstReply, t.assignee);
+      if (t.resolvedAt) audit('Resolved', t.id, 'In Progress → Resolved', t.resolvedAt, t.assignee);
+    });
+    for (let d = 7; d >= 0; d--) S.staff.filter(u => u.role !== 'Admin').forEach(u => {
+      const day = new Date(now() - d * D); const hh = parseInt(u.shift) || 8; day.setHours(hh, 2 + (u.id.charCodeAt(0) % 9), 0, 0);
+      if (day.getTime() < now()) audit('Signed in', '', u.role, day.getTime(), u.id);
+    });
+    audit('Failed sign-in', '', 'username: stela', now() - 2 * D, 'ST');
+    audit('Settings changed', 'SLA Urgent', 'resolve = 1', now() - 3 * D, 'AD');
+    AUDIT.sort((a, b) => b.t - a.t);
+  }
+  // keep the session alive while the user works
+  document.addEventListener('click', () => { if (ME && view === 'hl') lastAct = Date.now(); }, true);
+  document.addEventListener('keydown', () => { if (ME && view === 'hl') lastAct = Date.now(); }, true);
+  setInterval(() => { if (ME && view === 'hl' && Date.now() - lastAct > SESSION_MIN * 60e3) render(); }, 60e3);
+
   // ───────── public API ─────────
-  seed();
+  seed(); seedAudit();
   return {
+    login, logout, aSet, copyAudit, addUser, resetPw,
     render: renderAll, nav, open, setQueue: k => { queue = k; render(); }, setChannel: c => { fChannel = c; render(); }, setCompany: c => { fCompany = c; render(); },
     search, drop, set, resolvePrompt, mode, macro, insertKb, send, toCase, afterCaseCreated, newTicket, closeNew, chip, memPick, hint, saveNew,
     askOk, kpiSet: kpiSetFilter, exportCsv, addKb, addMacro, qaPick: qaPickFn, qaSave, adm, tickets: () => T, triage, navCount,

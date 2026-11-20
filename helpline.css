@@ -3,7 +3,7 @@
    Uses the Care Desk design tokens (--ink, --teal, --gold, --coral …)
    ============================================================ */
 .hl-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 18px}
-.hl-tabs button{padding:8px 13px;border-radius:20px;border:1px solid var(--line);background:#fff;color:var(--slate);font-weight:600;font-size:12.5px;display:inline-flex;gap:6px;align-items:center}
+.hl-tabs button{padding:7px 11px;border-radius:20px;border:1px solid var(--line);background:#fff;color:var(--slate);font-weight:600;font-size:12px;display:inline-flex;gap:6px;align-items:center}
 .hl-tabs button.on{background:var(--ink-2);border-color:var(--ink-2);color:#fff}
 .hl-tabs button .n{font-family:var(--mono);font-size:10px;background:rgba(0,0,0,.08);padding:1px 6px;border-radius:9px}
 .hl-tabs button.on .n{background:rgba(255,255,255,.18)}
@@ -148,3 +148,12 @@
 @media(max-width:980px){.hl-grid,.hl-ws,.hl-two,.hl-kb,.hl-admin{grid-template-columns:1fr}.hl-form{grid-template-columns:1fr}}
 @media(max-width:520px){.hl-stats{grid-template-columns:repeat(2,1fr)}}
 .hl-two>.card{overflow:auto}
+.hl-user{display:inline-flex;align-items:center;gap:8px;padding:4px 6px 4px 4px;border:1px solid var(--line);border-radius:22px;background:#fff;font-size:12px;line-height:1.15}
+.hl-user small{color:var(--slate-2)}
+.hl-user button{border:0;background:var(--paper);padding:6px 9px;border-radius:14px;font-size:11.5px;font-weight:600;color:var(--slate)}
+.hl-login{display:flex;justify-content:center;padding:40px 10px}
+.hl-login-card{width:100%;max-width:420px;padding:28px}
+.hl-login-card h3{font-family:var(--disp);font-size:20px;margin:8px 0 4px}
+.hl-login-card p{color:var(--slate-2);font-size:13px;margin:0 0 16px}
+.hl-act{display:inline-block;padding:3px 8px;border-radius:6px;background:#E3F2F2;color:var(--teal-d);font-size:11.5px;font-weight:600;white-space:nowrap}
+.hl-act.bad{background:#FBE0DC;color:#b8392a}
