@@ -851,3 +851,75 @@ const HL = (() => {
   }
   HL.navCount();
 })();
+
+// ───────── Table filters: every table gets sort + a filter per column (house rule) ─────────
+(function () {
+  const STATE = {};                       // filters/sort kept per table "signature" across re-renders
+  const txt = c => (c ? c.innerText || '' : '').replace(/\s+/g, ' ').trim();
+  const num = s => {                      // numbers, %, money and durations like "42m", "1.7h ago", "2d"
+    const d = s.match(/^(-?[\d.,]+)\s*(m|h|d)\b/i);
+    if (d) return parseFloat(d[1].replace(/,/g, '')) * ({ m: 1, h: 60, d: 1440 })[d[2].toLowerCase()] * (/over/i.test(s) ? -1 : 1);
+    const n = s.replace(/[₱$€,%\s]/g, '').match(/^-?\d+(\.\d+)?$/);
+    return n ? parseFloat(n[0]) : null;
+  };
+  function enhance(t) {
+    if (t.dataset.tf || t.closest('.no-tf')) return;
+    const head = t.tHead && t.tHead.rows[0], body = t.tBodies[0];
+    if (!head || !body) return;
+    const rows = () => [...body.rows].filter(r => r.cells.length === head.cells.length && !r.classList.contains('tot'));
+    if (rows().length < 3 || body.querySelector('input,select,textarea')) return;
+    t.dataset.tf = '1';
+    const sig = [...head.cells].map(txt).join('|'), st = STATE[sig] || (STATE[sig] = { f: {}, sk: null, dir: 1 });
+    const ownSort = [...head.cells].some(th => th.onclick || th.getAttribute('onclick'));
+    const fr = document.createElement('tr'); fr.className = 'tf-row';
+    [...head.cells].forEach((th, i) => {
+      const td = document.createElement('th'); fr.appendChild(td);
+      const vals = rows().map(r => txt(r.cells[i])), uniq = [...new Set(vals)].filter(Boolean).sort((a, b) => (num(a) ?? a) > (num(b) ?? b) ? 1 : -1);
+      const hasInput = rows().some(r => r.cells[i] && r.cells[i].querySelector('input,select,button'));
+      if (!txt(th) || hasInput || uniq.length < 2) return;
+      let el;
+      if (uniq.length <= 12 && uniq.length <= Math.max(3, vals.length * 0.6)) {
+        el = document.createElement('select');
+        el.innerHTML = '<option value="">All</option>' + uniq.map(v => `<option>${v.replace(/</g, '&lt;')}</option>`).join('');
+      } else { el = document.createElement('input'); el.type = 'search'; el.placeholder = 'Filter…'; }
+      el.value = st.f[i] || ''; el.onclick = e => e.stopPropagation();
+      el.oninput = el.onchange = () => { st.f[i] = el.value; run(); };
+      td.appendChild(el);
+      if (!ownSort) {
+        th.classList.add('tf-sort');
+        th.onclick = () => { st.dir = st.sk === i ? -st.dir : 1; st.sk = i; run(true); };
+      }
+    });
+    t.tHead.appendChild(fr);
+    function apply(resort) {
+      const rs = rows(), act = Object.entries(st.f).filter(([, v]) => v);
+      rs.forEach(r => {
+        const ok = act.every(([i, v]) => { const c = txt(r.cells[i]); return r.cells[i] && (c === v || (v.length > 0 && !fr.cells[i].querySelector('select') && c.toLowerCase().includes(v.toLowerCase()))); });
+        r.style.display = ok ? '' : 'none';
+      });
+      [...body.rows].filter(r => r.classList.contains('tot')).forEach(r => r.style.display = act.length ? 'none' : '');
+      [...head.cells].forEach((th, i) => th.dataset.dir = st.sk === i ? (st.dir > 0 ? '▲' : '▼') : '');
+      if (st.sk != null && !ownSort) {
+        const i = st.sk, sorted = rs.slice().sort((a, b) => {
+          const x = txt(a.cells[i]), y = txt(b.cells[i]), nx = num(x), ny = num(y);
+          return (nx != null && ny != null ? nx - ny : x.localeCompare(y, undefined, { numeric: true })) * st.dir;
+        });
+        const tot = [...body.rows].filter(r => r.classList.contains('tot'));
+        sorted.concat(tot).forEach(r => body.appendChild(r));
+      }
+    }
+    const obs = new MutationObserver(() => run());
+    function run(resort) { obs.disconnect(); apply(resort); obs.takeRecords(); obs.observe(body, { childList: true }); }
+    run();
+  }
+  let q;
+  const scan = () => { clearTimeout(q); q = setTimeout(() => document.querySelectorAll('table').forEach(enhance), 60); };
+  new MutationObserver(scan).observe(document.documentElement, { childList: true, subtree: true });
+  window.TF = { scan };
+  const css = document.createElement('style');
+  css.textContent = `.tf-row th{padding:4px 6px !important;background:var(--paper,#f6f3ec);border-bottom:1px solid var(--line,#e5e0d5)}
+  .tf-row select,.tf-row input{width:100%;min-width:60px;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;font-size:11.5px;padding:4px 6px;border:1px solid var(--line,#ddd);border-radius:6px;background:#fff;color:inherit;text-transform:none;letter-spacing:0}
+  th.tf-sort{cursor:pointer;user-select:none} th.tf-sort:hover{color:var(--teal-d,#0e8c92)} th[data-dir]:not([data-dir=""])::after{content:' ' attr(data-dir);color:var(--teal-d,#0e8c92)}`;
+  document.head.appendChild(css);
+  scan();
+})();
