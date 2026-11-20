@@ -41,9 +41,9 @@ const HL = (() => {
     staff: [
       { id: 'AD', n: 'Admin', role: 'Admin', shift: '—', on: true, user: 'admin', pw: 'Admin#2026', active: true },
       { id: 'SV', n: 'Ops Supervisor', role: 'Supervisor', shift: '08:00–17:00', on: true, user: 'supervisor', pw: 'Super#2026', active: true },
-      { id: 'JK', n: 'Jinky', role: 'Agent', shift: '07:00–16:00', on: true, user: 'jinky', pw: 'Jinky#2026', active: true },
-      { id: 'ST', n: 'Stella', role: 'Agent', shift: '09:00–18:00', on: true, user: 'stella', pw: 'Stella#2026', active: true },
-      { id: 'JP', n: 'Japheth', role: 'Agent', shift: '13:00–22:00', on: true, user: 'japheth', pw: 'Japheth#2026', active: true },
+      { id: 'MR', n: 'Maria', role: 'Agent', shift: '07:00–16:00', on: true, user: 'maria', pw: 'Maria#2026', active: true },
+      { id: 'AN', n: 'Ana', role: 'Agent', shift: '09:00–18:00', on: true, user: 'ana', pw: 'Ana#2026', active: true },
+      { id: 'BN', n: 'Ben', role: 'Agent', shift: '13:00–22:00', on: true, user: 'ben', pw: 'Ben#2026', active: true },
     ],
     hours: 'Mon–Sat 07:00–22:00 · Sunday on-call for Urgent',
   };
@@ -166,7 +166,7 @@ const HL = (() => {
         T.push({
           id: 'HL-' + (++seq), created, channel: pick(chW), company: S.companies[pick(compW)].n, member: null, name: nm, contact: '09XX XXX XX' + String(10 + Math.floor(rnd() * 89)),
           subject: pick(subj[cat]), category: cat, priority: cmp ? 'High' : pr, complaint: cmp, sentiment: cmp ? 'negative' : 'neutral',
-          status: rnd() < 0.985 ? 'Resolved' : 'Not Resolved', assignee: pick(['JK', 'ST', 'JP']), firstReply: created + Math.min(res, 0.05 + rnd() * 0.6) * H,
+          status: rnd() < 0.985 ? 'Resolved' : 'Not Resolved', assignee: pick(['MR', 'AN', 'BN']), firstReply: created + Math.min(res, 0.05 + rnd() * 0.6) * H,
           resolvedAt: Math.min(created + res * H, now() - 10 * 60e3), fcr, csat: rnd() < 0.62 ? (rnd() < 0.82 ? 5 : rnd() < 0.7 ? 4 : 3) : null, caseRef: null, history: true,
           msgs: [{ w: 'member', ch: '', t: created, x: pick(subj[cat]) + ' (sample)' }, { w: 'system', t: Math.min(created + res * H, now() - 10 * 60e3), x: 'Resolved' }],
         });
@@ -174,20 +174,20 @@ const HL = (() => {
     }
     // live tickets linked to Care Desk members
     const live = [
-      { m: 'PRS-100482', ch: 'Phone', ago: 0.3, pr: 'Urgent', st: 'In Progress', as: 'JK', s: 'Chest trauma, still at Manila Doctors ER, family asks for approval', x: 'Wife calling: husband fell on deck, now at Manila Doctors ER. Hospital waiting for AMAPHIL approval.', link: 'PC-2606-016' },
+      { m: 'PRS-100482', ch: 'Phone', ago: 0.3, pr: 'Urgent', st: 'In Progress', as: 'MR', s: 'Chest trauma, still at Manila Doctors ER, family asks for approval', x: 'Wife calling: husband fell on deck, now at Manila Doctors ER. Hospital waiting for AMAPHIL approval.', link: 'PC-2606-016' },
       { m: 'PRS-100958', ch: 'Viber', ago: 1.7, pr: 'Urgent', st: 'New', as: null, s: 'Discharge approval pending at Cebu Doctors', x: 'Good evening, my husband is ready for discharge but the hospital says no approval yet. Please help.', link: 'PC-2606-014' },
-      { m: 'PRS-100482-D1', ch: 'WhatsApp', ago: 3.5, pr: 'Normal', st: 'Waiting AMAPHIL', as: 'ST', s: 'LOA for prenatal labs', x: 'Hi, follow-up on the LOA for my prenatal labs at Makati Med.', link: 'PC-2606-011' },
-      { m: 'PRS-100731', ch: 'Email', ago: 26, pr: 'High', st: 'In Progress', as: 'JP', s: 'Why was my reimbursement reduced? Still no response', x: 'I sent all receipts 3 weeks ago and the amount is lower. Still no response from AMAPHIL. I am very disappointed.', cmp: true },
-      { m: 'PRS-100731-D2', ch: 'Messenger', ago: 5, pr: 'Normal', st: 'Waiting Member', as: 'ST', s: 'Dental: send photo of the restoration invoice', x: 'Hello po, I already had the dental procedure. What do you need from me?' },
+      { m: 'PRS-100482-D1', ch: 'WhatsApp', ago: 3.5, pr: 'Normal', st: 'Waiting AMAPHIL', as: 'AN', s: 'LOA for prenatal labs', x: 'Hi, follow-up on the LOA for my prenatal labs at Makati Med.', link: 'PC-2606-011' },
+      { m: 'PRS-100731', ch: 'Email', ago: 26, pr: 'High', st: 'In Progress', as: 'BN', s: 'Why was my reimbursement reduced? Still no response', x: 'I sent all receipts 3 weeks ago and the amount is lower. Still no response from AMAPHIL. I am very disappointed.', cmp: true },
+      { m: 'PRS-100731-D2', ch: 'Messenger', ago: 5, pr: 'Normal', st: 'Waiting Member', as: 'AN', s: 'Dental: send photo of the restoration invoice', x: 'Hello po, I already had the dental procedure. What do you need from me?' },
       { m: 'PRS-100204', ch: 'Phone', ago: 0.9, pr: 'Normal', st: 'New', as: null, s: 'Cannot log in to the mobile app', x: 'Captain Navarro cannot log in to the app, says wrong password.' },
       { m: null, n: 'Rico Lim', co: 'IONIAN BULK CARRIERS', ch: 'SMS', ago: 6.5, pr: 'Normal', st: 'New', as: null, s: 'Is my HMO still active?', x: 'Is my HMO still active? My contract ended last month.' },
-      { m: null, n: 'Nina Flores', co: 'CYCLADES TANKERS', ch: 'WhatsApp', ago: 52, pr: 'Normal', st: 'In Progress', as: 'JK', s: 'Add newborn as dependent', x: 'Hi, we had a baby last week. How do we add her to the HMO?' },
+      { m: null, n: 'Nina Flores', co: 'CYCLADES TANKERS', ch: 'WhatsApp', ago: 52, pr: 'Normal', st: 'In Progress', as: 'MR', s: 'Add newborn as dependent', x: 'Hi, we had a baby last week. How do we add her to the HMO?' },
       { m: null, n: 'Joy Villanueva', co: 'AEGEAN CREWING', ch: 'Viber', ago: 7.4, pr: 'High', st: 'Escalated', as: 'SV', s: 'Hospital refused the card', x: 'The clinic in Batangas refused my card even if it is on your list. Very upset.', cmp: true },
       { m: null, n: 'Carlo Navarro', co: 'PACIFIC STAR SHIPPING', ch: 'Email', ago: 0.2, pr: 'Normal', st: 'New', as: null, s: 'Request HMO declaration for visa', x: 'Good day, I need an HMO declaration for my wife for her visa application.' },
-      { m: null, n: 'Bea Castillo', co: 'HELLAS MARINE MANNING', ch: 'Phone', ago: 2.2, pr: 'Normal', st: 'Resolved', as: 'JK', res: 0.2, s: 'Username and password for my son', x: 'Asking for the app username and password of her son.', sol: 'Credentials re-sent by SMS; member logged in.', csat: 5 },
-      { m: null, n: 'Mark Bautista', co: 'AEGEAN CREWING', ch: 'Viber', ago: 4.1, pr: 'Normal', st: 'Resolved', as: 'ST', res: 0.6, s: 'Accredited dentist near Batangas', x: 'Looking for an accredited dentist near Batangas.', sol: 'Sent 3 accredited dentists near Batangas.', csat: 5 },
-      { m: null, n: 'Grace Torres', co: 'CYCLADES TANKERS', ch: 'Phone', ago: 1.4, pr: 'Urgent', st: 'Resolved', as: 'JP', res: 0.7, s: 'Son rushed to hospital, ER asks approval', x: 'Son rushed to the ER, hospital asks for approval.', sol: 'Called AMAPHIL MO, approval sent to the hospital in 40 minutes.', csat: 5 },
-      { m: null, n: 'Paolo Ramos', co: 'IONIAN BULK CARRIERS', ch: 'WhatsApp', ago: 5.5, pr: 'Normal', st: 'Resolved', as: 'ST', res: 3.2, s: 'Is the annual check-up covered?', x: 'Is the annual check-up covered for me and my wife?', sol: 'Explained: covered with doctor request, sent the steps.', csat: 4 },
+      { m: null, n: 'Bea Castillo', co: 'HELLAS MARINE MANNING', ch: 'Phone', ago: 2.2, pr: 'Normal', st: 'Resolved', as: 'MR', res: 0.2, s: 'Username and password for my son', x: 'Asking for the app username and password of her son.', sol: 'Credentials re-sent by SMS; member logged in.', csat: 5 },
+      { m: null, n: 'Mark Bautista', co: 'AEGEAN CREWING', ch: 'Viber', ago: 4.1, pr: 'Normal', st: 'Resolved', as: 'AN', res: 0.6, s: 'Accredited dentist near Batangas', x: 'Looking for an accredited dentist near Batangas.', sol: 'Sent 3 accredited dentists near Batangas.', csat: 5 },
+      { m: null, n: 'Grace Torres', co: 'CYCLADES TANKERS', ch: 'Phone', ago: 1.4, pr: 'Urgent', st: 'Resolved', as: 'BN', res: 0.7, s: 'Son rushed to hospital, ER asks approval', x: 'Son rushed to the ER, hospital asks for approval.', sol: 'Called AMAPHIL MO, approval sent to the hospital in 40 minutes.', csat: 5 },
+      { m: null, n: 'Paolo Ramos', co: 'IONIAN BULK CARRIERS', ch: 'WhatsApp', ago: 5.5, pr: 'Normal', st: 'Resolved', as: 'AN', res: 3.2, s: 'Is the annual check-up covered?', x: 'Is the annual check-up covered for me and my wife?', sol: 'Explained: covered with doctor request, sent the steps.', csat: 4 },
     ];
     live.forEach(l => {
       const created = now() - l.ago * H, mem = l.m ? MEMBERS[l.m] : null, tri = triage(l.s + ' ' + l.x);
@@ -821,7 +821,7 @@ const HL = (() => {
       const day = new Date(now() - d * D); const hh = parseInt(u.shift) || 8; day.setHours(hh, 2 + (u.id.charCodeAt(0) % 9), 0, 0);
       if (day.getTime() < now()) audit('Signed in', '', u.role, day.getTime(), u.id);
     });
-    audit('Failed sign-in', '', 'username: stela', now() - 2 * D, 'ST');
+    audit('Failed sign-in', '', 'username: stela', now() - 2 * D, 'AN');
     audit('Settings changed', 'SLA Urgent', 'resolve = 1', now() - 3 * D, 'AD');
     AUDIT.sort((a, b) => b.t - a.t);
   }
