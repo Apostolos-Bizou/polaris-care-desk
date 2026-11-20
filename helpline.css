@@ -157,3 +157,19 @@
 .hl-login-card p{color:var(--slate-2);font-size:13px;margin:0 0 16px}
 .hl-act{display:inline-block;padding:3px 8px;border-radius:6px;background:#E3F2F2;color:var(--teal-d);font-size:11.5px;font-weight:600;white-space:nowrap}
 .hl-act.bad{background:#FBE0DC;color:#b8392a}
+
+/* Inbox layout: the host page has a global .row{display:flex}, so table rows must stay table rows */
+.hl-table tr.row{display:table-row;gap:0}
+.hl-table tr.row:nth-child(even){background:rgba(15,23,42,.018)}
+.hl-table td,.hl-table th{vertical-align:middle}
+.hl-inbox{table-layout:fixed;min-width:860px}
+.hl-inbox th:nth-child(1){width:104px}.hl-inbox th:nth-child(2){width:40px}.hl-inbox th:nth-child(3){width:180px}
+.hl-inbox th:nth-child(5){width:132px}.hl-inbox th:nth-child(6){width:56px}.hl-inbox th:nth-child(7){width:96px}.hl-inbox th:nth-child(8){width:78px}
+.hl-inbox td{padding:12px 10px}
+.hl-inbox td:nth-child(1){white-space:nowrap}
+.hl-inbox td:nth-child(2),.hl-inbox td:nth-child(6),.hl-inbox th:nth-child(2),.hl-inbox th:nth-child(6){text-align:center}
+.hl-inbox td:nth-child(3) b,.hl-inbox .sub{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.hl-inbox .hl-subj{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.35}
+.hl-inbox .hl-st,.hl-inbox .hl-sla{white-space:nowrap}
+.hl-inbox td:nth-child(8){text-align:right}.hl-inbox th:nth-child(8){text-align:right}
+.hl-admin td{vertical-align:middle}.hl-admin td b{white-space:nowrap}

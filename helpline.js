@@ -309,7 +309,7 @@ const HL = (() => {
         <td><span class="hl-dot ${t.priority}"></span><span class="hl-id">${t.id}</span></td>
         <td class="hl-ch" title="${t.channel}">${chIc(t.channel)}</td>
         <td><b>${esc(t.name)}</b><div class="sub">${esc(t.company)}</div></td>
-        <td><b>${esc(t.subject)}</b>${t.complaint ? '<span class="hl-cmp">COMPLAINT</span>' : ''}<div class="sub">${esc(t.category)}${t.caseRef ? ' · 🔗 ' + t.caseRef : ''}</div></td>
+        <td><div class="hl-subj"><b>${esc(t.subject)}</b>${t.complaint ? ' <span class="hl-cmp">COMPLAINT</span>' : ''}</div><div class="sub">${esc(t.category)}${t.caseRef ? ' · 🔗 ' + t.caseRef : ''}</div></td>
         <td><span class="hl-st ${stCls(t.status)}">${t.status}</span></td>
         <td>${a ? `<span class="hl-av" title="${a.n}">${a.id}</span>` : '<span class="hl-av none">—</span>'}</td>
         <td><span class="hl-sla ${sl.cls}">${sl.txt}</span></td>
@@ -335,7 +335,7 @@ const HL = (() => {
       <select onchange="HL.setCompany(this.value)"><option value="">All companies</option>${S.companies.map(c => `<option ${fCompany === c.n ? 'selected' : ''}>${c.n}</option>`).join('')}</select>
       ${fChannel ? `<button class="btn ghost sm" onclick="HL.setChannel('')">✕ ${fChannel}</button>` : ''}
       <span style="color:var(--slate-2);font-size:12px">${list.length} ticket(s)</span></div>
-      <div style="overflow:auto"><table class="hl-table"><thead><tr><th>Ticket</th><th>Ch.</th><th>Member</th><th>Subject</th><th>Status</th><th>Agent</th><th>SLA</th><th>Age</th></tr></thead>
+      <div style="overflow:auto"><table class="hl-table hl-inbox"><thead><tr><th>Ticket</th><th>Ch.</th><th>Member</th><th>Subject</th><th>Status</th><th>Agent</th><th>SLA</th><th>Age</th></tr></thead>
       <tbody id="hl-rows">${rowsFor(list)}</tbody></table></div></div></div>`;
     $('#content').innerHTML = h;
   }
