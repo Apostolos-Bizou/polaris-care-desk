@@ -207,6 +207,33 @@ const HL = (() => {
       .replace(/{id}/g, t.id).replace(/{sla}/g, dur(sla.first)).replace(/{providers}/g, prov);
   }
 
+
+  // ───────── in-page dialog (no browser prompt) ─────────
+  let askCb = null;
+  function ask(title, label, withFcr, cb, second) {
+    let d = document.getElementById('hlAsk');
+    if (!d) {
+      d = document.createElement('div'); d.className = 'modal-scrim'; d.id = 'hlAsk';
+      d.onclick = e => { if (e.target === d) d.classList.remove('open'); };
+      d.innerHTML = `<div class="modal" style="max-width:520px"><div class="modal-head"><h3 id="hlAskT"></h3></div><div class="modal-body hl-form" style="display:block">
+        <label id="hlAskL"></label><textarea id="hlAskX"></textarea><div id="hlAsk2b" style="margin-top:10px"><label id="hlAsk2L"></label><textarea id="hlAsk2X" style="min-height:70px"></textarea></div>
+        <label id="hlAskFb" style="text-transform:none;font-size:13px;color:var(--ink);display:flex;gap:8px;align-items:center;margin-top:10px"><input type="checkbox" id="hlAskF" style="width:auto"> Solved on first contact</label></div>
+        <div class="modal-foot"><button class="btn ghost" onclick="document.getElementById('hlAsk').classList.remove('open')">Cancel</button><button class="btn primary" onclick="HL.askOk()">Save</button></div></div>`;
+      document.body.appendChild(d);
+    }
+    document.getElementById('hlAskT').textContent = title; document.getElementById('hlAskL').textContent = label;
+    document.getElementById('hlAskX').value = ''; document.getElementById('hlAskF').checked = false;
+    document.getElementById('hlAskFb').style.display = withFcr ? 'flex' : 'none';
+    document.getElementById('hlAsk2b').style.display = second ? 'block' : 'none';
+    if (second) { document.getElementById('hlAsk2L').textContent = second; document.getElementById('hlAsk2X').value = ''; }
+    askCb = cb; d.classList.add('open'); setTimeout(() => document.getElementById('hlAskX').focus(), 50);
+  }
+  function askOk() {
+    const x = document.getElementById('hlAskX').value.trim(); if (!x) return toast('Please write something');
+    const y = document.getElementById('hlAsk2X').value.trim();
+    document.getElementById('hlAsk').classList.remove('open');
+    const cb = askCb; askCb = null; if (cb) cb(x, document.getElementById('hlAskF').checked, y);
+  }
   // ───────── queues ─────────
   const QUEUES = [
     { k: 'open', n: 'All open', f: t => isOpen(t) },
@@ -313,9 +340,8 @@ const HL = (() => {
   }
   function drop(e, st) {
     e.preventDefault(); const id = e.dataTransfer.getData('text/plain'), t = T.find(x => x.id === id); if (!t || t.status === st) return render();
-    if (st === 'Resolved') { const sol = prompt('Solution for ' + id + ' (what we did for the member):'); if (!sol) return render(); resolve(t, sol, false); }
-    else setStatus(t, st);
-    render();
+    if (st === 'Resolved') { render(); return ask('Resolve ' + id, 'Solution (what we did for the member) *', true, (sol, f) => { resolve(t, sol, f); render(); }); }
+    setStatus(t, st); render();
   }
 
   // ───────── TICKET WORKSPACE ─────────
@@ -385,8 +411,7 @@ const HL = (() => {
   }
   function resolvePrompt() {
     const t = cur(); if (!t) return;
-    const sol = prompt('Solution (what we did for the member):'); if (!sol) return render();
-    resolve(t, sol, confirm('Solved on first contact? (OK = yes)')); render();
+    ask('Resolve ' + t.id, 'Solution (what we did for the member) *', true, (sol, f) => { resolve(t, sol, f); render(); });
   }
   function mode(m) { composeMode = m; render(); }
   function macro(i) { if (i === '') return; const t = cur(), a = document.getElementById('hl-text'); a.value = fill(MACROS[+i].x, t); a.focus(); }
@@ -595,8 +620,8 @@ const HL = (() => {
       ${MACROS.map(m => `<div class="hl-art"><h6>${esc(m.t)}</h6><p>${esc(m.x)}</p><div class="m">${esc(m.c)} · placeholders: {name} {id} {sla} {providers}</div></div>`).join('')}</div></div>`;
     $('#content').innerHTML = h;
   }
-  function addKb() { const t = prompt('Article title:'); if (!t) return; const b = prompt('Answer text:') || ''; KB.push({ t, c: 'Other', b, u: 0 }); render(); }
-  function addMacro() { const t = prompt('Quick reply title:'); if (!t) return; const x = prompt('Text (use {name}, {id}, {sla}):') || ''; MACROS.push({ t, c: 'Other', x }); render(); }
+  function addKb() { ask('New knowledge article', 'Title *', false, (t, f, b) => { KB.push({ t, c: 'Other', b, u: 0 }); render(); }, 'Answer text'); }
+  function addMacro() { ask('New quick reply', 'Title *', false, (t, f, x) => { MACROS.push({ t, c: 'Other', x }); render(); }, 'Text (you can use {name}, {id}, {sla})'); }
 
   // ───────── QUALITY (QA) ─────────
   let qaPick = null;
@@ -653,7 +678,7 @@ const HL = (() => {
   return {
     render: renderAll, nav, open, setQueue: k => { queue = k; render(); }, setChannel: c => { fChannel = c; render(); }, setCompany: c => { fCompany = c; render(); },
     search, drop, set, resolvePrompt, mode, macro, insertKb, send, toCase, afterCaseCreated, newTicket, closeNew, chip, memPick, hint, saveNew,
-    kpiSet: kpiSetFilter, exportCsv, addKb, addMacro, qaPick: qaPickFn, qaSave, adm, tickets: () => T, triage, navCount,
+    askOk, kpiSet: kpiSetFilter, exportCsv, addKb, addMacro, qaPick: qaPickFn, qaSave, adm, tickets: () => T, triage, navCount,
   };
 })();
 
