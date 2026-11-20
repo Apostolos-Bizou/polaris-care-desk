@@ -465,6 +465,7 @@
   .pill-gold{background:rgba(193,142,42,.16);color:#8a6410;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
   .pill-slate{background:rgba(100,116,139,.14);color:var(--slate-2);padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
 </style>
+<link rel="stylesheet" href="helpline.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
@@ -500,6 +501,35 @@
       <a href="#" data-view="payrun" onclick="go('payrun',event)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
         Payment Run
+      </a>
+      <div class="lab" style="margin-top:18px">Helpline · Call center</div>
+      <a href="#" data-view="hl" onclick="event.preventDefault();HL.nav('inbox')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/></svg>
+        Inbox <span class="count" id="nav-hl">0</span>
+      </a>
+      <a href="#" data-view="hl-board" onclick="event.preventDefault();HL.nav('board')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="5" height="16" rx="1"/><rect x="10" y="4" width="5" height="11" rx="1"/><rect x="17" y="4" width="4" height="7" rx="1"/></svg>
+        Board
+      </a>
+      <a href="#" data-view="hl-wall" onclick="event.preventDefault();HL.nav('wall')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h3l3-8 4 16 3-8h7"/></svg>
+        Supervisor wallboard
+      </a>
+      <a href="#" data-view="hl-kpi" onclick="event.preventDefault();HL.nav('kpi')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>
+        KPIs &amp; Reports
+      </a>
+      <a href="#" data-view="hl-kb" onclick="event.preventDefault();HL.nav('kb')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+        Knowledge &amp; Macros
+      </a>
+      <a href="#" data-view="hl-qa" onclick="event.preventDefault();HL.nav('qa')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
+        Quality
+      </a>
+      <a href="#" data-view="hl-admin" onclick="event.preventDefault();HL.nav('admin')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Helpline admin
       </a>
       <div class="lab" style="margin-top:18px">Reference</div>
       <a href="#" data-view="procedure" onclick="go('procedure',event)">
@@ -906,6 +936,7 @@ function openTrack(ref){clearGlobalSearch();currentRef=ref;view='track';render()
 function openProvider(id){clearGlobalSearch();currentProv=id;view='provider';render();window.scrollTo(0,0);}
 const TITLES={dashboard:['Operations / Case Board','Case Board'],network:['Operations / Network','Accredited Network'],ledger:['Operations / Availment Ledger','Availment Ledger'],procedure:['Reference / Procedure','Procedure & Coverage'],guide:['Reference / Guide','User Guide'],export:['Operations / Export','CBMS Utilization Export'],payrun:['Operations / Payment Run','Daily Payment Run'],case:['Operations / Case Board / Detail','Case Detail'],track:['Operations / Case Board / Tracking','Case Tracking'],provider:['Operations / Network / Provider','Provider Card']};
 function render(){
+  if(view==='hl'){HL.render();return;}
   const [crumb,title]=TITLES[view];
   $('#crumb').textContent=crumb;$('#title').textContent=title;
   $('#nav-cases').textContent=CASES.filter(c=>c.stage!=='ledger').length;
@@ -1937,5 +1968,6 @@ loadHistory();
 
 render();
 </script>
+<script src="helpline.js"></script>
 </body>
 </html>
