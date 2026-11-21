@@ -302,13 +302,14 @@ const HL = (() => {
       ${card('In today', tin, 'new requests', 'teal')}${card('Resolved today', tres, 'closed tickets', 'green')}</div>`;
   }
   function rowsFor(list) {
-    if (!list.length) return `<tr><td colspan="9" class="hl-empty">Nothing here 🎉</td></tr>`;
+    if (!list.length) return `<tr><td colspan="10" class="hl-empty">Nothing here 🎉</td></tr>`;
     return list.slice(0, 120).map(t => {
       const sl = slaInfo(t), a = staff(t.assignee);
       return `<tr class="row" onclick="HL.open('${t.id}')">
         <td><span class="hl-dot ${t.priority}"></span><span class="hl-id">${t.id}</span></td>
         <td class="hl-ch" title="${t.channel}">${chIc(t.channel)}</td>
-        <td><b>${esc(t.name)}</b><div class="sub">${esc(t.company)}</div></td>
+        <td><b>${esc(t.name)}</b></td>
+        <td class="hl-co">${esc(t.company)}</td>
         <td><div class="hl-subj"><b>${esc(t.subject)}</b>${t.complaint ? ' <span class="hl-cmp">COMPLAINT</span>' : ''}</div><div class="sub">${esc(t.category)}${t.caseRef ? ' · 🔗 ' + t.caseRef : ''}</div></td>
         <td><span class="hl-st ${stCls(t.status)}">${t.status}</span></td>
         <td>${a ? `<span class="hl-av" title="${a.n}">${a.id}</span>` : '<span class="hl-av none">—</span>'}</td>
@@ -335,7 +336,7 @@ const HL = (() => {
       <select onchange="HL.setCompany(this.value)"><option value="">All companies</option>${S.companies.map(c => `<option ${fCompany === c.n ? 'selected' : ''}>${c.n}</option>`).join('')}</select>
       ${fChannel ? `<button class="btn ghost sm" onclick="HL.setChannel('')">✕ ${fChannel}</button>` : ''}
       <span style="color:var(--slate-2);font-size:12px">${list.length} ticket(s)</span></div>
-      <div style="overflow:auto"><table class="hl-table hl-inbox"><thead><tr><th>Ticket</th><th>Ch.</th><th>Member</th><th>Subject</th><th>Status</th><th>Agent</th><th>SLA</th><th>Age</th></tr></thead>
+      <div style="overflow:auto"><table class="hl-table hl-inbox"><thead><tr><th>Ticket</th><th>Ch.</th><th>Member</th><th>Company</th><th>Subject</th><th>Status</th><th>Agent</th><th>SLA</th><th>Age</th></tr></thead>
       <tbody id="hl-rows">${rowsFor(list)}</tbody></table></div></div></div>`;
     $('#content').innerHTML = h;
   }
@@ -918,7 +919,7 @@ const HL = (() => {
   window.TF = { scan };
   const css = document.createElement('style');
   css.textContent = `.tf-row th{padding:4px 6px !important;background:var(--paper,#f6f3ec);border-bottom:1px solid var(--line,#e5e0d5)}
-  .tf-row select,.tf-row input{width:100%;min-width:60px;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;font-size:11.5px;padding:4px 6px;border:1px solid var(--line,#ddd);border-radius:6px;background:#fff;color:inherit;text-transform:none;letter-spacing:0}
+  .tf-row select,.tf-row input{width:100%;min-width:0;box-sizing:border-box;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;font-size:11.5px;padding:4px 6px;border:1px solid var(--line,#ddd);border-radius:6px;background:#fff;color:inherit;text-transform:none;letter-spacing:0}
   th.tf-sort{cursor:pointer;user-select:none} th.tf-sort:hover{color:var(--teal-d,#0e8c92)} th[data-dir]:not([data-dir=""])::after{content:' ' attr(data-dir);color:var(--teal-d,#0e8c92)}`;
   document.head.appendChild(css);
   scan();
